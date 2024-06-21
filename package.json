@@ -1,12 +1,6 @@
 {
   "name": "websteram-kernel",
   "version": "1.0.4",
-  "author": "snomiao <snomiao@gmail.com>",
-  "type": "module",
-  "exports": {
-    "import": "./dist/index.js",
-    "types": "./index.ts"
-  },
   "description": "Type-safety piping paradigram through webstream-kernels.",
   "keywords": [
     "webstream",
@@ -19,6 +13,12 @@
     "node",
     "browser"
   ],
+  "author": "snomiao <snomiao@gmail.com>",
+  "type": "module",
+  "exports": {
+    "import": "./dist/index.js",
+    "types": "./index.ts"
+  },
   "module": "index.ts",
   "types": "./index.ts",
   "files": [
