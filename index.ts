@@ -25,8 +25,13 @@ export function filters<T>(
 export function filters<T>(fn?: (x: T) => Awaitable<Boolean>) {
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
-      if (fn && (await fn(chunk))) return ctrl.enqueue(chunk);
-      if (undefined !== chunk && null !== chunk) return ctrl.enqueue(chunk);
+      if (fn) {
+        const shouldEnqueue = await fn(chunk);
+        if (shouldEnqueue) ctrl.enqueue(chunk);
+      } else {
+        const isNull = undefined === chunk || null === chunk;
+        if (!isNull) ctrl.enqueue(chunk);
+      }
     },
   });
 }
