@@ -1,6 +1,6 @@
 {
   "name": "websteram-kernel",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "snomiao <snomiao@gmail.com>",
   "type": "module",
   "exports": {
