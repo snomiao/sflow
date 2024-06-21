@@ -1,6 +1,6 @@
 {
   "name": "webstream-kernel",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "snomiao <snomiao@gmail.com>",
   "type": "module",
   "exports": {
