@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/snomiao/webstream-kernel/compare/v0.0.6...v0.0.7) (2024-06-21)
+
+
+### Bug Fixes
+
+* **filters:** fix shouldEnqueue ([b408e82](https://github.com/snomiao/webstream-kernel/commit/b408e82c4c23055cc7e5673c022a4166b5c3f3cf))
+
 ### [0.0.6](https://github.com/snomiao/webstream-kernel/compare/v0.0.5...v0.0.6) (2024-06-21)
 
 ### [0.0.5](https://github.com/snomiao/webstream-kernel/compare/v0.0.4...v0.0.5) (2024-06-21)
