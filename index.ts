@@ -4,117 +4,46 @@ import {
   of,
   toArray,
   toPromise,
-  toString,
   type ReadableLike,
 } from "web-streams-extensions";
-type TransformStreamReturnType<TS extends TransformStream> =
-  TS extends TransformStream<any, infer R> ? R : never;
-type TSRT<TS extends TransformStream> = TransformStreamReturnType<TS>;
-type SFRT<FN extends (...args: any[]) => TransformStream> =
-  TransformStreamReturnType<ReturnType<FN>>;
-type ChangeReturnType<T> = T extends (...args: any[]) => any
-  ? (...args: Parameters<T>) => SFRT<T>
-  : never;
-
-export type snoflow<T> = ReadableStream<T> & {
-  buffer: (...args: Parameters<typeof buffers<T>>) => snoflow<T[]>;
-  debounce: (...args: Parameters<typeof debounces<T>>) => snoflow<T>;
-  done: () => Promise<void>;
-  filter(): snoflow<NonNullable<T>>;
-  filter(fn: (x: T) => Awaitable<any>): snoflow<T>;
-  flatMap: <R>(...args: Parameters<typeof flatMaps<T, R>>) => snoflow<R>;
-  join(fn: (s: WritableStream<T>) => void | any): snoflow<T>;
-  join(stream: ReadableStream<T>): snoflow<T>;
-  limit: (...args: Parameters<typeof limits<T>>) => snoflow<T>;
-  map: <R>(...args: Parameters<typeof maps<T, R>>) => snoflow<R>;
-  peek: (...args: Parameters<typeof peeks<T>>) => snoflow<T>;
-  reduce: <S>(...args: Parameters<typeof reduces<T, S>>) => snoflow<S>;
-  skip: (...args: Parameters<typeof skips<T>>) => snoflow<T>;
-  tail: (...args: Parameters<typeof tails<T>>) => snoflow<T>;
-  tee(fn: (s: ReadableStream<T>) => void | any): snoflow<T>;
-  tee(stream: WritableStream<T>): snoflow<T>;
-  throttle: (...args: Parameters<typeof throttles<T>>) => snoflow<T>;
-} & (T extends any[]
-    ? { flat: (...args: Parameters<typeof flats<T>>) => snoflow<T[number]> }
-    : {});
-
-// @ts-ignore
-export const snoflow: <T>(
-  src:
-    | Promise<T>
-    | Iterable<T>
-    | AsyncIterable<T>
-    | (() => Iterable<T> | AsyncIterable<T>)
-    | ReadableLike<T>
-) => snoflow<T> = (src) => {
-  const r = from(src);
-  return (
-    // @ts-ignore
-    /* @ts-ignore */ Object.assign(r, {
-      buffer: (...args) => snoflow(r.pipeThrough(buffers(...args))), // @ts-ignore
-      debounce: (...args) => snoflow(r.pipeThrough(debounces(...args))), // @ts-ignore
-      done: () => r.pipeTo(nils()), // @ts-ignore
-      filter: (...args) => snoflow(r.pipeThrough(filters(...args))), // @ts-ignore
-      flatMap: (...args) => snoflow(r.pipeThrough(flatMaps(...args))), // @ts-ignore
-      flat: (...args) => snoflow(r.pipeThrough(flats(...args))), // @ts-ignore
-      join: (...args) => snoflow(r.pipeThrough(joins(...args))), // @ts-ignore
-      limit: (...args) => snoflow(r.pipeThrough(limits(...args))), // @ts-ignore
-      map: (...args) => snoflow(r.pipeThrough(maps(...args))), // @ts-ignore
-      peek: (...args) => snoflow(r.pipeThrough(peeks(...args))), // @ts-ignore
-      reduce: (...args) => snoflow(r.pipeThrough(reduces(...args))), // @ts-ignore
-      skip: (...args) => snoflow(r.pipeThrough(skips(...args))), // @ts-ignore
-      tail: (...args) => snoflow(r.pipeThrough(tails(...args))), // @ts-ignore
-      tee: (...args) => snoflow(r.pipeThrough(tees(...args))), // @ts-ignore
-      throttle: (...args) => snoflow(r.pipeThrough(throttles(...args))), // @ts-ignore
-    })
-  );
-};
-
-snoflow([1, 2, 3])
-  .buffer(2)
-  .debounce(100)
-  .filter()
-  .map((n) => [String(n)])
-  .flat()
-  .flatMap((n) => [String(n)])
-  .tee((s) => s.pipeTo(nils()))
-  .limit(1)
-  .map(() => 1)
-  .peek(() => {})
-  .reduce(0, (a, b) => a + b)
-  .skip(1)
-  .tail(1)
-  .throttle(100)
-  .done();
 
 type Awaitable<T> = Promise<T> | T;
 
 export function maps<T, R>(fn: (x: T, i: number) => Awaitable<R>) {
   let i = 0;
   return new TransformStream<T, R>({
-    transform: async (chunk, ctrl) => {
-      ctrl.enqueue(await fn(chunk, i++));
-    },
+    transform: async (chunk, ctrl) => ctrl.enqueue(await fn(chunk, i++)),
+  });
+}
+/* map a stream by parallel */
+export function pMaps<T, R>(
+  concurrent: number,
+  fn: (x: T, i: number) => Awaitable<R>
+) {
+  let i = 0;
+  return new TransformStream<T, R>({
+    transform: async (chunk, ctrl) => ctrl.enqueue(await fn(chunk, i++)),
   });
 }
 export function peeks<T>(fn: (x: T, i: number) => Awaitable<void | any>) {
   let i = 0;
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
-      await fn(chunk, i);
+      await fn(chunk, i++);
       ctrl.enqueue(chunk);
     },
   });
 }
 export const tees: {
-  <T>(fn: (s: ReadableStream<T>) => void | any): TransformStream<T, T>;
+  <T>(fn: (s: snoflow<T>) => void | any): TransformStream<T, T>;
   <T>(stream: WritableStream<T>): TransformStream<T, T>;
 } = (arg) => {
   if (arg instanceof WritableStream) return tees((s) => s.pipeTo(arg));
   const fn = arg;
   const { writable, readable } = new TransformStream();
   const [a, b] = readable.tee();
-  fn(a);
+  // @ts-ignore
+  fn(snoflow(a));
   return { writable, readable: b };
 };
 
@@ -142,7 +71,13 @@ export function debounces<T>(t: number) {
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
       if (id) clearTimeout(id);
-      id = setTimeout(() => ctrl.enqueue(chunk), t);
+      id = setTimeout(() => {
+        ctrl.enqueue(chunk);
+        id = null;
+      }, t);
+    },
+    flush: async (ctrl) => {
+      while (id) await new Promise((r) => setTimeout(r, t / 2));
     },
   });
 }
@@ -170,12 +105,13 @@ export function throttles<T>(t: number, keepLast = true) {
 }
 export const filters: {
   <T>(): TransformStream<T, NonNullable<T>>;
-  <T>(fn: (x: T) => Awaitable<any>): TransformStream<T, T>;
-} = (fn?: (arg: any) => any) => {
+  <T>(fn: (x: T, i: number) => Awaitable<any>): TransformStream<T, T>;
+} = (fn?: (...args: any[]) => any) => {
+  let i = 0;
   return new TransformStream({
     transform: async (chunk, ctrl) => {
       if (fn) {
-        const shouldEnqueue = await fn(chunk);
+        const shouldEnqueue = await fn(chunk, i++);
         if (shouldEnqueue) ctrl.enqueue(chunk);
       } else {
         const isNull = undefined === chunk || null === chunk;
@@ -184,12 +120,13 @@ export const filters: {
     },
   });
 };
-from([1, 2, 3]).pipeThrough(filters());
+// from([1, 2, 3]).pipeThrough(filters());
 
-export function flatMaps<T, R>(fn: (x: T) => Promise<R[]> | R[]) {
+export function flatMaps<T, R>(fn: (x: T, i: number) => Promise<R[]> | R[]) {
+  let i = 0;
   return new TransformStream<T, R>({
     transform: async (chunk, ctrl) => {
-      (await fn(chunk)).map((e) => ctrl.enqueue(e));
+      (await fn(chunk, i++)).map((e) => ctrl.enqueue(e));
     },
   });
 }
@@ -202,11 +139,12 @@ export function flats<T>() {
 }
 export function reduces<T, S>(
   state: S,
-  fn: (state: S, x: T) => Promise<S> | S
+  fn: (state: S, x: T, i: number) => Promise<S> | S
 ) {
+  let i = 0;
   return new TransformStream<T, S>({
     transform: async (chunk, ctrl) =>
-      ctrl.enqueue((state = await fn(state, chunk))),
+      ctrl.enqueue((state = await fn(state, chunk, i++))),
   });
 }
 export function tails<T>(n = 1) {
@@ -226,8 +164,7 @@ export const heads = limits;
 export function limits<T>(n = 1) {
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
-      ctrl.enqueue(chunk);
-      if (!n--) ctrl.terminate();
+      n-- && ctrl.enqueue(chunk);
     },
   });
 }
@@ -260,4 +197,63 @@ export const merges: (
   src: ReadableStream<ReadableStream<T> | Promise<T>>
 ) => ReadableStream<T> = merge as any;
 
-export { from, toArray, toPromise, toString };
+export type snoflow<T> = ReadableStream<T> & {
+  buffer: (...args: Parameters<typeof buffers<T>>) => snoflow<T[]>;
+  debounce: (...args: Parameters<typeof debounces<T>>) => snoflow<T>;
+  done: () => Promise<void>;
+  filter(): snoflow<NonNullable<T>>;
+  filter(fn: (x: T, i: number) => Awaitable<any>): snoflow<T>;
+  flatMap: <R>(...args: Parameters<typeof flatMaps<T, R>>) => snoflow<R>;
+  join(fn: (s: WritableStream<T>) => void | any): snoflow<T>;
+  join(stream: ReadableStream<T>): snoflow<T>;
+  limit: (...args: Parameters<typeof limits<T>>) => snoflow<T>;
+  map: <R>(...args: Parameters<typeof maps<T, R>>) => snoflow<R>;
+  peek: (...args: Parameters<typeof peeks<T>>) => snoflow<T>;
+  pMap: <R>(...args: Parameters<typeof pMaps<T, R>>) => snoflow<R>;
+  reduce: <S>(...args: Parameters<typeof reduces<T, S>>) => snoflow<S>;
+  skip: (...args: Parameters<typeof skips<T>>) => snoflow<T>;
+  tail: (...args: Parameters<typeof tails<T>>) => snoflow<T>;
+  tees(fn: (s: snoflow<T>) => void | any): snoflow<T>;
+  tees(stream: WritableStream<T>): snoflow<T>;
+  throttle: (...args: Parameters<typeof throttles<T>>) => snoflow<T>;
+  toArray: () => Promise<T[]>;
+  toFirst: () => Promise<T>;
+} & (T extends any[]
+    ? { flat: (...args: Parameters<typeof flats<T>>) => snoflow<T[number]> }
+    : {});
+
+// @ts-ignore
+export const snoflow: <T>(
+  src:
+    | Promise<T>
+    | Iterable<T>
+    | AsyncIterable<T>
+    | (() => Iterable<T> | AsyncIterable<T>)
+    | ReadableLike<T>
+    | ReadableStream<T>
+) => snoflow<T> = (src) => {
+  const r = src instanceof ReadableStream ? src : from(src);
+  return (
+    // @ts-ignore
+    /* @ts-ignore */ Object.assign(r, {
+      buffer: (...args) => snoflow(r.pipeThrough(buffers(...args))), // @ts-ignore
+      debounce: (...args) => snoflow(r.pipeThrough(debounces(...args))), // @ts-ignore
+      done: () => r.pipeTo(nils()), // @ts-ignore
+      filter: (...args) => snoflow(r.pipeThrough(filters(...args))), // @ts-ignore
+      flatMap: (...args) => snoflow(r.pipeThrough(flatMaps(...args))), // @ts-ignore
+      flat: (...args) => snoflow(r.pipeThrough(flats(...args))), // @ts-ignore
+      join: (...args) => snoflow(r.pipeThrough(joins(...args))), // @ts-ignore
+      limit: (...args) => snoflow(r.pipeThrough(limits(...args))), // @ts-ignore
+      map: (...args) => snoflow(r.pipeThrough(maps(...args))), // @ts-ignore
+      pMap: (...args) => snoflow(r.pipeThrough(pMmps(...args))), // @ts-ignore
+      peek: (...args) => snoflow(r.pipeThrough(peeks(...args))), // @ts-ignore
+      reduce: (...args) => snoflow(r.pipeThrough(reduces(...args))), // @ts-ignore
+      skip: (...args) => snoflow(r.pipeThrough(skips(...args))), // @ts-ignore
+      tail: (...args) => snoflow(r.pipeThrough(tails(...args))), // @ts-ignore
+      tees: (...args) => snoflow(r.pipeThrough(tees(...args))), // @ts-ignore
+      throttle: (...args) => snoflow(r.pipeThrough(throttles(...args))), // @ts-ignore
+      toArray: () => toArray(r), // @ts-ignore
+      toFirst: () => toPromise(snoflow(r).limit(1)), // @ts-ignore
+    })
+  );
+};
