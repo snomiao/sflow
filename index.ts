@@ -17,6 +17,15 @@ export function maps<T, R>(fn: (x: T, i: number) => Promise<R> | R) {
 export function nils<T>() {
   return new WritableStream<T>();
 }
+export function debounces<T>(t: number) {
+  let id: number | null | Timer = null;
+  return new TransformStream<T, T>({
+    transform: async (chunk, ctrl) => {
+      if (id) clearTimeout(id);
+      id = setTimeout(() => ctrl.enqueue(chunk), t);
+    },
+  });
+}
 
 export function filters<T>(): TransformStream<T, NonNullable<T>>;
 export function filters<T>(
