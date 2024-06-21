@@ -1,12 +1,24 @@
 {
-  "name": "webstream-kernel",
-  "version": "0.0.11",
+  "name": "websteram-kernel",
+  "version": "1.0.1",
   "author": "snomiao <snomiao@gmail.com>",
   "type": "module",
   "exports": {
     "import": "./dist/index.js",
     "types": "./index.ts"
   },
+  "description": "Type-safety piping paradigram through webstream-kernels.",
+  "keywords": [
+    "webstream",
+    "functional",
+    "pipe-through",
+    "kernel",
+    "transform",
+    "stream",
+    "bun",
+    "node",
+    "browser"
+  ],
   "module": "index.ts",
   "types": "./index.ts",
   "files": [
