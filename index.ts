@@ -6,10 +6,11 @@ import {
   toString,
 } from "web-streams-extensions";
 type Awaitable<T> = Promise<T> | T;
-export function maps<T, R>(fn: (x: T) => Promise<R> | R) {
+export function maps<T, R>(fn: (x: T, i: number) => Promise<R> | R) {
+  let i = 0;
   return new TransformStream<T, R>({
     transform: async (chunk, ctrl) => {
-      ctrl.enqueue(await fn(chunk));
+      ctrl.enqueue(await fn(chunk, i++));
     },
   });
 }
@@ -52,23 +53,23 @@ export function reduces<T, S>(
       ctrl.enqueue((state = await fn(state, chunk))),
   });
 }
-export function lasts<T>() {
-  let item: T;
+export function lasts<T>(n = 1) {
+  let chunks: T[] = [];
   return new TransformStream<T>({
     transform: async (chunk, ctrl) => {
-      item = chunk;
+      chunks.push(chunk);
+      if (chunks.length > n) chunks.shift();
     },
     flush: (ctrl) => {
-      ctrl.enqueue(item);
+      chunks.map((e) => ctrl.enqueue(e));
     },
   });
 }
-export function firsts<T>() {
-  let item: T;
+export function firsts<T>(n = 1) {
   return new TransformStream<T>({
     transform: async (chunk, ctrl) => {
-      ctrl.enqueue(item);
-      ctrl.terminate();
+      ctrl.enqueue(chunk);
+      if (!n--) ctrl.terminate();
     },
   });
 }
@@ -94,4 +95,3 @@ export const merges: (
 ) => ReadableStream<T> = merge as any;
 
 export { from, toArray, toPromise, toString };
-
