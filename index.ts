@@ -1,5 +1,5 @@
 import { from, toArray, toPromise, toString } from "web-streams-extensions";
-
+type Awaitable<T> = Promise<T> | T;
 export function maps<T, R>(fn: (x: T) => Promise<R> | R) {
   return new TransformStream<T, R>({
     transform: async (chunk, ctrl) => {
@@ -10,10 +10,16 @@ export function maps<T, R>(fn: (x: T) => Promise<R> | R) {
 export function nils<T>() {
   return new WritableStream<T>();
 }
-export function filters<T>(fn: (x: T) => Promise<boolean> | boolean) {
+
+export function filters<T>(): TransformStream<T, NonNullable<T>>;
+export function filters<T>(
+  fn: (x: T) => Awaitable<boolean>
+): TransformStream<T, T>;
+export function filters<T>(fn?: (x: T) => Awaitable<Boolean>) {
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
-      if (await fn(chunk)) ctrl.enqueue(chunk);
+      if (fn && (await fn(chunk))) return ctrl.enqueue(chunk);
+      if (undefined !== chunk && null !== chunk) return ctrl.enqueue(chunk);
     },
   });
 }
