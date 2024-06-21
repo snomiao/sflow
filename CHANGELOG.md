@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/snomiao/webstream-kernel/compare/v1.0.4...v1.1.0) (2024-06-21)
+
+
+### Features
+
+* **flow:** stream tees and joins ([7024afc](https://github.com/snomiao/webstream-kernel/commit/7024afca13e9b9be786c2d8286d93c9d58860cbe))
+
 ### [1.0.4](https://github.com/snomiao/webstream-kernel/compare/v1.0.3...v1.0.4) (2024-06-21)
 
 ### [1.0.3](https://github.com/snomiao/webstream-kernel/compare/v1.0.2...v1.0.3) (2024-06-21)
