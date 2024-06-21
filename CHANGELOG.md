@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.8](https://github.com/snomiao/webstream-kernel/compare/v0.0.7...v0.0.8) (2024-06-21)
+
+
+### Features
+
+* **debounces:** done ([115d007](https://github.com/snomiao/webstream-kernel/commit/115d007a47383c1389b509245528d9334cf75f8f))
+
 ### [0.0.7](https://github.com/snomiao/webstream-kernel/compare/v0.0.6...v0.0.7) (2024-06-21)
 
 
