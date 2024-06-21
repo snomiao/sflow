@@ -1,4 +1,10 @@
-import { from, toArray, toPromise, toString } from "web-streams-extensions";
+import {
+  from,
+  merge,
+  toArray,
+  toPromise,
+  toString,
+} from "web-streams-extensions";
 type Awaitable<T> = Promise<T> | T;
 export function maps<T, R>(fn: (x: T) => Promise<R> | R) {
   return new TransformStream<T, R>({
@@ -81,4 +87,11 @@ export function buffers<T>(n: number) {
   });
 }
 
+export const merges: (
+  concurrent?: number
+) => <T>(
+  src: ReadableStream<ReadableStream<T> | Promise<T>>
+) => ReadableStream<T> = merge as any;
+
 export { from, toArray, toPromise, toString };
+
