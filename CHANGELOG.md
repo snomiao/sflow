@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/snomiao/webstream-kernel/compare/v0.0.2...v0.0.3) (2024-06-21)
+
+
+### Features
+
+* **filter:** nonnullable ([5776d7a](https://github.com/snomiao/webstream-kernel/commit/5776d7a6cd23fb9a1b8af819ea4589e97030066a))
+
 ### [0.0.2](https://github.com/snomiao/webstream-kernel/compare/v0.0.1...v0.0.2) (2024-06-21)
 
 
