@@ -1,6 +1,6 @@
 {
   "name": "snoflow",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "author": "snomiao <snomiao@gmail.com>",
   "module": "index.ts",
   "devDependencies": {
@@ -12,8 +12,14 @@
     "typescript": "^5.0.0"
   },
   "exports": {
-    "import": "./dist/index.js",
-    "types": "./index.ts"
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./index.ts"
+    },
+    "./fromNodeStream": {
+      "import": "./dist/fromNodeStream.js",
+      "types": "./fromNodeStream.ts"
+    }
   },
   "description": "Type-safety piping paradigram through webstream-kernels.",
   "files": [
@@ -32,7 +38,7 @@
     "browser"
   ],
   "scripts": {
-    "build": "bun build index.ts --outdir=dist",
+    "build": "bun build index.ts fromNodeStream.ts --outdir=dist",
     "prerelease": "bun run build && bun run test",
     "release": "bunx standard-version && git push --follow-tags && npm publish",
     "test": "bun test"
