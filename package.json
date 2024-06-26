@@ -1,11 +1,12 @@
 {
   "name": "snoflow",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "author": "snomiao <snomiao@gmail.com>",
   "module": "index.ts",
   "devDependencies": {
     "@types/bun": "^1.1.5",
     "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.9",
     "typescript": "^5.5.2"
   },
   "peerDependencies": {
