@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.9](https://github.com/snomiao/snoflow/compare/v1.3.8...v1.3.9) (2024-06-26)
+
+
+### Bug Fixes
+
+* **main:** flowsource ([4e89d38](https://github.com/snomiao/snoflow/commit/4e89d387b6f512abfa881c8838a7fe8b8fe17569))
+
 ### [1.3.8](https://github.com/snomiao/snoflow/compare/v1.3.7...v1.3.8) (2024-06-26)
 
 ### [1.3.7](https://github.com/snomiao/snoflow/compare/v1.3.6...v1.3.7) (2024-06-26)
