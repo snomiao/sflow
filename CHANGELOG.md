@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/snomiao/snoflow/compare/v1.2.5...v1.3.0) (2024-06-26)
+
+
+### Features
+
+* **snoflow:** parallel utils ([1dceebb](https://github.com/snomiao/snoflow/commit/1dceebb3ee70403a5e03ee95d5a2a1628027569a))
+
 ### [1.2.5](https://github.com/snomiao/webstream-kernel/compare/v1.2.4...v1.2.5) (2024-06-22)
 
 ### [1.2.4](https://github.com/snomiao/webstream-kernel/compare/v1.2.3...v1.2.4) (2024-06-21)
