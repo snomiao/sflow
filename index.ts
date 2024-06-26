@@ -1,3 +1,4 @@
+import { sortBy } from "rambda";
 import {
   from,
   merge,
@@ -217,6 +218,7 @@ export type snoflow<T> = ReadableStream<T> & {
   tees(stream: WritableStream<T>): snoflow<T>;
   throttle: (...args: Parameters<typeof throttles<T>>) => snoflow<T>;
   toArray: () => Promise<T[]>;
+  toSortedArray(compare?: (item: T) => number): Promise<T[]>;
   toFirst: () => Promise<T>;
 } & (T extends any[]
     ? { flat: (...args: Parameters<typeof flats<T>>) => snoflow<T[number]> }
@@ -253,6 +255,7 @@ export const snoflow: <T>(
       tees: (...args) => snoflow(r.pipeThrough(tees(...args))), // @ts-ignore
       throttle: (...args) => snoflow(r.pipeThrough(throttles(...args))), // @ts-ignore
       toArray: () => toArray(r), // @ts-ignore
+      toSortedArray: async (fn = ()=> x) => sortBy(fn, await toArray(r)), // @ts-ignore
       toFirst: () => toPromise(snoflow(r).limit(1)), // @ts-ignore
     })
   );
