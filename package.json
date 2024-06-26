@@ -1,7 +1,25 @@
 {
   "name": "snoflow",
   "version": "1.2.5",
+  "author": "snomiao <snomiao@gmail.com>",
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bun": "^1.1.5",
+    "@types/jest": "^29.5.12",
+    "typescript": "^5.5.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "exports": {
+    "import": "./dist/index.js",
+    "types": "./index.ts"
+  },
   "description": "Type-safety piping paradigram through webstream-kernels.",
+  "files": [
+    "*.ts",
+    "dist"
+  ],
   "keywords": [
     "webstream",
     "functional",
@@ -13,34 +31,16 @@
     "node",
     "browser"
   ],
-  "author": "snomiao <snomiao@gmail.com>",
-  "type": "module",
-  "exports": {
-    "import": "./dist/index.js",
-    "types": "./index.ts"
-  },
-  "module": "index.ts",
-  "types": "./index.ts",
-  "files": [
-    "*.ts",
-    "dist"
-  ],
   "scripts": {
     "build": "bun build index.ts --outdir=dist",
     "prerelease": "bun run build && bun run test",
     "release": "bunx standard-version && git push --follow-tags && npm publish",
     "test": "bun test"
   },
+  "type": "module",
+  "types": "./index.ts",
   "dependencies": {
     "rambda": "^9.2.1",
     "web-streams-extensions": "^0.12.0"
-  },
-  "devDependencies": {
-    "@types/bun": "^1.1.5",
-    "@types/jest": "^29.5.12",
-    "typescript": "^5.5.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
   }
 }
