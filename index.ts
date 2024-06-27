@@ -1,3 +1,4 @@
+import DIE from "@snomiao/die";
 import { sortBy, type Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
 import {
@@ -142,6 +143,7 @@ export type snoflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {
     _type: T;
     readable: ReadableStream<T>;
+    writable: WritableStream<T>;
     buffer(...args: Parameters<typeof buffers<T>>): snoflow<T[]>;
     abort(...args: Parameters<typeof aborts<T>>): snoflow<T>;
     through(stream?: TransformStream<T, T>): snoflow<T>;
@@ -186,6 +188,15 @@ export type snoflow<T> = ReadableStream<T> &
           ...args: Parameters<typeof mapAddFields<K, T, R>>
         ) => snoflow<Omit<T, K> & { [key in K]: R }>;
       }
+    : {}) &
+  (T extends string | Uint8Array
+    ? {
+        toResponse: () => Response;
+        text: () => Promise<string>;
+        json: () => Promise<any>;
+        blob: () => Promise<Blob>;
+        arrayBuffer: () => Promise<ArrayBuffer>;
+      }
     : {});
 
 export type flowSource<T> =
@@ -203,7 +214,13 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
   // @ts-ignore todo
   return Object.assign(r, {
     _type: null as T,
-    readable: r,
+    get readable() {
+      return r;
+    },
+    get writable() {
+      DIE(new Error("WIP"));
+      return new WritableStream();
+    },
     through: (...args: Parameters<typeof _throughs>) =>
       snoflow(r.pipeThrough(_throughs(...args))),
     mapAddField: (
@@ -253,10 +270,17 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(_tees(...args))),
     throttle: (...args: Parameters<typeof throttles>) =>
       snoflow(r.pipeThrough(throttles(...args))),
+    // to promises
     toArray: () => wseToArray(r),
-    toCount: async () => (await wseToArray(r)).length,
     toFirst: () => wseToPromise(snoflow(r).limit(1)),
     toLast: () => wseToPromise(snoflow(r).tail(1)),
+    // as response (only ReadableStream<string | UInt8Array>)
+    toResponse: (init?: ResponseInit) => new Response(r, init),
+    text: (init?: ResponseInit) => new Response(r, init).text(),
+    json: (init?: ResponseInit) => new Response(r, init).json(),
+    blob: (init?: ResponseInit) => new Response(r, init).blob(),
+    arrayBuffer: (init?: ResponseInit) => new Response(r, init).arrayBuffer(),
+    // as iterator
     [Symbol.asyncIterator]: streamAsyncIterator<T>,
   });
 };

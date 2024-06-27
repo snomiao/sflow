@@ -4,6 +4,7 @@
 ## Examples
 
 ### Pipe style
+
 ```
 await snoflow([1, 2, 3])
     .buffer(2)
