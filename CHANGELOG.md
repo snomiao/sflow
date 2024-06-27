@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/snomiao/snoflow/compare/v1.4.8...v1.5.0) (2024-06-27)
+
+
+### Features
+
+* **main:** merge desc ([8cac190](https://github.com/snomiao/snoflow/commit/8cac19084c6135b3fd2080ffda746d0993034267))
+
+
+### Bug Fixes
+
+* **main:** merge asc ([590e2c8](https://github.com/snomiao/snoflow/commit/590e2c80195687d81318681c68f39813baa83108))
+
 ### [1.4.8](https://github.com/snomiao/snoflow/compare/v1.4.7...v1.4.8) (2024-06-27)
 
 ### [1.4.7](https://github.com/snomiao/snoflow/compare/v1.4.6...v1.4.7) (2024-06-27)
