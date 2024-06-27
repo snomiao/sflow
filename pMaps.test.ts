@@ -17,3 +17,14 @@ it("Infinity concurrent", async () => {
   expect(finishOrder).toEqual([1, 1, 2, 2, 3, 3, 4, 4]);
   expect(returnOrder).toEqual([1, 2, 3, 4, 4, 3, 2, 1]);
 });
+it("pmaps", async () => {
+  const t = Date.now();
+  const req = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const acc = snoflow(req.toReversed())
+    .pMap(3, async (n) => {
+      await new Promise((r) => setTimeout(r, n * 100));
+      return n;
+    })
+    .toArray();
+  expect(acc).resolves.toEqual(req.toReversed());
+})
