@@ -1,6 +1,6 @@
 {
   "name": "snoflow",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Type-safety piping paradigram through webstream-kernels.",
   "keywords": [
     "webstream",
@@ -37,8 +37,7 @@
     "release": "bunx standard-version && git push --follow-tags && npm publish",
     "test": "bun test"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@snomiao/die": "^1.0.9",
     "react-hook-form": "^7.52.0",
