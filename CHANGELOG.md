@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.7](https://github.com/snomiao/snoflow/compare/v1.4.6...v1.4.7) (2024-06-27)
+
 ### [1.4.6](https://github.com/snomiao/snoflow/compare/v1.4.5...v1.4.6) (2024-06-27)
 
 ### [1.4.5](https://github.com/snomiao/snoflow/compare/v1.4.4...v1.4.5) (2024-06-27)
