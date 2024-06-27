@@ -205,16 +205,16 @@ export type flowSource<T> =
   | (() => Iterable<T> | AsyncIterable<T>)
   | ReadableLike<T>
   | ReadableStream<T>
-  | snoflow<T>
-  // | (T extends Uint8Array ? XMLHttpRequestBodyInit : never);
+  | snoflow<T>;
+// | (T extends Uint8Array ? XMLHttpRequestBodyInit : never);
 
 export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
   const r: ReadableStream<T> =
     src instanceof ReadableStream
       ? src
-      // : isXMLHTTPRequestBodyInit(src)
-      // ? new Response(src).body!
-      : wseFrom(src);
+      : // : isXMLHTTPRequestBodyInit(src)
+        // ? new Response(src).body!
+        wseFrom(src);
   // @ts-ignore todo
   return Object.assign(r, {
     _type: null as T,
@@ -276,6 +276,7 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(throttles(...args))),
     // to promises
     toArray: () => wseToArray(r),
+    toCount: async () => (await wseToArray(r)).length,
     toFirst: () => wseToPromise(snoflow(r).limit(1)),
     toLast: () => wseToPromise(snoflow(r).tail(1)),
     // as response (only ReadableStream<string | UInt8Array>)
