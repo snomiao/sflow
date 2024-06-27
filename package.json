@@ -1,6 +1,6 @@
 {
   "name": "snoflow",
-  "version": "1.3.13",
+  "version": "1.3.14",
   "author": "snomiao <snomiao@gmail.com>",
   "module": "index.ts",
   "devDependencies": {
@@ -49,6 +49,7 @@
   "dependencies": {
     "@snomiao/die": "^1.0.9",
     "rambda": "^9.2.1",
+    "react-hook-form": "^7.52.0",
     "unwind-array": "^1.1.4",
     "web-streams-extensions": "^0.12.0"
   }
