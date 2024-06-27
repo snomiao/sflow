@@ -42,7 +42,7 @@ export { intervals } from "./intervals";
 export { joins } from "./joins";
 export { mapAddFields } from "./mapAddFields";
 export { maps } from "./maps";
-export { mergeAscends } from "./mergeAscends";
+export { mergeAscends, mergeDescends } from "./mergeAscends";
 export { nils } from "./nils";
 export { pMaps } from "./pMaps";
 export { peeks } from "./peeks";
