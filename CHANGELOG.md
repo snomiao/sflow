@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.2](https://github.com/snomiao/snoflow/compare/v1.4.1...v1.4.2) (2024-06-27)
+
+
+### Bug Fixes
+
+* **main:** wip bodyinit ([9de2af8](https://github.com/snomiao/snoflow/commit/9de2af815ae3c02050ed8421439543a56bb2db55))
+
 ### [1.4.1](https://github.com/snomiao/webstream-kernel/compare/v1.4.0...v1.4.1) (2024-06-27)
 
 
