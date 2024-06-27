@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/snomiao/snoflow/compare/v1.5.0...v1.6.0) (2024-06-27)
+
+
+### Features
+
+* **chunkby:** init ([2c9a424](https://github.com/snomiao/snoflow/commit/2c9a424a190216dbed6767eb9a5b10c569551538))
+
+
+### Bug Fixes
+
+* **main:** add pmap test ([df4a32f](https://github.com/snomiao/snoflow/commit/df4a32f3d520d60c82dbb893107580e3d694926b))
+
 ## [1.5.0](https://github.com/snomiao/snoflow/compare/v1.4.8...v1.5.0) (2024-06-27)
 
 
