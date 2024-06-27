@@ -1,6 +1,6 @@
 import { range } from "rambda";
 import { snoflow } from ".";
-import { mergeAscends } from "./mergeAscends";
+import { mergeAscends, mergeDescends } from "./mergeAscends";
 
 it("merge asc", async () => {
   const req1 = snoflow([0, 1, 2]);
@@ -28,8 +28,7 @@ it("curried", async () => {
   ).toEqual(ret);
 });
 
-// todo fix this test
-it("merge desc", async () => {
+it("merge desc by invert use of asc", async () => {
   const req1 = snoflow([0, 1, 2].toReversed());
   const req2 = snoflow([1, 2, 3].toReversed());
   const req3 = snoflow([0, 4, 5].toReversed());
@@ -37,6 +36,18 @@ it("merge desc", async () => {
 
   expect(
     await mergeAscends((x) => -x, [req1, req2, req3])
+      // .peek(console.log)
+      .toArray()
+  ).toEqual(ret);
+});
+it("merge desc by desc export", async () => {
+  const req1 = snoflow([0, 1, 2].toReversed());
+  const req2 = snoflow([1, 2, 3].toReversed());
+  const req3 = snoflow([0, 4, 5].toReversed());
+  const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5].toReversed();
+
+  expect(
+    await mergeDescends((x) => x, [req1, req2, req3])
       // .peek(console.log)
       .toArray()
   ).toEqual(ret);

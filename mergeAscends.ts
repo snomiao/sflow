@@ -84,3 +84,13 @@ export const mergeAscends: {
     })
   );
 };
+
+export const mergeDescends: {
+  <T>(ordFn: (input: T) => Ord): {
+    (srcs: flowSource<flowSource<T>>): snoflow<T>;
+  };
+  <T>(ordFn: (input: T) => Ord, srcs: flowSource<flowSource<T>>): snoflow<T>;
+} = <T>(ordFn: (input: T) => Ord, srcs?: flowSource<flowSource<T>>) => {
+  if (!srcs) return ((srcs: any) => mergeDescends(ordFn, srcs)) as any;
+  return mergeAscends((x) => -ordFn(x), srcs);
+};
