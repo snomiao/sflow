@@ -38,15 +38,15 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@snomiao/die": "^1.0.9",
-    "rambda": "^9.2.1",
-    "react-hook-form": "^7.52.0",
-    "unwind-array": "^1.1.4",
-    "web-streams-extensions": "^0.12.0"
   },
   "devDependencies": {
+    "@snomiao/die": "^1.0.9",
+    "react-hook-form": "^7.52.0",
+    "web-streams-extensions": "^0.12.0",
+    "rambda": "^9.2.1",
     "@types/bun": "^1.1.6",
     "@types/jest": "^29.5.12",
+    "unwind-array": "^1.1.4",
     "@types/node": "^20.14.9",
     "typescript": "^5.5.2"
   },

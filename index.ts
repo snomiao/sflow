@@ -30,6 +30,31 @@ import { tees } from "./tees";
 import { throttles } from "./throttles";
 import { throughs } from "./throughs";
 import { unwinds } from "./unwinds";
+export type { Unwinded } from "./Unwinded";
+export { aborts } from "./aborts";
+export { buffers } from "./buffers";
+export { debounces } from "./debounces";
+export { filters } from "./filters";
+export { flatMaps } from "./flatMaps";
+export { flats } from "./flats";
+export type { flowSource } from "./flowSource";
+export { intervals } from "./intervals";
+export { joins } from "./joins";
+export { mapAddFields } from "./mapAddFields";
+export { maps } from "./maps";
+export { nils } from "./nils";
+export { pMaps } from "./pMaps";
+export { peeks } from "./peeks";
+export { reduces } from "./reduces";
+export { skips } from "./skips";
+export { slices } from "./slices";
+export { streamAsyncIterator } from "./streamAsyncIterator";
+export { tails } from "./tails";
+export { tees } from "./tees";
+export { throttles } from "./throttles";
+export { throughs } from "./throughs";
+export { unwinds } from "./unwinds";
+
 /** @deprecated will remove next major version */
 export const merges: (
   concurrent?: number
