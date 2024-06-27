@@ -8,10 +8,13 @@ import {
 } from "web-streams-extensions";
 import type { Awaitable } from "./Awaitable";
 import type { Unwinded } from "./Unwinded";
+import { aborts } from "./aborts";
+import { buffers } from "./buffers";
 import { debounces } from "./debounces";
 import { filters } from "./filters";
 import { flatMaps } from "./flatMaps";
 import { flats } from "./flats";
+import { intervals } from "./intervals";
 import { joins } from "./joins";
 import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
@@ -19,6 +22,9 @@ import { nils } from "./nils";
 import { pMaps } from "./pMaps";
 import { peeks } from "./peeks";
 import { reduces } from "./reduces";
+import { skips } from "./skips";
+import { slices } from "./slices";
+import { streamAsyncIterator } from "./streamAsyncIterator";
 import { tails } from "./tails";
 import { tees } from "./tees";
 import { throttles } from "./throttles";
@@ -54,59 +60,6 @@ export function limits<T>(n = 1, { terminate = false } = {}) {
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
       (n-- && ctrl.enqueue(chunk)) || (terminate && ctrl.terminate());
-    },
-  });
-}
-/** Note: will abort immediately without a signal provided */
-export function aborts<T>(signal?: AbortSignal) {
-  return new TransformStream<T, T>({
-    transform: async (chunk, ctrl) =>
-      signal?.aborted || !signal ? ctrl.terminate() : ctrl.enqueue(chunk),
-  });
-}
-export function skips<T>(n = 1) {
-  return new TransformStream<T, T>({
-    transform: async (chunk, ctrl) => {
-      if (n <= 0) ctrl.enqueue(chunk);
-      else n--;
-    },
-  });
-}
-export function slices<T>(start = 0, end = Infinity) {
-  const count = end - start;
-  const { readable, writable } = new TransformStream<T, T>();
-  return {
-    writable,
-    readable: readable.pipeThrough(skips(start)).pipeThrough(limits(count)),
-  };
-}
-/** you could use flats to re-join buffers, default buffer length is Infinity, which will enqueue when upstream drain */
-export function buffers<T>(n: number = Infinity) {
-  let chunks: T[] = [];
-  if (n <= 0) throw new Error("Buffer size must be greater than 0");
-  return new TransformStream<T, T[]>({
-    transform: async (chunk, ctrl) => {
-      chunks.push(chunk);
-      if (chunks.length >= n) ctrl.enqueue(chunks.splice(0, Infinity)); // clear chunks
-    },
-    flush: async (ctrl) => void (chunks.length && ctrl.enqueue(chunks)),
-  });
-}
-/** like buffer, but collect item[] in interval (ms) */
-export function intervals<T>(interval?: number) {
-  let chunks: T[] = [];
-  let id: null | ReturnType<typeof setInterval> = null;
-  return new TransformStream<T, T[]>({
-    start: (ctrl) => {
-      if (interval) id = setInterval(() => ctrl.enqueue(chunks), interval);
-    },
-    transform: async (chunk, ctrl) => {
-      if (!interval) ctrl.enqueue([chunk]);
-      chunks.push(chunk);
-    },
-    flush: async (ctrl) => {
-      if (chunks.length) ctrl.enqueue(chunks);
-      id !== null && clearInterval(id);
     },
   });
 }
@@ -305,24 +258,14 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
   });
 };
 
-async function* streamAsyncIterator<T>(this: ReadableStream<T>) {
-  const reader = this.getReader();
-  try {
-    while (1) {
-      const { done, value } = await reader.read();
-      if (done) return;
-      yield value;
-    }
-  } finally {
-    reader.releaseLock();
-  }
-}
+/** merge multiple flow sources */
 export const confluence = <SRCS extends flowSource<any>[]>(...srcs: SRCS) =>
   snoflow(wseMerges()(wseFrom(srcs.map(snoflow)))) as snoflow<
     {
       [key in keyof SRCS]: SRCS[key] extends flowSource<infer T> ? T : never;
     }[number]
   >;
+
 const _tees: {
   <T>(fn: (s: snoflow<T>) => void | any): TransformStream<T, T>;
   <T>(stream?: WritableStream<T>): TransformStream<T, T>;
