@@ -1,5 +1,6 @@
 import DIE from "@snomiao/die";
 import { sortBy, type Ord } from "rambda";
+import type { FieldPathByValue, FieldPathValue } from "react-hook-form";
 import { unwind } from "unwind-array";
 import {
   from as wseFrom,
@@ -17,17 +18,20 @@ export const merges: (
   src: ReadableStream<ReadableStream<T> | Promise<T>>
 ) => ReadableStream<T> = wseMerge as any;
 
-
-
 export function maps<T, R>(fn: (x: T, i: number) => Awaitable<R>) {
   let i = 0;
   return new TransformStream<T, R>({
     transform: async (chunk, ctrl) => ctrl.enqueue(await fn(chunk, i++)),
   });
 }
-type Unwinded<T, K extends keyof T> = {
-  [key in K]: T[K];
-} & Omit<T, K>;
+
+type Unwinded<T, K> = T extends Record<string, any>
+  ? K extends FieldPathByValue<T, ReadonlyArray<any>>
+    ? {
+        [key in K]: FieldPathValue<T, K>[number];
+      } & Omit<T, K>
+    : never
+  : never;
 export function unwinds<
   T extends Record<string, any>,
   K extends keyof T & string
@@ -103,13 +107,13 @@ export const tees: {
 export const throughs: {
   <T>(stream?: TransformStream<T, T>): TransformStream<T, T>;
   <T, R>(stream: TransformStream<T, R>): TransformStream<T, R>;
-  <T, R>(fn: (s: snoflow<T>) => ReadableStream<R>): TransformStream<T, R>;
+  <T, R>(fn: (s: snoflow<T>) => flowSource<R>): TransformStream<T, R>;
 } = (arg: any) => {
   if (!arg) return new TransformStream();
   if (typeof arg !== "function") return throughs((s) => s.pipeThrough(arg));
   const fn = arg;
   const { writable, readable } = new TransformStream();
-  return { writable, readable: fn(snoflow(readable)) };
+  return { writable, readable: snoflow(fn(snoflow(readable))) };
 };
 
 export const joins: {
@@ -299,7 +303,6 @@ export function intervals<T>(interval?: number) {
   });
 }
 
-
 const wseMerges: (
   concurrent?: number
 ) => <T>(
@@ -312,7 +315,7 @@ export const parallels = <SRCS extends flowSource<any>[]>(...srcs: SRCS) =>
       [key in keyof SRCS]: SRCS[key] extends flowSource<infer T> ? T : never;
     }[number]
   >;
-/** wip */
+/** @deprecated wip */
 export const mergeIncs = <T>(
   compareFn: (input: T) => Ord,
   ...srcs: ReadableStream<T>[]
@@ -369,7 +372,6 @@ export const mergeIncs = <T>(
   );
   return snoflow(readable);
 };
-export const mergeDecs = () => {};
 type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type snoflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {
