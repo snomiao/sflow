@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/snomiao/webstream-kernel/compare/v1.4.0...v1.4.1) (2024-06-27)
+
+
+### Bug Fixes
+
+* **main:** wip writable ([2abf981](https://github.com/snomiao/webstream-kernel/commit/2abf981a8c71077e597b170912b2d7cea78760bd))
+* **unwind:** array path ([a380889](https://github.com/snomiao/webstream-kernel/commit/a38088977452adc9ecca6298095232eebd0474f1))
+
 ## [1.4.0](https://github.com/snomiao/webstream-kernel/compare/v1.3.14...v1.4.0) (2024-06-27)
 
 
