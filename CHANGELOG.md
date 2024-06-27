@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/snomiao/webstream-kernel/compare/v1.4.0...v1.4.1) (2024-06-27)
+
+
+### Bug Fixes
+
+* **main:** wip writable ([2abf981](https://github.com/snomiao/webstream-kernel/commit/2abf981a8c71077e597b170912b2d7cea78760bd))
+* **unwind:** array path ([a380889](https://github.com/snomiao/webstream-kernel/commit/a38088977452adc9ecca6298095232eebd0474f1))
+
+## [1.4.0](https://github.com/snomiao/webstream-kernel/compare/v1.3.14...v1.4.0) (2024-06-27)
+
+
+### Features
+
+* **ret:** as response ([4fa5d02](https://github.com/snomiao/webstream-kernel/commit/4fa5d02956b3550b7bf012ebff38e2d4d6dbf91e))
+
+
+### Bug Fixes
+
+* **main:** slice ([e2a5021](https://github.com/snomiao/webstream-kernel/commit/e2a5021c996cc55f3410184a1e5a4deaa37826d6))
+* **main:** split files ([012f6ee](https://github.com/snomiao/webstream-kernel/commit/012f6ee372fab76044f0d09acc84374e40e04d64))
+* **throughs:** use flowsource ([7882665](https://github.com/snomiao/webstream-kernel/commit/7882665e98611d31a567262f3dac2740c9ca0fcd))
+
 ### [1.3.14](https://github.com/snomiao/snoflow/compare/v1.3.13...v1.3.14) (2024-06-27)
 
 

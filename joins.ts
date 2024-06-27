@@ -1,6 +1,5 @@
 import { parallels } from ".";
 
-
 export const joins: {
   <T>(fn: (s: WritableStream<T>) => void | any): TransformStream<T, T>;
   <T>(stream?: ReadableStream<T>): TransformStream<T, T>;
