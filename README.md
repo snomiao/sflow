@@ -24,4 +24,4 @@ await snoflow([1, 2, 3])
     .done()
 ```
 
-### Using snoflow kernel by individual to allow 
+### Using snoflow kernel by individual to allow e
