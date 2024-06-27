@@ -1,4 +1,3 @@
-import console from "console";
 import { range } from "rambda";
 import { snoflow } from ".";
 import { mergeAscends } from "./mergeAscends";
@@ -10,22 +9,35 @@ it("merge asc", async () => {
   const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5];
 
   expect(
-    await mergeAscends((x) => x, req1, req2, req3)
-      .peek(console.log)
+    await mergeAscends((x) => x, [req1, req2, req3])
+      // .peek(console.log)
+      .toArray()
+  ).toEqual(ret);
+});
+
+it("curried", async () => {
+  const req1 = snoflow([0, 1, 2]);
+  const req2 = snoflow([1, 2, 3]);
+  const req3 = snoflow([0, 4, 5]);
+  const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5];
+
+  expect(
+    await snoflow([req1, req2, req3])
+      .through(mergeAscends((x) => x)) // merge all flows into one by ascend order
       .toArray()
   ).toEqual(ret);
 });
 
 // todo fix this test
-it.skip("merge desc", async () => {
+it("merge desc", async () => {
   const req1 = snoflow([0, 1, 2].toReversed());
   const req2 = snoflow([1, 2, 3].toReversed());
   const req3 = snoflow([0, 4, 5].toReversed());
   const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5].toReversed();
 
   expect(
-    await mergeAscends((x) => -x, req1, req2, req3)
-      .peek(console.log)
+    await mergeAscends((x) => -x, [req1, req2, req3])
+      // .peek(console.log)
       .toArray()
   ).toEqual(ret);
 });
@@ -39,7 +51,7 @@ it("merge a super long asc", async () => {
     .sort((a, b) => a - b);
 
   expect(
-    await mergeAscends((x) => x, req1, req2, req3)
+    await mergeAscends((x) => x, [req1, req2, req3])
       // .peek(console.log)
       .toArray()
   ).toEqual(ret); // cost about 60ms in my machine
@@ -49,8 +61,8 @@ it("not throws asc", async () => {
   const req1 = snoflow([1, 2, 3]);
   const req2 = snoflow([0, 4, 5]);
   expect(
-    await mergeAscends((x) => x, req1, req2)
-      .peek(console.log)
+    await mergeAscends((x) => x, [req1, req2])
+      // .peek(console.log)
       .toArray()
   ).toEqual([0, 1, 2, 3, 4, 5]);
 });
@@ -59,8 +71,8 @@ it("throws not asc", async () => {
   const req1 = snoflow([1, 2, 0]); // not asc
   const req2 = snoflow([0, 4, 5]);
   expect(() =>
-    mergeAscends((x) => x, req1, req2)
-      .peek(console.log)
+    mergeAscends((x) => x, [req1, req2])
+      // .peek(console.log)
       .toArray()
   ).toThrow(/ascending/);
 });

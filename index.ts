@@ -42,6 +42,7 @@ export { intervals } from "./intervals";
 export { joins } from "./joins";
 export { mapAddFields } from "./mapAddFields";
 export { maps } from "./maps";
+export { mergeAscends } from "./mergeAscends";
 export { nils } from "./nils";
 export { pMaps } from "./pMaps";
 export { peeks } from "./peeks";
@@ -109,7 +110,6 @@ export const parallels = <SRCS extends ReadableStream<any>[]>(...srcs: SRCS) =>
         : never;
     }[number]
   >;
-
 type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type snoflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {
@@ -118,15 +118,15 @@ export type snoflow<T> = ReadableStream<T> &
     writable: WritableStream<T>;
     buffer(...args: Parameters<typeof buffers<T>>): snoflow<T[]>;
     abort(...args: Parameters<typeof aborts<T>>): snoflow<T>;
-    through(stream?: TransformStream<T, T>): snoflow<T>;
+    through<R>(fn: (s: snoflow<T>) => snoflow<R>): snoflow<R>; // fn must fisrt
     through<R>(stream: TransformStream<T, R>): snoflow<R>;
-    through<R>(fn: (s: snoflow<T>) => snoflow<R>): snoflow<R>;
+    through(stream?: TransformStream<T, T>): snoflow<T>;
     interval(...args: Parameters<typeof intervals<T>>): snoflow<T[]>;
     debounce(...args: Parameters<typeof debounces<T>>): snoflow<T>;
     done: (pipeTo?: WritableStream<T>) => Promise<void>;
     end: (pipeTo?: WritableStream<T>) => Promise<void>;
+    filter(fn: (x: T, i: number) => Awaitable<any>): snoflow<T>; // fn must fisrt
     filter(): snoflow<NonNullable<T>>;
-    filter(fn: (x: T, i: number) => Awaitable<any>): snoflow<T>;
     flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): snoflow<R>;
     join(fn: (s: WritableStream<T>) => void | any): snoflow<T>;
     join(stream?: ReadableStream<T>): snoflow<T>;
@@ -134,22 +134,25 @@ export type snoflow<T> = ReadableStream<T> &
     head(...args: Parameters<typeof heads<T>>): snoflow<T>;
     map<R>(...args: Parameters<typeof maps<T, R>>): snoflow<R>;
     peek(...args: Parameters<typeof peeks<T>>): snoflow<T>;
+    pMap<R>(fn: (x: T, i: number) => Awaitable<R>): snoflow<R>; // fn must fisrt
     pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): snoflow<R>;
-    pMap<R>(fn: (x: T, i: number) => Awaitable<R>): snoflow<R>;
+    reduce(fn: (state: T | null, x: T, i: number) => Awaitable<T>): snoflow<T>; // fn must fisrt
     reduce<S>(state: S, fn: Reducer<S, T>): snoflow<S>;
-    reduce(fn: (state: T | null, x: T, i: number) => Awaitable<T>): snoflow<T>;
     skip: (...args: Parameters<typeof skips<T>>) => snoflow<T>;
     slice: (...args: Parameters<typeof slices<T>>) => snoflow<T>;
     tail: (...args: Parameters<typeof tails<T>>) => snoflow<T>;
-    tees(fn: (s: snoflow<T>) => void | any): snoflow<T>;
+    tees(fn: (s: snoflow<T>) => void | any): snoflow<T>; // fn must fisrt
     tees(stream?: WritableStream<T>): snoflow<T>;
     throttle: (...args: Parameters<typeof throttles<T>>) => snoflow<T>;
+    // to promises
     toArray: () => Promise<T[]>;
     toCount: () => Promise<number>;
     toFirst: () => Promise<T>;
     toLast: () => Promise<T>;
-  } & (T extends any[]
-    ? { flat: (...args: Parameters<typeof flats<T>>) => snoflow<T[number]> }
+  } & (T extends ReadonlyArray<any>
+    ? {
+        flat: (...args: Parameters<typeof flats<T>>) => snoflow<T[number]>;
+      }
     : {}) &
   (T extends Record<string, any>
     ? {
@@ -163,6 +166,7 @@ export type snoflow<T> = ReadableStream<T> &
     : {}) &
   (T extends string | Uint8Array
     ? {
+        // to response
         toResponse: () => Response;
         text: () => Promise<string>;
         json: () => Promise<any>;
@@ -170,7 +174,6 @@ export type snoflow<T> = ReadableStream<T> &
         arrayBuffer: () => Promise<ArrayBuffer>;
       }
     : {});
-
 // | (T extends Uint8Array ? XMLHttpRequestBodyInit : never);
 
 export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
