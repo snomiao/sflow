@@ -29,4 +29,3 @@ it("works", async () => {
     .throttle(100)
     .done();
 });
-

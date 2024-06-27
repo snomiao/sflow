@@ -9,6 +9,7 @@ import type { Awaitable } from "./Awaitable";
 import type { Unwinded } from "./Unwinded";
 import { aborts } from "./aborts";
 import { buffers } from "./buffers";
+import { chunkBys } from "./chunkBys";
 import { debounces } from "./debounces";
 import { filters } from "./filters";
 import { flatMaps } from "./flatMaps";
@@ -116,6 +117,7 @@ export type snoflow<T> = ReadableStream<T> &
     _type: T;
     readable: ReadableStream<T>;
     writable: WritableStream<T>;
+    chunkBy(...args: Parameters<typeof chunkBys<T>>): snoflow<T[]>;
     buffer(...args: Parameters<typeof buffers<T>>): snoflow<T[]>;
     abort(...args: Parameters<typeof aborts<T>>): snoflow<T>;
     through<R>(fn: (s: snoflow<T>) => snoflow<R>): snoflow<R>; // fn must fisrt
@@ -198,6 +200,8 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
     mapAddField: (
       ...args: Parameters<typeof mapAddFields> // @ts-ignore
     ) => snoflow(r.pipeThrough(mapAddFields(...args))),
+    chunkBy: (...args: Parameters<typeof chunkBys>) =>
+      snoflow(r.pipeThrough(chunkBys(...args))),
     buffer: (...args: Parameters<typeof buffers>) =>
       snoflow(r.pipeThrough(buffers(...args))),
     abort: (...args: Parameters<typeof aborts>) =>
