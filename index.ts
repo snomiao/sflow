@@ -1,4 +1,5 @@
 import { sortBy, type Ord } from "rambda";
+import type { FieldPathByValue } from "react-hook-form";
 import {
   from as wseFrom,
   merge as wseMerge,
@@ -178,7 +179,9 @@ export type snoflow<T> = ReadableStream<T> &
     : {}) &
   (T extends Record<string, any>
     ? {
-        unwind<K extends keyof T & string>(key: K): snoflow<Unwinded<T, K>>;
+        unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
+          key: K
+        ): snoflow<Unwinded<T, K>>;
         mapAddField: <K extends string, R>(
           ...args: Parameters<typeof mapAddFields<K, T, R>>
         ) => snoflow<Omit<T, K> & { [key in K]: R }>;
