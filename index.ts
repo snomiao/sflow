@@ -1,4 +1,3 @@
-import DIE from "@snomiao/die";
 import { sortBy, type Ord } from "rambda";
 import {
   from as wseFrom,
@@ -214,10 +213,10 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
     get readable() {
       return r;
     },
-    get writable() {
-      DIE(new Error("WIP"));
-      return new WritableStream();
-    },
+    // get writable() {
+    //   DIE(new Error("WIP"));
+    //   return new WritableStream();
+    // },
     through: (...args: Parameters<typeof _throughs>) =>
       snoflow(r.pipeThrough(_throughs(...args))),
     mapAddField: (
