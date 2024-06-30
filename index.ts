@@ -8,14 +8,14 @@ import {
 import type { Awaitable } from "./Awaitable";
 import type { Unwinded } from "./Unwinded";
 import { aborts } from "./aborts";
-import { buffers } from "./buffers";
+import { chunks } from "./buffers";
 import { chunkBys } from "./chunkBys";
 import { debounces } from "./debounces";
 import { filters } from "./filters";
 import { flatMaps } from "./flatMaps";
 import { flats } from "./flats";
 import type { flowSource } from "./flowSource";
-import { intervals } from "./intervals";
+import { intervals as chunkIntervals } from "./intervals";
 import { joins } from "./joins";
 import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
@@ -33,7 +33,7 @@ import { throughs } from "./throughs";
 import { unwinds } from "./unwinds";
 export type { Unwinded } from "./Unwinded";
 export { aborts } from "./aborts";
-export { buffers } from "./buffers";
+export { chunks as buffers } from "./buffers";
 export { debounces } from "./debounces";
 export { filters } from "./filters";
 export { flatMaps } from "./flatMaps";
@@ -118,12 +118,16 @@ export type snoflow<T> = ReadableStream<T> &
     readable: ReadableStream<T>;
     writable: WritableStream<T>;
     chunkBy(...args: Parameters<typeof chunkBys<T>>): snoflow<T[]>;
-    buffer(...args: Parameters<typeof buffers<T>>): snoflow<T[]>;
+    /** @deprecated use chunk*/
+    buffer(...args: Parameters<typeof chunks<T>>): snoflow<T[]>;
+    chunk(...args: Parameters<typeof chunks<T>>): snoflow<T[]>;
     abort(...args: Parameters<typeof aborts<T>>): snoflow<T>;
     through<R>(fn: (s: snoflow<T>) => snoflow<R>): snoflow<R>; // fn must fisrt
     through<R>(stream: TransformStream<T, R>): snoflow<R>;
     through(stream?: TransformStream<T, T>): snoflow<T>;
-    interval(...args: Parameters<typeof intervals<T>>): snoflow<T[]>;
+    /** @deprecated use chunkInterval */
+    interval(...args: Parameters<typeof chunkIntervals<T>>): snoflow<T[]>;
+    chunkInterval(...args: Parameters<typeof chunkIntervals<T>>): snoflow<T[]>;
     debounce(...args: Parameters<typeof debounces<T>>): snoflow<T>;
     done: (pipeTo?: WritableStream<T>) => Promise<void>;
     end: (pipeTo?: WritableStream<T>) => Promise<void>;
@@ -202,12 +206,17 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
     ) => snoflow(r.pipeThrough(mapAddFields(...args))),
     chunkBy: (...args: Parameters<typeof chunkBys>) =>
       snoflow(r.pipeThrough(chunkBys(...args))),
-    buffer: (...args: Parameters<typeof buffers>) =>
-      snoflow(r.pipeThrough(buffers(...args))),
+    buffer: (...args: Parameters<typeof chunks>) =>
+      snoflow(r.pipeThrough(chunks(...args))),
+    chunk: (...args: Parameters<typeof chunks>) =>
+      snoflow(r.pipeThrough(chunks(...args))),
     abort: (...args: Parameters<typeof aborts>) =>
       snoflow(r.pipeThrough(aborts(...args))),
-    interval: (...args: Parameters<typeof intervals>) =>
-      snoflow(r.pipeThrough(intervals(...args))),
+    chunkInterval: (...args: Parameters<typeof chunkIntervals>) =>
+      snoflow(r.pipeThrough(chunkIntervals(...args))),
+    /** @deprecated */
+    interval: (...args: Parameters<typeof chunkIntervals>) =>
+      snoflow(r.pipeThrough(chunkIntervals(...args))),
     debounce: (...args: Parameters<typeof debounces>) =>
       snoflow(r.pipeThrough(debounces(...args))),
     done: (dst = nils<T>()) => r.pipeTo(dst),
