@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://github.com/snomiao/snoflow/compare/v1.6.0...v1.6.1) (2024-06-30)
+
+
+### Bug Fixes
+
+* **web-streams-extensions:** is be dependenceis ([c0255bd](https://github.com/snomiao/snoflow/commit/c0255bd128cc5f173fa8abcbefa300e665244634))
+
 ## [1.6.0](https://github.com/snomiao/snoflow/compare/v1.5.0...v1.6.0) (2024-06-27)
 
 

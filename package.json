@@ -1,6 +1,6 @@
 {
   "name": "snoflow",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Type-safety piping paradigram through webstream-kernels.",
   "keywords": [
     "webstream",
