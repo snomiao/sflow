@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.2](https://github.com/snomiao/snoflow/compare/v1.6.1...v1.6.2) (2024-07-04)
+
+
+### Bug Fixes
+
+* **main:** not await peek fn ([c1ff8a3](https://github.com/snomiao/snoflow/commit/c1ff8a3fffd2b5995fed8509d305d78380d47f27))
+* **main:** re order peek fn ([a6711ef](https://github.com/snomiao/snoflow/commit/a6711efd4d7914c2669c32ac20fdd39b36dd8de5))
+
 ### [1.6.1](https://github.com/snomiao/snoflow/compare/v1.6.0...v1.6.1) (2024-06-30)
 
 
