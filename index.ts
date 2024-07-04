@@ -1,21 +1,21 @@
-import { sortBy, type Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
 import {
   from as wseFrom,
   merge as wseMerge,
   toArray as wseToArray,
   toPromise as wseToPromise,
-  type ReadableLike,
 } from "web-streams-extensions";
 import type { Awaitable } from "./Awaitable";
 import type { Unwinded } from "./Unwinded";
 import { aborts } from "./aborts";
-import { buffers } from "./buffers";
+import { chunks } from "./buffers";
+import { chunkBys } from "./chunkBys";
 import { debounces } from "./debounces";
 import { filters } from "./filters";
 import { flatMaps } from "./flatMaps";
 import { flats } from "./flats";
-import { intervals } from "./intervals";
+import type { flowSource } from "./flowSource";
+import { intervals as chunkIntervals } from "./intervals";
 import { joins } from "./joins";
 import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
@@ -31,6 +31,32 @@ import { tees } from "./tees";
 import { throttles } from "./throttles";
 import { throughs } from "./throughs";
 import { unwinds } from "./unwinds";
+export type { Unwinded } from "./Unwinded";
+export { aborts } from "./aborts";
+export { chunks as buffers } from "./buffers";
+export { debounces } from "./debounces";
+export { filters } from "./filters";
+export { flatMaps } from "./flatMaps";
+export { flats } from "./flats";
+export type { flowSource } from "./flowSource";
+export { intervals } from "./intervals";
+export { joins } from "./joins";
+export { mapAddFields } from "./mapAddFields";
+export { maps } from "./maps";
+export { mergeAscends, mergeDescends } from "./mergeAscends";
+export { nils } from "./nils";
+export { pMaps } from "./pMaps";
+export { peeks } from "./peeks";
+export { reduces } from "./reduces";
+export { skips } from "./skips";
+export { slices } from "./slices";
+export { streamAsyncIterator } from "./streamAsyncIterator";
+export { tails } from "./tails";
+export { tees } from "./tees";
+export { throttles } from "./throttles";
+export { throughs } from "./throughs";
+export { unwinds } from "./unwinds";
+
 /** @deprecated will remove next major version */
 export const merges: (
   concurrent?: number
@@ -53,19 +79,25 @@ const _throughs: {
 export const firsts = limits;
 export function heads<T>(n = 1) {
   return new TransformStream<T, T>({
-    transform: async (chunk, ctrl) => void (n-- && ctrl.enqueue(chunk)),
+    transform: async (chunk, ctrl) => {
+      return void (n-- > 0 && ctrl.enqueue(chunk));
+    },
   });
 }
 /** Currently will not pipe down more items after count satisfied, but still receives more items. */
-export function limits<T>(n = 1, { terminate = false } = {}) {
+export function limits<T>(n: number, { terminate = false } = {}) {
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
-      (n-- && ctrl.enqueue(chunk)) || (terminate && ctrl.terminate());
+      if (n-- > 0) {
+        ctrl.enqueue(chunk);
+      } else {
+        terminate && ctrl.terminate();
+      }
     },
   });
 }
 
-const wseMerges: (
+export const wseMerges: (
   concurrent?: number
 ) => <T>(
   src: ReadableStream<ReadableStream<T> | Promise<T>>
@@ -79,81 +111,28 @@ export const parallels = <SRCS extends ReadableStream<any>[]>(...srcs: SRCS) =>
         : never;
     }[number]
   >;
-
-/** @deprecated wip */
-export const mergeIncs = <T>(
-  compareFn: (input: T) => Ord,
-  ...srcs: ReadableStream<T>[]
-) => {
-  const slots = srcs.map(() => null as T | null);
-  const pendings = srcs.map(
-    () => Promise.withResolvers<void>() as PromiseWithResolvers<void> | null
-  );
-  let full = false;
-  const { readable, writable } = new TransformStream();
-  const w = writable.getWriter();
-  Promise.all(
-    srcs.map(async (src, i) => {
-      for await (const item of snoflow(src)) {
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        while (slots[i] != null) {
-          pendings[i] = Promise.withResolvers<void>();
-          await pendings[i]!.promise; // wait for this slot empty;
-          pendings[i] = null;
-        }
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        slots[i] = item;
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        full = slots.every((slot) => slot != null);
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        const allDone = pendings.every((e) => !e);
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        if (!full) continue;
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        const fullSlots = slots.flatMap((e) => (e != null ? [e] : []));
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        const minValue = sortBy(compareFn, fullSlots)[0];
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        const minIndex = slots.findIndex((e) => e === minValue);
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        w.write(minValue);
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        slots[minIndex] = null;
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        pendings[minIndex]?.resolve();
-        console.log(new Error().stack?.split("\n").toReversed()[0]);
-        // pendings[minIndex] = null;
-      }
-      // done
-      console.log(new Error().stack?.split("\n").toReversed()[0]);
-      pendings[i] = null;
-      console.log(new Error().stack?.split("\n").toReversed()[0]);
-      const allDone = pendings.every((e) => !e);
-      console.log({ allDone });
-      // if (allDone) {
-      //   await w.close();
-      // }
-    })
-  );
-  return snoflow(readable);
-};
 type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type snoflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {
     _type: T;
     readable: ReadableStream<T>;
     writable: WritableStream<T>;
-    buffer(...args: Parameters<typeof buffers<T>>): snoflow<T[]>;
+    chunkBy(...args: Parameters<typeof chunkBys<T>>): snoflow<T[]>;
+    /** @deprecated use chunk*/
+    buffer(...args: Parameters<typeof chunks<T>>): snoflow<T[]>;
+    chunk(...args: Parameters<typeof chunks<T>>): snoflow<T[]>;
     abort(...args: Parameters<typeof aborts<T>>): snoflow<T>;
-    through(stream?: TransformStream<T, T>): snoflow<T>;
+    through<R>(fn: (s: snoflow<T>) => snoflow<R>): snoflow<R>; // fn must fisrt
     through<R>(stream: TransformStream<T, R>): snoflow<R>;
-    through<R>(fn: (s: snoflow<T>) => snoflow<R>): snoflow<R>;
-    interval(...args: Parameters<typeof intervals<T>>): snoflow<T[]>;
+    through(stream?: TransformStream<T, T>): snoflow<T>;
+    /** @deprecated use chunkInterval */
+    interval(...args: Parameters<typeof chunkIntervals<T>>): snoflow<T[]>;
+    chunkInterval(...args: Parameters<typeof chunkIntervals<T>>): snoflow<T[]>;
     debounce(...args: Parameters<typeof debounces<T>>): snoflow<T>;
     done: (pipeTo?: WritableStream<T>) => Promise<void>;
     end: (pipeTo?: WritableStream<T>) => Promise<void>;
+    filter(fn: (x: T, i: number) => Awaitable<any>): snoflow<T>; // fn must fisrt
     filter(): snoflow<NonNullable<T>>;
-    filter(fn: (x: T, i: number) => Awaitable<any>): snoflow<T>;
     flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): snoflow<R>;
     join(fn: (s: WritableStream<T>) => void | any): snoflow<T>;
     join(stream?: ReadableStream<T>): snoflow<T>;
@@ -161,22 +140,25 @@ export type snoflow<T> = ReadableStream<T> &
     head(...args: Parameters<typeof heads<T>>): snoflow<T>;
     map<R>(...args: Parameters<typeof maps<T, R>>): snoflow<R>;
     peek(...args: Parameters<typeof peeks<T>>): snoflow<T>;
+    pMap<R>(fn: (x: T, i: number) => Awaitable<R>): snoflow<R>; // fn must fisrt
     pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): snoflow<R>;
-    pMap<R>(fn: (x: T, i: number) => Awaitable<R>): snoflow<R>;
+    reduce(fn: (state: T | null, x: T, i: number) => Awaitable<T>): snoflow<T>; // fn must fisrt
     reduce<S>(state: S, fn: Reducer<S, T>): snoflow<S>;
-    reduce(fn: (state: T | null, x: T, i: number) => Awaitable<T>): snoflow<T>;
     skip: (...args: Parameters<typeof skips<T>>) => snoflow<T>;
     slice: (...args: Parameters<typeof slices<T>>) => snoflow<T>;
     tail: (...args: Parameters<typeof tails<T>>) => snoflow<T>;
-    tees(fn: (s: snoflow<T>) => void | any): snoflow<T>;
+    tees(fn: (s: snoflow<T>) => void | any): snoflow<T>; // fn must fisrt
     tees(stream?: WritableStream<T>): snoflow<T>;
     throttle: (...args: Parameters<typeof throttles<T>>) => snoflow<T>;
+    // to promises
     toArray: () => Promise<T[]>;
     toCount: () => Promise<number>;
     toFirst: () => Promise<T>;
     toLast: () => Promise<T>;
-  } & (T extends any[]
-    ? { flat: (...args: Parameters<typeof flats<T>>) => snoflow<T[number]> }
+  } & (T extends ReadonlyArray<any>
+    ? {
+        flat: (...args: Parameters<typeof flats<T>>) => snoflow<T[number]>;
+      }
     : {}) &
   (T extends Record<string, any>
     ? {
@@ -190,6 +172,7 @@ export type snoflow<T> = ReadableStream<T> &
     : {}) &
   (T extends string | Uint8Array
     ? {
+        // to response
         toResponse: () => Response;
         text: () => Promise<string>;
         json: () => Promise<any>;
@@ -198,19 +181,13 @@ export type snoflow<T> = ReadableStream<T> &
       }
     : {});
 
-export type flowSource<T> =
-  | Promise<T>
-  // | (() => Promise<T>) 
-  | Iterable<T>
-  | AsyncIterable<T>
-  | (() => Iterable<T> | AsyncIterable<T>)
-  | ReadableLike<T>
-  | ReadableStream<T>
-  | snoflow<T>;
-
 export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
   const r: ReadableStream<T> =
-    src instanceof ReadableStream ? src : wseFrom(src);
+    src instanceof ReadableStream
+      ? src
+      : // : isXMLHTTPRequestBodyInit(src)
+        // ? new Response(src).body!
+        wseFrom(src);
   // @ts-ignore todo
   return Object.assign(r, {
     _type: null as T,
@@ -226,12 +203,19 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
     mapAddField: (
       ...args: Parameters<typeof mapAddFields> // @ts-ignore
     ) => snoflow(r.pipeThrough(mapAddFields(...args))),
-    buffer: (...args: Parameters<typeof buffers>) =>
-      snoflow(r.pipeThrough(buffers(...args))),
+    chunkBy: (...args: Parameters<typeof chunkBys>) =>
+      snoflow(r.pipeThrough(chunkBys(...args))),
+    buffer: (...args: Parameters<typeof chunks>) =>
+      snoflow(r.pipeThrough(chunks(...args))),
+    chunk: (...args: Parameters<typeof chunks>) =>
+      snoflow(r.pipeThrough(chunks(...args))),
     abort: (...args: Parameters<typeof aborts>) =>
       snoflow(r.pipeThrough(aborts(...args))),
-    interval: (...args: Parameters<typeof intervals>) =>
-      snoflow(r.pipeThrough(intervals(...args))),
+    chunkInterval: (...args: Parameters<typeof chunkIntervals>) =>
+      snoflow(r.pipeThrough(chunkIntervals(...args))),
+    /** @deprecated */
+    interval: (...args: Parameters<typeof chunkIntervals>) =>
+      snoflow(r.pipeThrough(chunkIntervals(...args))),
     debounce: (...args: Parameters<typeof debounces>) =>
       snoflow(r.pipeThrough(debounces(...args))),
     done: (dst = nils<T>()) => r.pipeTo(dst),
@@ -272,6 +256,7 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(throttles(...args))),
     // to promises
     toArray: () => wseToArray(r),
+    toCount: async () => (await wseToArray(r)).length,
     toFirst: () => wseToPromise(snoflow(r).limit(1)),
     toLast: () => wseToPromise(snoflow(r).tail(1)),
     // as response (only ReadableStream<string | UInt8Array>)
@@ -284,14 +269,6 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
     [Symbol.asyncIterator]: streamAsyncIterator<T>,
   });
 };
-
-/** merge multiple flow sources */
-export const confluence = <SRCS extends flowSource<any>[]>(...srcs: SRCS) =>
-  snoflow(wseMerges()(wseFrom(srcs.map(snoflow)))) as snoflow<
-    {
-      [key in keyof SRCS]: SRCS[key] extends flowSource<infer T> ? T : never;
-    }[number]
-  >;
 
 const _tees: {
   <T>(fn: (s: snoflow<T>) => void | any): TransformStream<T, T>;
@@ -306,3 +283,9 @@ const _tees: {
   fn(snoflow(a));
   return { writable, readable: b };
 };
+const isXMLHTTPRequestBodyInit = (v: any): v is XMLHttpRequestBodyInit =>
+  v instanceof Blob ||
+  v instanceof ArrayBuffer ||
+  v instanceof FormData ||
+  v instanceof URLSearchParams ||
+  typeof v === "string";

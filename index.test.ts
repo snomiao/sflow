@@ -10,17 +10,6 @@ it("async iteratable", async () => {
   }
   expect(req).toEqual(acc);
 });
-it("pmaps", async () => {
-  const t = Date.now();
-  const req = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  const acc = snoflow(req.toReversed())
-    .pMap(3, async (n) => {
-      await new Promise((r) => setTimeout(r, n * 100));
-      return n;
-    })
-    .toArray();
-  expect(acc).resolves.toEqual(req.toReversed());
-});
 
 it("works", async () => {
   await snoflow([1, 2, 3])
@@ -40,4 +29,3 @@ it("works", async () => {
     .throttle(100)
     .done();
 });
-

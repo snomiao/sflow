@@ -2,7 +2,78 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [1.4.2](https://github.com/snomiao/webstream-kernel/compare/v1.4.1...v1.4.2) (2024-07-04)
+### [1.6.2](https://github.com/snomiao/snoflow/compare/v1.6.1...v1.6.2) (2024-07-04)
+
+
+### Bug Fixes
+
+* **main:** not await peek fn ([c1ff8a3](https://github.com/snomiao/snoflow/commit/c1ff8a3fffd2b5995fed8509d305d78380d47f27))
+* **main:** re order peek fn ([a6711ef](https://github.com/snomiao/snoflow/commit/a6711efd4d7914c2669c32ac20fdd39b36dd8de5))
+
+### [1.6.1](https://github.com/snomiao/snoflow/compare/v1.6.0...v1.6.1) (2024-06-30)
+
+
+### Bug Fixes
+
+* **web-streams-extensions:** is be dependenceis ([c0255bd](https://github.com/snomiao/snoflow/commit/c0255bd128cc5f173fa8abcbefa300e665244634))
+
+## [1.6.0](https://github.com/snomiao/snoflow/compare/v1.5.0...v1.6.0) (2024-06-27)
+
+
+### Features
+
+* **chunkby:** init ([2c9a424](https://github.com/snomiao/snoflow/commit/2c9a424a190216dbed6767eb9a5b10c569551538))
+
+
+### Bug Fixes
+
+* **main:** add pmap test ([df4a32f](https://github.com/snomiao/snoflow/commit/df4a32f3d520d60c82dbb893107580e3d694926b))
+
+## [1.5.0](https://github.com/snomiao/snoflow/compare/v1.4.8...v1.5.0) (2024-06-27)
+
+
+### Features
+
+* **main:** merge desc ([8cac190](https://github.com/snomiao/snoflow/commit/8cac19084c6135b3fd2080ffda746d0993034267))
+
+
+### Bug Fixes
+
+* **main:** merge asc ([590e2c8](https://github.com/snomiao/snoflow/commit/590e2c80195687d81318681c68f39813baa83108))
+
+### [1.4.8](https://github.com/snomiao/snoflow/compare/v1.4.7...v1.4.8) (2024-06-27)
+
+### [1.4.7](https://github.com/snomiao/snoflow/compare/v1.4.6...v1.4.7) (2024-06-27)
+
+### [1.4.6](https://github.com/snomiao/snoflow/compare/v1.4.5...v1.4.6) (2024-06-27)
+
+### [1.4.5](https://github.com/snomiao/snoflow/compare/v1.4.4...v1.4.5) (2024-06-27)
+
+
+### Bug Fixes
+
+* **main:** clean deps ([a39d092](https://github.com/snomiao/snoflow/commit/a39d09280e27d05e41c240865916474699ff64f8))
+
+### [1.4.4](https://github.com/snomiao/snoflow/compare/v1.4.3...v1.4.4) (2024-06-27)
+
+
+### Bug Fixes
+
+* **main:** merge asc it works ([9858565](https://github.com/snomiao/snoflow/commit/9858565e86808f3082a7337559b7cbc79c2c38e8))
+
+### [1.4.3](https://github.com/snomiao/snoflow/compare/v1.4.2...v1.4.3) (2024-06-27)
+
+
+### Bug Fixes
+
+* **main:** tocount ([3de653a](https://github.com/snomiao/snoflow/commit/3de653a7409cb15d787b39101eac3cf59119a19f))
+
+### [1.4.2](https://github.com/snomiao/snoflow/compare/v1.4.1...v1.4.2) (2024-06-27)
+
+
+### Bug Fixes
+
+* **main:** wip bodyinit ([9de2af8](https://github.com/snomiao/snoflow/commit/9de2af815ae3c02050ed8421439543a56bb2db55))
 
 ### [1.4.1](https://github.com/snomiao/webstream-kernel/compare/v1.4.0...v1.4.1) (2024-06-27)
 
