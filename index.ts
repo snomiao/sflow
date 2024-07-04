@@ -200,6 +200,7 @@ export type snoflow<T> = ReadableStream<T> &
 
 export type flowSource<T> =
   | Promise<T>
+  // | (() => Promise<T>) 
   | Iterable<T>
   | AsyncIterable<T>
   | (() => Iterable<T> | AsyncIterable<T>)
