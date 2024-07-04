@@ -5,7 +5,7 @@
 
 ### Pipe style
 
-```
+```ts
 await snoflow([1, 2, 3])
     .buffer(2)
     .debounce(100)
@@ -24,4 +24,28 @@ await snoflow([1, 2, 3])
     .done()
 ```
 
-### Using snoflow kernel by individual to allow ek
+### Using native ReadableStream snoflow kernels to allow tree-shaking
+
+```ts
+await new ReadableStream({
+    start:(ctrl)=>{
+        [1, 2, 3].map(x=> ctrl.enqueue(x))
+    }
+})
+    .pipeThrough(buffers(2))
+    .pipeThrough(debounces(100))
+    .pipeThrough(filters())
+    .pipeThrough(maps((n) => [String(n)]))
+    .pipeThrough(flats())
+    .pipeThrough(flatMaps((n) => [String(n)]))
+    .pipeThrough(teess((s) => s.pipeTo(nils())))
+    .pipeThrough(limits(1))
+    .pipeThrough(maps(() => 1))
+    .pipeThrough(peeks(() => {}))
+    .pipeThrough(reduces(0, (a, b) => a + b))
+    .pipeThrough(skips(1))
+    .pipeThrough(tails(1))
+    .pipeThrough(throttles(100))
+    .pipeTo(nils())
+
+```
