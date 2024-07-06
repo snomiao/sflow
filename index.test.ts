@@ -1,5 +1,5 @@
 // snoflow
-import { snoflow } from ".";
+import { snoflow } from "./snoflow";
 import { nils } from "./nils";
 
 it("async iteratable", async () => {

@@ -1,5 +1,5 @@
 import { range } from "rambda";
-import { snoflow } from ".";
+import { snoflow } from "./snoflow";
 import { mergeAscends, mergeDescends } from "./mergeAscends";
 
 it("merge asc", async () => {

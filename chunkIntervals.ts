@@ -1,5 +1,5 @@
 /** like buffer, but collect item[] in interval (ms) */
-export function intervals<T>(interval?: number) {
+export function chunkIntervals<T>(interval?: number) {
   let chunks: T[] = [];
   let id: null | ReturnType<typeof setInterval> = null;
   return new TransformStream<T, T[]>({

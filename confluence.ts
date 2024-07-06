@@ -1,5 +1,6 @@
 import { from as wseFrom } from "web-streams-extensions";
-import { snoflow, wseMerges } from ".";
+import { wseMerges } from "./snoflow";
+import { snoflow } from "./snoflow";
 import { flowSource } from "./flowSource";
 
 /** merge multiple flow sources */

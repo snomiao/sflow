@@ -1,6 +1,7 @@
 import DIE from "@snomiao/die";
 import { sortBy, type Ord } from "rambda";
-import { snoflow, type flowSource } from ".";
+import { type flowSource } from ".";
+import { snoflow } from "./snoflow";
 /**
  * merge multiple stream by ascend order, assume all input stream is sorted by ascend
  * output stream will be sorted by ascend too.
