@@ -23,12 +23,13 @@ import { throttles } from "./throttles";
 import { unwinds } from "./unwinds";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Awaitable } from "./Awaitable";
-import type { uniqBys, uniqs } from "./uniqs";
+import { uniqBys, uniqs } from "./uniqs";
 import { limits } from "./limits";
 import type { Unwinded } from "./Unwinded";
 import { tees } from "./tees";
 import { throughs } from "./throughs";
 import { wseFrom, wseToArray, wseToPromise } from "./wse";
+import type { uniqBy } from "rambda";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type snoflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {
@@ -160,6 +161,10 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(heads(...args))),
     map: (...args: Parameters<typeof maps>) =>
       snoflow(r.pipeThrough(maps(...args))),
+    uniq: (...args: Parameters<typeof uniqs>) =>
+      snoflow(r.pipeThrough(uniqs(...args))),
+    uniqBy: (...args: Parameters<typeof uniqBys>) =>
+      snoflow(r.pipeThrough(uniqBys(...args))),
     unwind: (
       ...args: Parameters<typeof unwinds> // @ts-ignore
     ) => snoflow(r.pipeThrough(unwinds(...args))),
