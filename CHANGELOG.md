@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/snomiao/webstream-kernel/compare/v1.6.3...v1.7.0) (2024-07-06)
+
+
+### Features
+
+* **uniqs:** init ([bd4cc90](https://github.com/snomiao/webstream-kernel/commit/bd4cc901d12250c133aed80afdcdc0c892e2a4f9))
+
+
+### Bug Fixes
+
+* **main:** add tee test ([8e60875](https://github.com/snomiao/webstream-kernel/commit/8e608758dceed11748ee8a46cf765c4b26efb771))
+
 ### [1.6.3](https://github.com/snomiao/webstream-kernel/compare/v1.6.2...v1.6.3) (2024-07-04)
 
 ### [1.6.2](https://github.com/snomiao/snoflow/compare/v1.6.1...v1.6.2) (2024-07-04)
