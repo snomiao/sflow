@@ -1,6 +1,6 @@
 // snoflow
-import { snoflow } from "./snoflow";
-import { nils } from "./nils";
+import { snoflow } from ".";
+import { nils } from ".";
 
 it("async iteratable", async () => {
   const req = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

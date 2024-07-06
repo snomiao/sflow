@@ -16,6 +16,7 @@ export { mergeAscends, mergeDescends } from "./mergeAscends";
 export { nils } from "./nils";
 export { pMaps } from "./pMaps";
 export { peeks } from "./peeks";
+export { uniqs } from "./uniqs";
 export { reduces } from "./reduces";
 export { skips } from "./skips";
 export { slices } from "./slices";

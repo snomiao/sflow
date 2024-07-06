@@ -4,7 +4,7 @@ import {
   toArray as wseToArray,
   toPromise as wseToPromise,
 } from "web-streams-extensions";
-import { limits, heads, type Unwinded, tees, throughs } from ".";
+import { limits, heads, type Unwinded, tees, throughs, uniqs } from ".";
 
 import { aborts } from "./aborts";
 import { chunks } from "./chunks";
@@ -30,9 +30,11 @@ import { throttles } from "./throttles";
 import { unwinds } from "./unwinds";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Awaitable } from "./Awaitable";
+import type { uniqBys } from "./uniqs";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type snoflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {
+    // { [Symbol.asyncDispose]: () => Promise<void> } &
     _type: T;
     readable: ReadableStream<T>;
     writable: WritableStream<T>;
@@ -66,6 +68,8 @@ export type snoflow<T> = ReadableStream<T> &
     skip: (...args: Parameters<typeof skips<T>>) => snoflow<T>;
     slice: (...args: Parameters<typeof slices<T>>) => snoflow<T>;
     tail: (...args: Parameters<typeof tails<T>>) => snoflow<T>;
+    uniq: (...args: Parameters<typeof uniqs<T>>) => snoflow<T>;
+    uniqBy: <K>(...args: Parameters<typeof uniqBys<T, K>>) => snoflow<T>;
     tees(fn: (s: snoflow<T>) => void | any): snoflow<T>; // fn must fisrt
     tees(stream?: WritableStream<T>): snoflow<T>;
     throttle: (...args: Parameters<typeof throttles<T>>) => snoflow<T>;
@@ -189,6 +193,7 @@ export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
     blob: (init?: ResponseInit) => new Response(r, init).blob(),
     arrayBuffer: (init?: ResponseInit) => new Response(r, init).arrayBuffer(),
     // as iterator
+    // [Symbol.asyncDispose]: async () => await r.pipeTo(nils()),
     [Symbol.asyncIterator]: streamAsyncIterator<T>,
   });
 };
