@@ -2,7 +2,7 @@
 export function limits<T>(n = 1, { terminate = false } = {}) {
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
-      (n-- && ctrl.enqueue(chunk)) || (terminate && ctrl.terminate());
+      (n-- > 0 && ctrl.enqueue(chunk)) || (terminate && ctrl.terminate());
     },
   });
 }

@@ -1,5 +1,5 @@
 import type { Awaitable } from "./Awaitable";
-/** return undefined or undefined to skip emit  */
+/** return undefined to skip emit */
 export const reduces: {
   <T, S>(
     state: S,

@@ -1,4 +1,4 @@
-import { parallels } from ".";
+import { parallels } from "./parallels";
 
 export const joins: {
   <T>(fn: (s: WritableStream<T>) => void | any): TransformStream<T, T>;

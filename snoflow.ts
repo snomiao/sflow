@@ -1,11 +1,4 @@
-import {
-  from as wseFrom,
-  merge as wseMerge,
-  toArray as wseToArray,
-  toPromise as wseToPromise,
-} from "web-streams-extensions";
-import { limits, heads, type Unwinded, tees, throughs, uniqs } from ".";
-
+import { heads } from "./heads";
 import { aborts } from "./aborts";
 import { chunks } from "./chunks";
 import { chunkBys } from "./chunkBys";
@@ -13,7 +6,7 @@ import { debounces } from "./debounces";
 import { filters } from "./filters";
 import { flatMaps } from "./flatMaps";
 import { flats } from "./flats";
-import type { flowSource } from "./flowSource";
+import type { FlowSource } from "./FlowSource";
 import { chunkIntervals } from "./chunkIntervals";
 import { joins } from "./joins";
 import { mapAddFields } from "./mapAddFields";
@@ -30,7 +23,12 @@ import { throttles } from "./throttles";
 import { unwinds } from "./unwinds";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Awaitable } from "./Awaitable";
-import type { uniqBys } from "./uniqs";
+import type { uniqBys, uniqs } from "./uniqs";
+import { limits } from "./limits";
+import type { Unwinded } from "./Unwinded";
+import { tees } from "./tees";
+import { throughs } from "./throughs";
+import { wseFrom, wseToArray, wseToPromise } from "./wse";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type snoflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {
@@ -107,7 +105,7 @@ export type snoflow<T> = ReadableStream<T> &
         arrayBuffer: () => Promise<ArrayBuffer>;
       }
     : {});
-export const snoflow = <T>(src: flowSource<T>): snoflow<T> => {
+export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
   const r: ReadableStream<T> =
     src instanceof ReadableStream
       ? src
@@ -210,15 +208,10 @@ export const _tees: {
   fn(snoflow(a));
   return { writable, readable: b };
 };
-export const wseMerges: (
-  concurrent?: number
-) => <T>(
-  src: ReadableStream<ReadableStream<T> | Promise<T>>
-) => ReadableStream<T> = wseMerge as any;
 export const _throughs: {
   <T>(stream?: TransformStream<T, T>): TransformStream<T, T>;
   <T, R>(stream: TransformStream<T, R>): TransformStream<T, R>;
-  <T, R>(fn: (s: snoflow<T>) => flowSource<R>): TransformStream<T, R>;
+  <T, R>(fn: (s: snoflow<T>) => FlowSource<R>): TransformStream<T, R>;
 } = (arg: any) => {
   if (!arg) return new TransformStream();
   if (typeof arg !== "function") return throughs((s) => s.pipeThrough(arg));

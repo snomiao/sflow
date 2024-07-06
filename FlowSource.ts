@@ -2,7 +2,7 @@ import { type ReadableLike } from "web-streams-extensions";
 import { snoflow } from "./snoflow";
 
 
-export type flowSource<T> = Promise<T> |
+export type FlowSource<T> = Promise<T> |
 Iterable<T> |
 AsyncIterable<T> |
 (() => Iterable<T> | AsyncIterable<T>) |

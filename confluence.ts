@@ -1,12 +1,13 @@
-import { from as wseFrom } from "web-streams-extensions";
-import { wseMerges } from "./snoflow";
+import { wseFrom } from "./wse";
+import { wseMerges } from "./wseMerges";
 import { snoflow } from "./snoflow";
-import { flowSource } from "./flowSource";
+import type { FlowSource } from "./FlowSource";
 
 /** merge multiple flow sources */
 
-export const confluence = <SRCS extends flowSource<any>[]>(...srcs: SRCS) => snoflow(wseMerges()(wseFrom(srcs.map(snoflow)))) as snoflow<
-  {
-    [key in keyof SRCS]: SRCS[key] extends flowSource<infer T> ? T : never;
-  }[number]
->;
+export const confluence = <SRCS extends FlowSource<any>[]>(...srcs: SRCS) =>
+  snoflow(wseMerges()(wseFrom(srcs.map(snoflow)))) as snoflow<
+    {
+      [key in keyof SRCS]: SRCS[key] extends FlowSource<infer T> ? T : never;
+    }[number]
+  >;
