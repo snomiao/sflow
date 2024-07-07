@@ -29,6 +29,7 @@ import type { Unwinded } from "./Unwinded";
 import { tees } from "./tees";
 import { throughs } from "./throughs";
 import { wseFrom, wseToArray, wseToPromise } from "./wse";
+import { logs } from "./logs";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type snoflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {
@@ -58,6 +59,7 @@ export type snoflow<T> = ReadableStream<T> &
     limit(...args: Parameters<typeof limits<T>>): snoflow<T>;
     head(...args: Parameters<typeof heads<T>>): snoflow<T>;
     map<R>(...args: Parameters<typeof maps<T, R>>): snoflow<R>;
+    log(...args: Parameters<typeof logs<T>>): snoflow<T>;
     peek(...args: Parameters<typeof peeks<T>>): snoflow<T>;
     pMap<R>(fn: (x: T, i: number) => Awaitable<R>): snoflow<R>; // fn must fisrt
     pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): snoflow<R>;
@@ -72,10 +74,12 @@ export type snoflow<T> = ReadableStream<T> &
     tees(stream?: WritableStream<T>): snoflow<T>;
     throttle: (...args: Parameters<typeof throttles<T>>) => snoflow<T>;
     // to promises
+    toNil: () => Promise<void>;
     toArray: () => Promise<T[]>;
     toCount: () => Promise<number>;
     toFirst: () => Promise<T>;
     toLast: () => Promise<T>;
+    toLog(...args: Parameters<typeof logs<T>>): Promise<void>;
   } & (T extends ReadonlyArray<any>
     ? {
         flat: (...args: Parameters<typeof flats<T>>) => snoflow<T[number]>;
@@ -160,6 +164,8 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(heads(...args))),
     map: (...args: Parameters<typeof maps>) =>
       snoflow(r.pipeThrough(maps(...args))),
+    log: (...args: Parameters<typeof logs>) =>
+      snoflow(r.pipeThrough(logs(...args))),
     uniq: (...args: Parameters<typeof uniqs>) =>
       snoflow(r.pipeThrough(uniqs(...args))),
     uniqBy: (...args: Parameters<typeof uniqBys>) =>
@@ -184,10 +190,13 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
     throttle: (...args: Parameters<typeof throttles>) =>
       snoflow(r.pipeThrough(throttles(...args))),
     // to promises
+    toNil: () => r.pipeTo(nils<T>()),
     toArray: () => wseToArray(r),
     toCount: async () => (await wseToArray(r)).length,
     toFirst: () => wseToPromise(snoflow(r).limit(1)),
     toLast: () => wseToPromise(snoflow(r).tail(1)),
+    toLog: (...args: Parameters<typeof logs<T>>) =>
+      snoflow(r.pipeThrough(logs(...args))).done(),
     // as response (only ReadableStream<string | UInt8Array>)
     toResponse: (init?: ResponseInit) => new Response(r, init),
     text: (init?: ResponseInit) => new Response(r, init).text(),
