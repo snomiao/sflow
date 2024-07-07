@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.4](https://github.com/snomiao/webstream-kernel/compare/v1.7.3...v1.7.4) (2024-07-07)
+
+
+### Bug Fixes
+
+* **main:** nils ([8406eb2](https://github.com/snomiao/webstream-kernel/commit/8406eb24c0f0bc074b949a9c13ba64ca830c8b8c))
+
 ### [1.7.3](https://github.com/snomiao/webstream-kernel/compare/v1.7.2...v1.7.3) (2024-07-07)
 
 
