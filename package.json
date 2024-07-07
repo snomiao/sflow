@@ -32,7 +32,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build index.ts fromNodeStream.ts --outdir=dist",
+    "build": "bun build index.ts fromNodeStream.ts --outdir=dist && bun build:umd",
+    "build:umd": "bunx rollup dist/index.js --file=dist/index.umd.js --format=umd --name snoflow",
     "prerelease": "bun run build && bun run test",
     "release": "bunx standard-version && git push --follow-tags && npm publish",
     "test": "bun test"
@@ -46,7 +47,7 @@
   },
   "devDependencies": {
     "@snomiao/die": "^1.0.9",
-    "@types/bun": "^1.1.6",
+    "@types/bun": "latest",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.9",
     "typescript": "^5.5.2"
