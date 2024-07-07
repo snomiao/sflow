@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/snomiao/webstream-kernel/compare/v1.8.3...v1.9.0) (2024-07-07)
+
+
+### Features
+
+* **foreachs:** init ([b9943d9](https://github.com/snomiao/webstream-kernel/commit/b9943d90c1ac308c45517ac68c4426de5494ee7d))
+
 ### [1.8.3](https://github.com/snomiao/webstream-kernel/compare/v1.8.2...v1.8.3) (2024-07-07)
 
 ### [1.8.2](https://github.com/snomiao/webstream-kernel/compare/v1.8.1...v1.8.2) (2024-07-07)
