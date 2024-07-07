@@ -29,7 +29,6 @@ import type { Unwinded } from "./Unwinded";
 import { tees } from "./tees";
 import { throughs } from "./throughs";
 import { wseFrom, wseToArray, wseToPromise } from "./wse";
-import type { uniqBy } from "rambda";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type snoflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {

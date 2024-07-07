@@ -26,4 +26,5 @@ export { throttles } from "./throttles";
 export { throughs } from "./throughs";
 export { unwinds } from "./unwinds";
 export { snoflow };
+export { snoflow as sf };
 export default snoflow;
