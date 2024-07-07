@@ -13,6 +13,7 @@ import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
 import { nils } from "./nils";
 import { peeks } from "./peeks";
+import { forEachs } from "./forEachs";
 import { pMaps } from "./pMaps";
 import { reduces } from "./reduces";
 import { skips } from "./skips";
@@ -61,6 +62,7 @@ export type snoflow<T> = ReadableStream<T> &
     map<R>(...args: Parameters<typeof maps<T, R>>): snoflow<R>;
     log(...args: Parameters<typeof logs<T>>): snoflow<T>;
     peek(...args: Parameters<typeof peeks<T>>): snoflow<T>;
+    forEach(...args: Parameters<typeof forEachs<T>>): snoflow<T>;
     pMap<R>(fn: (x: T, i: number) => Awaitable<R>): snoflow<R>; // fn must fisrt
     pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): snoflow<R>;
     reduce(fn: (state: T | null, x: T, i: number) => Awaitable<T>): snoflow<T>; // fn must fisrt
@@ -181,6 +183,8 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(pMaps(...args))),
     peek: (...args: Parameters<typeof peeks>) =>
       snoflow(r.pipeThrough(peeks(...args))),
+    forEach: (...args: Parameters<typeof forEachs>) =>
+      snoflow(r.pipeThrough(forEachs(...args))),
     reduce: (...args: Parameters<typeof reduces>) =>
       snoflow(r.pipeThrough(reduces(...args))),
     skip: (...args: Parameters<typeof skips>) =>

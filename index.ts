@@ -15,6 +15,7 @@ export { mergeAscends, mergeDescends } from "./mergeAscends";
 export { nils, nil } from "./nils";
 export { pMaps } from "./pMaps";
 export { peeks } from "./peeks";
+export { forEachs } from "./forEachs";
 export { uniqs, uniqBys } from "./uniqs";
 export { reduces } from "./reduces";
 export { skips } from "./skips";
