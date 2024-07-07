@@ -193,11 +193,13 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(_tees(...args))),
     throttle: (...args: Parameters<typeof throttles>) =>
       snoflow(r.pipeThrough(throttles(...args))),
-    // prevents
+    /** prevent downstream abort, ignore downstream errors   */
     preventAbort: () =>
       snoflow(r.pipeThrough(throughs(), { preventAbort: true })),
+    /** prevent upstream close */
     preventClose: () =>
       snoflow(r.pipeThrough(throughs(), { preventClose: true })),
+    /** prevent upstream cancel, ignore upstream errors */
     preventCancel: () =>
       snoflow(r.pipeThrough(throughs(), { preventCancel: true })),
     // to promises
