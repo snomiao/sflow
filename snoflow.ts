@@ -73,6 +73,10 @@ export type snoflow<T> = ReadableStream<T> &
     tees(fn: (s: snoflow<T>) => void | any): snoflow<T>; // fn must fisrt
     tees(stream?: WritableStream<T>): snoflow<T>;
     throttle: (...args: Parameters<typeof throttles<T>>) => snoflow<T>;
+    // prevents
+    preventAbort: () => snoflow<T>;
+    preventClose: () => snoflow<T>;
+    preventCancel: () => snoflow<T>;
     // to promises
     toNil: () => Promise<void>;
     toArray: () => Promise<T[]>;
@@ -189,6 +193,13 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(_tees(...args))),
     throttle: (...args: Parameters<typeof throttles>) =>
       snoflow(r.pipeThrough(throttles(...args))),
+    // prevents
+    preventAbort: () =>
+      snoflow(r.pipeThrough(throughs(), { preventAbort: true })),
+    preventClose: () =>
+      snoflow(r.pipeThrough(throughs(), { preventClose: true })),
+    preventCancel: () =>
+      snoflow(r.pipeThrough(throughs(), { preventCancel: true })),
     // to promises
     toNil: () => r.pipeTo(nils<T>()),
     toArray: () => wseToArray(r),
