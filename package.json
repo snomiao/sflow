@@ -1,8 +1,9 @@
 {
   "name": "sflow",
   "version": "1.9.2",
-  "description": "Type-safety piping paradigram through webstream-kernels.",
+  "description": "stream-flow with type-safety piping paradigram through web-stream-kernels.",
   "keywords": [
+    "web-stream",
     "webstream",
     "functional",
     "pipe-through",
@@ -11,7 +12,8 @@
     "stream",
     "bun",
     "node",
-    "browser"
+    "browser",
+    "snoflow"
   ],
   "author": "snomiao <snomiao@gmail.com>",
   "type": "module",
