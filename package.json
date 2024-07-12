@@ -1,6 +1,6 @@
 {
   "name": "sflow",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Type-safety piping paradigram through webstream-kernels.",
   "keywords": [
     "webstream",
