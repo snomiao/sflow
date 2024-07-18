@@ -124,12 +124,7 @@ export type snoflow<T> = ReadableStream<T> &
     : {});
 export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
   const r: ReadableStream<T> =
-    src instanceof ReadableStream
-      ? src
-      : // : isXMLHTTPRequestBodyInit(src)
-
-        // ? new Response(src).body!
-        from(src);
+    src instanceof ReadableStream ? src : wseFrom(src);
   // @ts-ignore todo
   return Object.assign(r, {
     _type: null as T,
@@ -256,4 +251,3 @@ export const _throughs: {
   const { writable, readable } = new TransformStream();
   return { writable, readable: snoflow(fn(snoflow(readable))) };
 };
-
