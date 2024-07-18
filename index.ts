@@ -16,6 +16,7 @@ export { maps } from "./maps";
 export { mergeAscends, mergeDescends } from "./mergeAscends";
 export { nils, nil } from "./nils";
 export { pMaps } from "./pMaps";
+export { unpromises } from "./unpromises";
 export { peeks } from "./peeks";
 export { forEachs } from "./forEachs";
 export { uniqs, uniqBys } from "./uniqs";
