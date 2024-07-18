@@ -6,6 +6,8 @@ export { debounces } from "./debounces";
 export { filters } from "./filters";
 export { flatMaps } from "./flatMaps";
 export { flats } from "./flats";
+export type { FlowSource } from "./FlowSource";
+/** @deprecated */
 export type { FlowSource as flowSource } from "./FlowSource";
 export { chunkIntervals as intervals } from "./chunkIntervals";
 export { joins } from "./joins";

@@ -1,12 +1,13 @@
 # SNOFLOW
 
+stream-flow with type-safety piping paradigram through web-stream-kernels.
 
 ## Examples
 
-### Pipe style
+### Simple Pipe style (clear piping syntax)
 
 ```ts
-await snoflow([1, 2, 3])
+await sflow([1, 2, 3])
     .buffer(2)
     .debounce(100)
     .filter()
@@ -24,7 +25,7 @@ await snoflow([1, 2, 3])
     .done()
 ```
 
-### Using native ReadableStream snoflow kernels to allow tree-shaking
+### Using native WebStream, pipe throughs sflow kernels (Allow tree-shaking while bundle)
 
 ```ts
 await new ReadableStream({
@@ -49,3 +50,8 @@ await new ReadableStream({
     .pipeTo(nils())
 
 ```
+
+### Reference
+
+- [Highland.js]( https://caolan.github.io/highland/ )
+- [RxJS]( https://rxjs.dev/ )

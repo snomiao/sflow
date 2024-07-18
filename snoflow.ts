@@ -32,6 +32,13 @@ import { throughs } from "./throughs";
 import { wseFrom, wseToArray, wseToPromise } from "./wse";
 import { logs } from "./logs";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
+// maybe:
+// subscribe (forEach+nils)
+// find (filter+limit)
+// distinct=uniq
+//
+// todo:
+// catch, retry
 export type snoflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {
     // { [Symbol.asyncDispose]: () => Promise<void> } &
@@ -122,7 +129,7 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       : // : isXMLHTTPRequestBodyInit(src)
 
         // ? new Response(src).body!
-        wseFrom(src);
+        from(src);
   // @ts-ignore todo
   return Object.assign(r, {
     _type: null as T,
