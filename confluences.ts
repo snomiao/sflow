@@ -1,7 +1,7 @@
 import { pMaps, type FlowSource } from ".";
 import { maps } from "./maps";
 import { nils } from "./nils";
-import { froms } from "./sflow";
+import { froms } from "./froms";
 
 /** Confluence of multiple flow sources */
 

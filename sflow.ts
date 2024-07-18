@@ -30,12 +30,13 @@ import { limits } from "./limits";
 import type { Unwinded } from "./Unwinded";
 import { tees } from "./tees";
 import { throughs } from "./throughs";
-import { wseFrom, wseToArray, wseToPromise } from "./wse";
+import { wseToArray, wseToPromise } from "./wse";
 import { logs } from "./logs";
 import { chunkIfs } from "./chunkIfs";
 import { lines } from "./lines";
 import { riffles } from "./riffles";
 import { confluences } from "./confluences";
+import { froms } from "./froms";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
   state: S,
@@ -289,6 +290,4 @@ export const _throughs: {
   return { writable, readable: snoflow(fn(snoflow(readable))) };
 };
 
-export const froms: {
-  <T>(src: FlowSource<T>): ReadableStream<T>;
-} = (src) => (src instanceof ReadableStream ? src : wseFrom(src));
+
