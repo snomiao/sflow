@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.12.0](https://github.com/snomiao/webstream-kernel/compare/v1.11.2...v1.12.0) (2024-07-18)
+
+
+### Features
+
+* **riffles:** done ([0c8cd2b](https://github.com/snomiao/webstream-kernel/commit/0c8cd2b5b0d95947ba4b71372e431ef06a6e3621))
+
+
+### Bug Fixes
+
+* **main:** confluence pipeline ([ae26747](https://github.com/snomiao/webstream-kernel/commit/ae26747b355b2c447cf1203668ec56a674ed36e9))
+* **main:** parallels 2 ([f81d012](https://github.com/snomiao/webstream-kernel/commit/f81d012a4628e9cfad7ec8d7fa7cd9ad5511e83a))
+
 ### [1.11.2](https://github.com/snomiao/webstream-kernel/compare/v1.11.1...v1.11.2) (2024-07-18)
 
 
