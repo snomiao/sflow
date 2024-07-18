@@ -32,4 +32,5 @@ export { unwinds } from "./unwinds";
 export { logs } from "./logs";
 export { snoflow };
 export { snoflow as sf };
+export { snoflow as sflow };
 export default snoflow;

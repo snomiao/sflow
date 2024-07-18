@@ -7,8 +7,9 @@ export function unpromises<T>(
     const s = await promise;
     await s.pipeTo(tr.writable);
   })().catch((error) => {
-    console.error(error)
-    tr.readable.cancel(error)
+    tr.readable.cancel(error).catch(() => {
+      throw error;
+    });
   });
   return tr.readable;
 }

@@ -16,6 +16,7 @@ import { peeks } from "./peeks";
 import { forEachs } from "./forEachs";
 import { pMaps } from "./pMaps";
 import { reduces } from "./reduces";
+import { reduceEmits } from "./reduceEmits";
 import { skips } from "./skips";
 import { slices } from "./slices";
 import { streamAsyncIterator } from "./streamAsyncIterator";
@@ -32,6 +33,11 @@ import { throughs } from "./throughs";
 import { wseFrom, wseToArray, wseToPromise } from "./wse";
 import { logs } from "./logs";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
+export type EmitReducer<S, T, R> = (
+  state: S,
+  x: T,
+  i: number
+) => Awaitable<{ next: S; emit: R }>;
 // maybe:
 // subscribe (forEach+nils)
 // find (filter+limit)
@@ -74,6 +80,7 @@ export type snoflow<T> = ReadableStream<T> &
     pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): snoflow<R>;
     reduce(fn: (state: T | null, x: T, i: number) => Awaitable<T>): snoflow<T>; // fn must fisrt
     reduce<S>(state: S, fn: Reducer<S, T>): snoflow<S>;
+    reduceEmits<S, R>(state: S, fn: EmitReducer<S, T, R>): snoflow<R>;
     skip: (...args: Parameters<typeof skips<T>>) => snoflow<T>;
     slice: (...args: Parameters<typeof slices<T>>) => snoflow<T>;
     tail: (...args: Parameters<typeof tails<T>>) => snoflow<T>;
@@ -189,6 +196,8 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(forEachs(...args))),
     reduce: (...args: Parameters<typeof reduces>) =>
       snoflow(r.pipeThrough(reduces(...args))),
+    reduceEmit: (...args: Parameters<typeof reduceEmits>) =>
+      snoflow(r.pipeThrough(reduceEmits(...args))),
     skip: (...args: Parameters<typeof skips>) =>
       snoflow(r.pipeThrough(skips(...args))),
     slice: (...args: Parameters<typeof slices>) =>
