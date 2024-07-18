@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.2](https://github.com/snomiao/webstream-kernel/compare/v1.11.1...v1.11.2) (2024-07-18)
+
+
+### Bug Fixes
+
+* **lines:** sflow def ([4149be2](https://github.com/snomiao/webstream-kernel/commit/4149be25a3e5b67e0765c00278216283a02650bf))
+* **main:** logs with console.log ([15bc700](https://github.com/snomiao/webstream-kernel/commit/15bc7002dddca67a02b999065c09498d63415bf1))
+
 ### [1.11.1](https://github.com/snomiao/webstream-kernel/compare/v1.11.0...v1.11.1) (2024-07-18)
 
 ## [1.11.0](https://github.com/snomiao/webstream-kernel/compare/v1.10.1...v1.11.0) (2024-07-18)
