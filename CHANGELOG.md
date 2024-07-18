@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/snomiao/webstream-kernel/compare/v1.10.1...v1.11.0) (2024-07-18)
+
+
+### Features
+
+* **lines:** init ([df9190f](https://github.com/snomiao/webstream-kernel/commit/df9190f9f6eeefafa82e5114fed596f33a66d25d))
+
+
+### Bug Fixes
+
+* **main:** reduceEmits ([7c60c70](https://github.com/snomiao/webstream-kernel/commit/7c60c70db9fa1ad74f2e01444d2f00d3e218f1c0))
+
 ### [1.10.1](https://github.com/snomiao/webstream-kernel/compare/v1.10.0...v1.10.1) (2024-07-18)
 
 ## [1.10.0](https://github.com/snomiao/webstream-kernel/compare/v1.9.2...v1.10.0) (2024-07-18)
