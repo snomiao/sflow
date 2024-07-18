@@ -10,7 +10,7 @@ export { filters } from "./filters";
 export { flatMaps } from "./flatMaps";
 export { flats } from "./flats";
 export { forEachs } from "./forEachs";
-export { joins } from "./joins";
+export { merges as joins } from "./merges";
 export { logs } from "./logs";
 export { mapAddFields } from "./mapAddFields";
 export { maps } from "./maps";

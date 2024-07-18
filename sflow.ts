@@ -8,7 +8,7 @@ import { flatMaps } from "./flatMaps";
 import { flats } from "./flats";
 import type { FlowSource } from "./FlowSource";
 import { chunkIntervals } from "./chunkIntervals";
-import { joins } from "./joins";
+import { merges } from "./merges";
 import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
 import { nils } from "./nils";
@@ -123,7 +123,7 @@ export type snoflow<T> = ReadableStream<T> &
         >;
       }
     : {}) &
-  // text process
+  // text stream process
   (T extends string ? { lines: () => snoflow<string> } : {}) &
   // toResponse
   (T extends string | Uint8Array
@@ -179,8 +179,11 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
     flat: (
       ...args: Parameters<typeof flats> // @ts-ignore
     ) => snoflow(r.pipeThrough(flats(...args))),
-    join: (...args: Parameters<typeof joins>) =>
-      snoflow(r.pipeThrough(joins(...args))),
+    /** @deprecated will be remove next major version, please use merge */
+    join: (...args: Parameters<typeof merges>) =>
+      snoflow(r.pipeThrough(merges(...args))),
+    merge: (...args: Parameters<typeof merges>) =>
+      snoflow(r.pipeThrough(merges(...args))),
     limit: (...args: Parameters<typeof limits>) =>
       snoflow(r.pipeThrough(limits(...args))),
     head: (...args: Parameters<typeof heads>) =>
