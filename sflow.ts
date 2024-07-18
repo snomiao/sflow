@@ -33,7 +33,7 @@ import { throughs } from "./throughs";
 import { wseFrom, wseToArray, wseToPromise } from "./wse";
 import { logs } from "./logs";
 import { chunkIfs } from "./chunkIfs";
-import type { lines } from "./lines";
+import { lines } from "./lines";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
   state: S,
@@ -85,7 +85,6 @@ export type snoflow<T> = ReadableStream<T> &
     reduce<S>(state: S, fn: Reducer<S, T>): snoflow<S>;
     reduceEmits<S, R>(state: S, fn: EmitReducer<S, T, R>): snoflow<R>;
     skip: (...args: Parameters<typeof skips<T>>) => snoflow<T>;
-    lines: (...args: Parameters<typeof lines>) => snoflow<T>;
     slice: (...args: Parameters<typeof slices<T>>) => snoflow<T>;
     tail: (...args: Parameters<typeof tails<T>>) => snoflow<T>;
     uniq: (...args: Parameters<typeof uniqs<T>>) => snoflow<T>;
@@ -104,9 +103,7 @@ export type snoflow<T> = ReadableStream<T> &
     toFirst: () => Promise<T>;
     toLast: () => Promise<T>;
     toLog(...args: Parameters<typeof logs<T>>): Promise<void>;
-  } & 
-  // Array Process
-  (T extends ReadonlyArray<any>
+  } & (T extends ReadonlyArray<any> // Array Process
     ? {
         flat: (...args: Parameters<typeof flats<T>>) => snoflow<T[number]>;
       }
@@ -236,6 +233,10 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
     toLast: () => wseToPromise(snoflow(r).tail(1)),
     toLog: (...args: Parameters<typeof logs<T>>) =>
       snoflow(r.pipeThrough(logs(...args))).done(),
+    // string stream process
+    lines: () =>
+      // @ts-expect-error should be string
+      snoflow(r.pipeThrough(lines())),
     // as response (only ReadableStream<string | UInt8Array>)
     toResponse: (init?: ResponseInit) => new Response(r, init),
     text: (init?: ResponseInit) => new Response(r, init).text(),
