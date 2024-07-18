@@ -35,6 +35,7 @@ import { logs } from "./logs";
 import { chunkIfs } from "./chunkIfs";
 import { lines } from "./lines";
 import { riffles } from "./riffles";
+import { confluences } from "./confluences";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
   state: S,
@@ -74,6 +75,8 @@ export type snoflow<T> = ReadableStream<T> &
     flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): snoflow<R>;
     join(fn: (s: WritableStream<T>) => void | any): snoflow<T>;
     join(stream?: ReadableStream<T>): snoflow<T>;
+    merge(fn: (s: WritableStream<T>) => void | any): snoflow<T>;
+    merge(stream?: ReadableStream<T>): snoflow<T>;
     limit(...args: Parameters<typeof limits<T>>): snoflow<T>;
     head(...args: Parameters<typeof heads<T>>): snoflow<T>;
     map<R>(...args: Parameters<typeof maps<T, R>>): snoflow<R>;
@@ -125,7 +128,11 @@ export type snoflow<T> = ReadableStream<T> &
         >;
       }
     : {}) &
-  // text stream process
+  // Streams
+  (T extends ReadableStream
+    ? { confluence(...args: Parameters<typeof confluences<T>>): snoflow<T> }
+    : {}) &
+  // text process
   (T extends string ? { lines: () => snoflow<string> } : {}) &
   // toResponse
   (T extends string | Uint8Array
@@ -138,8 +145,7 @@ export type snoflow<T> = ReadableStream<T> &
       }
     : {});
 export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
-  const r: ReadableStream<T> =
-    src instanceof ReadableStream ? src : wseFrom(src);
+  const r: ReadableStream<T> = froms(src);
   // @ts-ignore todo
   return Object.assign(r, {
     _type: null as T,
@@ -186,6 +192,9 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(merges(...args))),
     merge: (...args: Parameters<typeof merges>) =>
       snoflow(r.pipeThrough(merges(...args))),
+    confluence: (
+      ...args: Parameters<typeof confluences> // @ts-expect-error only flowsources
+    ) => snoflow(r.pipeThrough(confluences(...args))),
     limit: (...args: Parameters<typeof limits>) =>
       snoflow(r.pipeThrough(limits(...args))),
     head: (...args: Parameters<typeof heads>) =>
@@ -279,3 +288,7 @@ export const _throughs: {
   const { writable, readable } = new TransformStream();
   return { writable, readable: snoflow(fn(snoflow(readable))) };
 };
+
+export const froms: {
+  <T>(src: FlowSource<T>): ReadableStream<T>;
+} = (src) => (src instanceof ReadableStream ? src : wseFrom(src));

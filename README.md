@@ -51,6 +51,10 @@ await new ReadableStream({
 
 ```
 
+## Visual Demo
+
+TODO
+
 ### Reference
 
 - [Highland.js]( https://caolan.github.io/highland/ )
