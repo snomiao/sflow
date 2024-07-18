@@ -1,5 +1,5 @@
 import { sf } from ".";
-import { snoflow } from "./snoflow";
+import { snoflow } from "./sflow";
 import { unpromises } from "./unpromises";
 
 it("works", async () => {

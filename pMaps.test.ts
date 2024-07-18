@@ -1,5 +1,5 @@
 import { sleep } from "bun";
-import { snoflow } from "./snoflow";
+import { snoflow } from "./sflow";
 
 it("Infinity concurrent", async () => {
   const runOrder: number[] = [];

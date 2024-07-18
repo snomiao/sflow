@@ -1,0 +1,9 @@
+import { maps, sflow } from ".";
+import { chunkIfs } from "./chunkIfs";
+it("chunkIfs", async () => {
+  const out = await sflow("a,b,c\n1,2,3\nd,s,f".split(""))
+    .through(chunkIfs((e: string) => e.indexOf("\n") === -1))
+    .map((chars) => chars.join(""))
+    .toArray();
+  expect(out).toEqual(["a,b,c\n", "1,2,3\n", "d,s,f"]);
+});

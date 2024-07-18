@@ -32,6 +32,8 @@ import { tees } from "./tees";
 import { throughs } from "./throughs";
 import { wseFrom, wseToArray, wseToPromise } from "./wse";
 import { logs } from "./logs";
+import { chunkIfs } from "./chunkIfs";
+import type { lines } from "./lines";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
   state: S,
@@ -51,12 +53,13 @@ export type snoflow<T> = ReadableStream<T> &
     _type: T;
     readable: ReadableStream<T>;
     writable: WritableStream<T>;
-    chunkBy(...args: Parameters<typeof chunkBys<T>>): snoflow<T[]>;
     /** @deprecated use chunk*/
     buffer(...args: Parameters<typeof chunks<T>>): snoflow<T[]>;
     chunk(...args: Parameters<typeof chunks<T>>): snoflow<T[]>;
+    chunkBy(...args: Parameters<typeof chunkBys<T>>): snoflow<T[]>;
+    chunkIf(...args: Parameters<typeof chunkIfs<T>>): snoflow<T[]>;
     abort(...args: Parameters<typeof aborts<T>>): snoflow<T>;
-    through<R>(fn: (s: snoflow<T>) => snoflow<R>): snoflow<R>; // fn must fisrt
+    through<R>(fn: (s: snoflow<T>) => FlowSource<R>): snoflow<R>; // fn must fisrt
     through<R>(stream: TransformStream<T, R>): snoflow<R>;
     through(stream?: TransformStream<T, T>): snoflow<T>;
     /** @deprecated use chunkInterval */
@@ -82,6 +85,7 @@ export type snoflow<T> = ReadableStream<T> &
     reduce<S>(state: S, fn: Reducer<S, T>): snoflow<S>;
     reduceEmits<S, R>(state: S, fn: EmitReducer<S, T, R>): snoflow<R>;
     skip: (...args: Parameters<typeof skips<T>>) => snoflow<T>;
+    lines: (...args: Parameters<typeof lines>) => snoflow<T>;
     slice: (...args: Parameters<typeof slices<T>>) => snoflow<T>;
     tail: (...args: Parameters<typeof tails<T>>) => snoflow<T>;
     uniq: (...args: Parameters<typeof uniqs<T>>) => snoflow<T>;
@@ -100,11 +104,14 @@ export type snoflow<T> = ReadableStream<T> &
     toFirst: () => Promise<T>;
     toLast: () => Promise<T>;
     toLog(...args: Parameters<typeof logs<T>>): Promise<void>;
-  } & (T extends ReadonlyArray<any>
+  } & 
+  // Array Process
+  (T extends ReadonlyArray<any>
     ? {
         flat: (...args: Parameters<typeof flats<T>>) => snoflow<T[number]>;
       }
     : {}) &
+  // Dictionary process
   (T extends Record<string, any>
     ? {
         unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
@@ -119,9 +126,11 @@ export type snoflow<T> = ReadableStream<T> &
         >;
       }
     : {}) &
+  // text process
+  (T extends string ? { lines: () => snoflow<string> } : {}) &
+  // toResponse
   (T extends string | Uint8Array
     ? {
-        // to response
         toResponse: () => Response;
         text: () => Promise<string>;
         json: () => Promise<any>;
@@ -149,6 +158,8 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
     ) => snoflow(r.pipeThrough(mapAddFields(...args))),
     chunkBy: (...args: Parameters<typeof chunkBys>) =>
       snoflow(r.pipeThrough(chunkBys(...args))),
+    chunkIf: (...args: Parameters<typeof chunkIfs>) =>
+      snoflow(r.pipeThrough(chunkIfs(...args))),
     buffer: (...args: Parameters<typeof chunks>) =>
       snoflow(r.pipeThrough(chunks(...args))),
     chunk: (...args: Parameters<typeof chunks>) =>

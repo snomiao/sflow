@@ -1,6 +1,6 @@
 import { wseFrom } from "./wse";
 import { wseMerges } from "./wseMerges";
-import { snoflow } from "./snoflow";
+import { snoflow } from "./sflow";
 import type { FlowSource } from "./FlowSource";
 
 /** merge multiple flow sources */

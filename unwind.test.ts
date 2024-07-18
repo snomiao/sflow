@@ -1,4 +1,4 @@
-import { snoflow } from "./snoflow";
+import { snoflow } from "./sflow";
 it("works", async () => {
   expect(
     await snoflow([{ a: 1, b: [1, 2, 3], c: [1, 2, 3] }])
