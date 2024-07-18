@@ -34,6 +34,7 @@ import { wseFrom, wseToArray, wseToPromise } from "./wse";
 import { logs } from "./logs";
 import { chunkIfs } from "./chunkIfs";
 import { lines } from "./lines";
+import { riffles } from "./riffles";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
   state: S,
@@ -78,6 +79,7 @@ export type snoflow<T> = ReadableStream<T> &
     map<R>(...args: Parameters<typeof maps<T, R>>): snoflow<R>;
     log(...args: Parameters<typeof logs<T>>): snoflow<T>;
     peek(...args: Parameters<typeof peeks<T>>): snoflow<T>;
+    riffle(...args: Parameters<typeof riffles<T>>): snoflow<T>;
     forEach(...args: Parameters<typeof forEachs<T>>): snoflow<T>;
     pMap<R>(fn: (x: T, i: number) => Awaitable<R>): snoflow<R>; // fn must fisrt
     pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): snoflow<R>;
@@ -203,6 +205,8 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(pMaps(...args))),
     peek: (...args: Parameters<typeof peeks>) =>
       snoflow(r.pipeThrough(peeks(...args))),
+    riffle: (...args: Parameters<typeof riffles>) =>
+      snoflow(r.pipeThrough(riffles(...args))),
     forEach: (...args: Parameters<typeof forEachs>) =>
       snoflow(r.pipeThrough(forEachs(...args))),
     reduce: (...args: Parameters<typeof reduces>) =>

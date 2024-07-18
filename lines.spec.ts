@@ -1,5 +1,4 @@
-import { filter, through } from "web-streams-extensions";
-import { filters, flats, sf } from ".";
+import { sf } from ".";
 import { lines } from "./lines";
 
 it("split string stream into lines stream", async () => {

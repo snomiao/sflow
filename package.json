@@ -42,19 +42,20 @@
   },
   "dependencies": {
     "web-streams-extensions": "^0.12.0",
-    "peek-log": "^0.0.11",
-    "unwind-array": "^1.1.4",
-    "react-hook-form": "^7.52.0",
-    "rambda": "^9.2.1"
+    "unwind-array": "^1.1.4"
   },
   "devDependencies": {
+    "peek-log": "^0.0.11",
     "@snomiao/die": "^1.0.9",
     "@types/bun": "latest",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.9",
+    "rambda": "^9.2.1",
     "typescript": "^5.5.2"
   },
   "peerDependencies": {
+    "react-hook-form": "^7.52.0",
+    "rambda": "^9.2.1",
     "typescript": "^5.0.0"
   }
 }
