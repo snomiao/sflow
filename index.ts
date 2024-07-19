@@ -12,6 +12,7 @@ export { flats } from "./flats";
 export { forEachs } from "./forEachs";
 export { merges as joins } from "./merges";
 export { logs } from "./logs";
+export { confluences } from "./confluences";
 export { mapAddFields } from "./mapAddFields";
 export { maps } from "./maps";
 export { mergeAscends, mergeDescends } from "./mergeAscends";

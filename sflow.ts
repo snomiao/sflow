@@ -130,7 +130,7 @@ export type snoflow<T> = ReadableStream<T> &
       }
     : {}) &
   // Streams
-  (T extends ReadableStream
+  (T extends ReadableStream<infer T>
     ? { confluence(...args: Parameters<typeof confluences<T>>): snoflow<T> }
     : {}) &
   // text process
