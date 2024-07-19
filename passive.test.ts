@@ -1,10 +1,10 @@
 import { sleep } from "bun";
-import { snoflow } from ".";
+import { sflow } from ".";
 
 /* wip */
 
 it("eager", () => {
-  snoflow(
+  sflow(
     new ReadableStream({
       start: (ctrl) => {
         ctrl.enqueue(1);
@@ -17,7 +17,7 @@ it("eager", () => {
 });
 it("passive", () => {
   let i = 0;
-  snoflow(
+  sflow(
     new ReadableStream({
       pull: (ctrl) => {
         console.log("pulling", i);

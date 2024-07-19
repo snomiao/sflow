@@ -1,4 +1,4 @@
-import { snoflow } from "./sflow";
+import { sflow } from "./sflow";
 export { chunkBys } from "./chunkBys";
 export { chunkIfs } from "./chunkIfs";
 export { chunkIntervals as intervals } from "./chunkIntervals";
@@ -32,8 +32,8 @@ export { uniqBys, uniqs } from "./uniqs";
 export { unpromises } from "./unpromises";
 export type { Unwinded as Unwinded } from "./Unwinded";
 export { unwinds } from "./unwinds";
-export { snoflow as sf, snoflow as sflow, snoflow };
-export default snoflow;
+export { sflow as sf, sflow as sflow, sflow as snoflow };
+export default sflow;
 
 /** @deprecated */
 export type { FlowSource as flowSource } from "./FlowSource";

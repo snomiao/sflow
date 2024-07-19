@@ -1,7 +1,7 @@
-import snoflow, { reduces, uniqs } from ".";
+import sflow, { uniqs } from ".";
 
 it("tees", async () => {
-  let flow1 = snoflow([1, 2, 3]);
+  let flow1 = sflow([1, 2, 3]);
   const flow2 = flow1.tees((x) => (flow1 = x));
   expect(flow1.locked).toEqual(false);
   const flow3 = flow1.tees((b) => (flow1 = b));
@@ -14,11 +14,11 @@ it("tees", async () => {
 });
 
 it("uniqs", async () => {
-  let flow0 = snoflow([1, 4, 2, 2, 3, 3, {}, {}]);
+  let flow0 = sflow([1, 4, 2, 2, 3, 3, {}, {}]);
   expect(await flow0.through(uniqs()).toArray()).toEqual([1, 4, 2, 3, {}, {}]);
 });
 it("latests", async () => {
-  let flow0 = snoflow([1, 2, 3, 3]);
+  let flow0 = sflow([1, 2, 3, 3]);
   // reduces(new Set(), (s, x) => s.add(s))
   // .through((function() {
   //     new

@@ -1,5 +1,5 @@
 import { sf } from ".";
-import { snoflow } from "./sflow";
+import { sflow } from "./sflow";
 import { unpromises } from "./unpromises";
 
 it("works", async () => {
@@ -8,5 +8,5 @@ it("works", async () => {
   expect(await sf(unpromises(p)).toArray()).toEqual([1, 2, 3]);
 });
 async function getStream() {
-  return snoflow([1, 2, 3]);
+  return sflow([1, 2, 3]);
 }

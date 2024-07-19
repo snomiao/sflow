@@ -41,8 +41,9 @@
     "test": "bun test"
   },
   "dependencies": {
-    "web-streams-extensions": "^0.12.0",
-    "unwind-array": "^1.1.4"
+    "proxy-deep": "^4.0.1",
+    "unwind-array": "^1.1.4",
+    "web-streams-extensions": "^0.12.0"
   },
   "devDependencies": {
     "peek-log": "^0.0.11",

@@ -1,7 +1,7 @@
-import { snoflow } from "./sflow";
+import { sflow } from "./sflow";
 it("works", async () => {
   expect(
-    await snoflow([{ a: 1, b: [1, 2, 3], c: [1, 2, 3] }])
+    await sflow([{ a: 1, b: [1, 2, 3], c: [1, 2, 3] }])
       .unwind("b")
       .map((e) => e)
       .toArray()

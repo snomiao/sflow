@@ -1,7 +1,7 @@
 import DIE from "@snomiao/die";
 import { sortBy, type Ord } from "rambda";
 import { type FlowSource } from ".";
-import { snoflow } from "./sflow";
+import { sflow } from "./sflow";
 /**
  * merge multiple stream by ascend order, assume all input stream is sorted by ascend
  * output stream will be sorted by ascend too.
@@ -19,10 +19,10 @@ export const mergeAscends: {
   <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): snoflow<T>;
 } = <T>(ordFn: (input: T) => Ord, _srcs?: FlowSource<FlowSource<T>>) => {
   if (!_srcs) return ((srcs: any) => mergeAscends(ordFn, srcs)) as any;
-  return snoflow(
+  return sflow(
     new ReadableStream({
       start: async (ctrl) => {
-        const srcs = await snoflow(_srcs).toArray();
+        const srcs = await sflow(_srcs).toArray();
         const slots = srcs.map(() => undefined as { value: T } | undefined);
         const pendingSlotRemoval = srcs.map(
           () => undefined as PromiseWithResolvers<void> | undefined
@@ -31,7 +31,7 @@ export const mergeAscends: {
         let lastMinValue: T | undefined = undefined;
         await Promise.all(
           srcs.map(async (src, i) => {
-            for await (const value of snoflow(src)) {
+            for await (const value of sflow(src)) {
               while (slots[i] !== undefined) {
                 if (shiftMinValueIfFull()) continue;
                 pendingSlotRemoval[i] = Promise.withResolvers<void>();

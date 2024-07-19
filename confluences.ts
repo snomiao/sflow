@@ -1,10 +1,9 @@
 import { pMaps, type FlowSource } from ".";
+import { froms } from "./froms";
 import { maps } from "./maps";
 import { nils } from "./nils";
-import { froms } from "./froms";
 
 /** Confluence of multiple flow sources */
-
 export const confluences = <T>(): TransformStream<FlowSource<T>, T> => {
   const { writable, readable: sources } = new TransformStream<
     FlowSource<T>,
