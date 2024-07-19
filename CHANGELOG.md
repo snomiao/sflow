@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/snomiao/webstream-kernel/compare/v1.12.2...v1.13.0) (2024-07-19)
+
+
+### Features
+
+* **main:** distributesby ([d43e547](https://github.com/snomiao/webstream-kernel/commit/d43e547a161b124c541192a86309b43f21752f56))
+
+
+### Bug Fixes
+
+* **main:** preventss ([373e54e](https://github.com/snomiao/webstream-kernel/commit/373e54e3dc5506139961a1b8e3d1242cfccddee0))
+
 ### [1.12.2](https://github.com/snomiao/webstream-kernel/compare/v1.12.1...v1.12.2) (2024-07-19)
 
 ### [1.12.1](https://github.com/snomiao/webstream-kernel/compare/v1.12.0...v1.12.1) (2024-07-19)
