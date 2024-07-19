@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.1](https://github.com/snomiao/webstream-kernel/compare/v1.14.0...v1.14.1) (2024-07-19)
+
+
+### Bug Fixes
+
+* **toLatest:** deep nest ([799a2f5](https://github.com/snomiao/webstream-kernel/commit/799a2f5d43bc052c9b7fec3c26758750eb82b3eb))
+
 ## [1.14.0](https://github.com/snomiao/webstream-kernel/compare/v1.13.0...v1.14.0) (2024-07-19)
 
 
