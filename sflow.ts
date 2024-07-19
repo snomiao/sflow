@@ -265,8 +265,9 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
             new DeepProxy(latestObj, {
               get(target, key, receiver) {
                 const val = Reflect.get(target, key, receiver);
+                console.log({ val });
                 if (typeof val === "object" && val !== null)
-                  return this.nest({});
+                  return this.nest(val);
                 return val;
               },
             })
