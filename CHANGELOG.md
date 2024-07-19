@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.14.0](https://github.com/snomiao/webstream-kernel/compare/v1.13.0...v1.14.0) (2024-07-19)
+
+
+### Features
+
+* **tolatest:** done ([0010007](https://github.com/snomiao/webstream-kernel/commit/0010007005815717f76decd25711e39901c6704d))
+
 ## [1.13.0](https://github.com/snomiao/webstream-kernel/compare/v1.12.2...v1.13.0) (2024-07-19)
 
 
