@@ -1,4 +1,4 @@
-# SNOFLOW
+r# SNOFLOW
 
 stream-flow with type-safety piping paradigram through web-stream-kernels.
 

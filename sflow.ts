@@ -1,42 +1,42 @@
-import { heads } from "./heads";
-import { aborts } from "./aborts";
-import { chunks } from "./chunks";
+import type { FieldPathByValue } from "react-hook-form";
+import type { Awaitable } from "./Awaitable";
 import { chunkBys } from "./chunkBys";
+import { chunkIfs } from "./chunkIfs";
+import { chunkIntervals } from "./chunkIntervals";
+import { chunks } from "./chunks";
+import { confluences } from "./confluences";
 import { debounces } from "./debounces";
 import { filters } from "./filters";
 import { flatMaps } from "./flatMaps";
 import { flats } from "./flats";
 import type { FlowSource } from "./FlowSource";
-import { chunkIntervals } from "./chunkIntervals";
-import { merges } from "./merges";
+import { forEachs } from "./forEachs";
+import { froms } from "./froms";
+import { heads } from "./heads";
+import { limits } from "./limits";
+import { lines } from "./lines";
+import { logs } from "./logs";
 import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
+import { merges } from "./merges";
 import { nils } from "./nils";
 import { peeks } from "./peeks";
-import { forEachs } from "./forEachs";
 import { pMaps } from "./pMaps";
-import { reduces } from "./reduces";
 import { reduceEmits } from "./reduceEmits";
+import { reduces } from "./reduces";
+import { riffles } from "./riffles";
 import { skips } from "./skips";
 import { slices } from "./slices";
 import { streamAsyncIterator } from "./streamAsyncIterator";
 import { tails } from "./tails";
-import { throttles } from "./throttles";
-import { unwinds } from "./unwinds";
-import type { FieldPathByValue } from "react-hook-form";
-import type { Awaitable } from "./Awaitable";
-import { uniqBys, uniqs } from "./uniqs";
-import { limits } from "./limits";
-import type { Unwinded } from "./Unwinded";
 import { tees } from "./tees";
+import { terminates } from "./terminates";
+import { throttles } from "./throttles";
 import { throughs } from "./throughs";
+import { uniqBys, uniqs } from "./uniqs";
+import type { Unwinded } from "./Unwinded";
+import { unwinds } from "./unwinds";
 import { wseToArray, wseToPromise } from "./wse";
-import { logs } from "./logs";
-import { chunkIfs } from "./chunkIfs";
-import { lines } from "./lines";
-import { riffles } from "./riffles";
-import { confluences } from "./confluences";
-import { froms } from "./froms";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
   state: S,
@@ -61,7 +61,7 @@ export type snoflow<T> = ReadableStream<T> &
     chunk(...args: Parameters<typeof chunks<T>>): snoflow<T[]>;
     chunkBy(...args: Parameters<typeof chunkBys<T>>): snoflow<T[]>;
     chunkIf(...args: Parameters<typeof chunkIfs<T>>): snoflow<T[]>;
-    abort(...args: Parameters<typeof aborts<T>>): snoflow<T>;
+    abort(...args: Parameters<typeof terminates<T>>): snoflow<T>;
     through<R>(fn: (s: snoflow<T>) => FlowSource<R>): snoflow<R>; // fn must fisrt
     through<R>(stream: TransformStream<T, R>): snoflow<R>;
     through(stream?: TransformStream<T, T>): snoflow<T>;
@@ -170,8 +170,8 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(chunks(...args))),
     chunk: (...args: Parameters<typeof chunks>) =>
       snoflow(r.pipeThrough(chunks(...args))),
-    abort: (...args: Parameters<typeof aborts>) =>
-      snoflow(r.pipeThrough(aborts(...args))),
+    abort: (...args: Parameters<typeof terminates>) =>
+      snoflow(r.pipeThrough(terminates(...args))),
     chunkInterval: (...args: Parameters<typeof chunkIntervals>) =>
       snoflow(r.pipeThrough(chunkIntervals(...args))),
     /** @deprecated */
@@ -233,13 +233,13 @@ export const snoflow = <T>(src: FlowSource<T>): snoflow<T> => {
       snoflow(r.pipeThrough(_tees(...args))),
     throttle: (...args: Parameters<typeof throttles>) =>
       snoflow(r.pipeThrough(throttles(...args))),
-    /** prevent downstream abort, ignore downstream errors   */
+    /** prevent upstream abort, ignore upstream errors   */
     preventAbort: () =>
       snoflow(r.pipeThrough(throughs(), { preventAbort: true })),
     /** prevent upstream close */
     preventClose: () =>
       snoflow(r.pipeThrough(throughs(), { preventClose: true })),
-    /** prevent upstream cancel, ignore upstream errors */
+    /** prevent downstream cancel, ignore downstream errors */
     preventCancel: () =>
       snoflow(r.pipeThrough(throughs(), { preventCancel: true })),
     // to promises
@@ -289,5 +289,3 @@ export const _throughs: {
   const { writable, readable } = new TransformStream();
   return { writable, readable: snoflow(fn(snoflow(readable))) };
 };
-
-
