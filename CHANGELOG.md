@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.12.1](https://github.com/snomiao/webstream-kernel/compare/v1.12.0...v1.12.1) (2024-07-19)
+
+
+### Bug Fixes
+
+* **confluence:** infert T ([e6ed748](https://github.com/snomiao/webstream-kernel/commit/e6ed748e3217e7deb7913bd4289dc18591198068))
+* **main:** confluence ready ([abe082a](https://github.com/snomiao/webstream-kernel/commit/abe082ae3691f48856f562f1ba47085c98cef213))
+
 ## [1.12.0](https://github.com/snomiao/webstream-kernel/compare/v1.11.2...v1.12.0) (2024-07-18)
 
 
