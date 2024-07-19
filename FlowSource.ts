@@ -1,4 +1,5 @@
 import { type ReadableLike } from "web-streams-extensions";
+import type sflow from ".";
 
 export type FlowSource<T> =
   | Promise<T>
@@ -7,5 +8,5 @@ export type FlowSource<T> =
   | (() => Iterable<T> | AsyncIterable<T>)
   | ReadableLike<T>
   | ReadableStream<T>
-  | snoflow<T>;
+  | sflow<T>;
 // | (T extends Uint8Array ? XMLHttpRequestBodyInit : never);

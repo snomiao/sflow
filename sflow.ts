@@ -1,4 +1,3 @@
-import DeepProxy from "proxy-deep";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Awaitable } from "./Awaitable";
 import { chunkBys } from "./chunkBys";
@@ -109,7 +108,7 @@ export type sflow<T> = ReadableStream<T> &
     toCount: () => Promise<number>;
     toFirst: () => Promise<T>;
     /** Returns a promise that always give you latest value of the stream */
-    toLatest: () => Promise<{ done: boolean; value: T }>;
+    // toLatest: () => Promise<{ value: T; readable: sflow<T> }>;
     toLast: () => Promise<T>;
     toLog(...args: Parameters<typeof logs<T>>): Promise<void>;
   } & (T extends ReadonlyArray<any> // Array Process
@@ -252,31 +251,30 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     toLast: () => wseToPromise(sflow(r).tail(1)),
     toLog: (...args: Parameters<typeof logs<T>>) =>
       sflow(r.pipeThrough(logs(...args))).done(),
-    toLatest: () => {
-      let latestObj = { done: false, value: undefined as T };
-      const initialPromise = Promise.withResolvers();
-      let initialized = false;
-      sflow(r)
-        .forEach((e) => {
-          latestObj.value = e as T;
-          if (initialized) return;
-          initialized = true;
-          initialPromise.resolve(
-            new DeepProxy(latestObj, {
-              get(target, key, receiver) {
-                const val = Reflect.get(target, key, receiver);
-                console.log({ val });
-                if (typeof val === "object" && val !== null)
-                  return this.nest(val);
-                return val;
-              },
-            })
-          );
-        })
-        .done()
-        .finally(() => (latestObj.done = true));
-      return initialPromise.promise;
-    },
+    // toLatest: () => {
+    //   const store = { value: undefined as T, readable: ReadableStream };
+    //   const proxy = new DeepProxy(store, {
+    //     get(target, key, receiver) {
+    //       const val = Reflect.get(target, key, receiver);
+    //       if (typeof val === "object" && val !== null) return this.nest(val);
+    //       return val;
+    //     },
+    //   });
+    //   const initialPromise = Promise.withResolvers();
+
+    //   let initialized = false;
+    //   store.readable = sflow(r).tees((r) =>
+    //     r
+    //       .forEach((e) => {
+    //         store.value = e as T; // update store
+    //         if (initialized) return;
+    //         initialized = true;
+    //         initialPromise.resolve(proxy);
+    //       })
+    //       .done()
+    //   );
+    //   return initialPromise.promise;
+    // },
     // string stream process
     lines: () =>
       // @ts-expect-error should be string
