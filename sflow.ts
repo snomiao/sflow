@@ -252,11 +252,10 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     toCount: async () => (await wseToArray(r)).length,
     toFirst: () => wseToPromise(sflow(r).limit(1)),
     toLast: () => wseToPromise(sflow(r).tail(1)),
-    toOne: () => {
-      const a = wseToArray(r);
-      if (!a.length) DIE("TOO MANY ITEMS");
-      if (a.length > 1) DIE("TOO MANY ITEMS"); 
-      return a[0]
+    toOne: async () => {
+      const a = await wseToArray(r);
+      if (a.length !== 1) DIE(`Expect only 1 Item, got ${a.length}`);
+      return a[0];
     },
     toLog: (...args: Parameters<typeof logs<T>>) =>
       sflow(r.pipeThrough(logs(...args))).done(),
