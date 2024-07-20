@@ -1,3 +1,4 @@
+import DIE from "@snomiao/die";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Awaitable } from "./Awaitable";
 import { chunkBys } from "./chunkBys";
@@ -107,6 +108,8 @@ export type sflow<T> = ReadableStream<T> &
     toArray: () => Promise<T[]>;
     toCount: () => Promise<number>;
     toFirst: () => Promise<T>;
+    /** Will throw an error if multple items emitted */
+    toOne: () => Promise<T>;
     /** Returns a promise that always give you latest value of the stream */
     // toLatest: () => Promise<{ value: T; readable: sflow<T> }>;
     toLast: () => Promise<T>;
@@ -249,6 +252,12 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     toCount: async () => (await wseToArray(r)).length,
     toFirst: () => wseToPromise(sflow(r).limit(1)),
     toLast: () => wseToPromise(sflow(r).tail(1)),
+    toOne: () => {
+      const a = wseToArray(r);
+      if (!a.length) DIE("TOO MANY ITEMS");
+      if (a.length > 1) DIE("TOO MANY ITEMS"); 
+      return a[0]
+    },
     toLog: (...args: Parameters<typeof logs<T>>) =>
       sflow(r.pipeThrough(logs(...args))).done(),
     // toLatest: () => {
