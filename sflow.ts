@@ -6,6 +6,7 @@ import { chunkIfs } from "./chunkIfs";
 import { chunkIntervals } from "./chunkIntervals";
 import { chunks } from "./chunks";
 import { confluences } from "./confluences";
+import { convolves } from "./convolves";
 import { debounces } from "./debounces";
 import { filters } from "./filters";
 import { flatMaps } from "./flatMaps";
@@ -60,6 +61,7 @@ export type sflow<T> = ReadableStream<T> &
     /** @deprecated use chunk*/
     buffer(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
     chunk(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
+    convolve(...args: Parameters<typeof convolves<T>>): sflow<T[]>;
     chunkBy(...args: Parameters<typeof chunkBys<T>>): sflow<T[]>;
     chunkIf(...args: Parameters<typeof chunkIfs<T>>): sflow<T[]>;
     abort(...args: Parameters<typeof terminates<T>>): sflow<T>;
@@ -88,7 +90,7 @@ export type sflow<T> = ReadableStream<T> &
     forEach(...args: Parameters<typeof forEachs<T>>): sflow<T>;
     pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>; // fn must fisrt
     pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
-    reduce(fn: (state: T | null, x: T, i: number) => Awaitable<T>): sflow<T>; // fn must fisrt
+    reduce<S>(fn: (state: S | null, x: T, i: number) => Awaitable<S>): sflow<S>; // fn must fisrt
     reduce<S>(state: S, fn: Reducer<S, T>): sflow<S>;
     reduceEmits<S, R>(state: S, fn: EmitReducer<S, T, R>): sflow<R>;
     skip: (...args: Parameters<typeof skips<T>>) => sflow<T>;
@@ -175,6 +177,8 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
       sflow(r.pipeThrough(chunks(...args))),
     chunk: (...args: Parameters<typeof chunks>) =>
       sflow(r.pipeThrough(chunks(...args))),
+    convolve: (...args: Parameters<typeof convolves>) =>
+      sflow(r.pipeThrough(convolves(...args))),
     abort: (...args: Parameters<typeof terminates>) =>
       sflow(r.pipeThrough(terminates(...args))),
     chunkInterval: (...args: Parameters<typeof chunkIntervals>) =>
@@ -198,8 +202,9 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
       sflow(r.pipeThrough(merges(...args))),
     merge: (...args: Parameters<typeof merges>) =>
       sflow(r.pipeThrough(merges(...args))),
-    confluence: (...args: Parameters<typeof confluences>) =>
-      sflow(r.pipeThrough(confluences(...args))),
+    confluence: (
+      ...args: Parameters<typeof confluences> // @ts-ignore
+    ) => sflow(r.pipeThrough(confluences(...args))),
     limit: (...args: Parameters<typeof limits>) =>
       sflow(r.pipeThrough(limits(...args))),
     head: (...args: Parameters<typeof heads>) =>
@@ -249,14 +254,19 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     // to promises
     toNil: () => r.pipeTo(nils<T>()),
     toArray: () => wseToArray(r),
+    /** Get count of stream items */
     toCount: async () => (await wseToArray(r)).length,
-    toFirst: () => wseToPromise(sflow(r).limit(1)),
+    /** Get first item from stream, ignore others */
+    toFirst: () => wseToPromise(sflow(r).limit(1, { terminate: true })),
+    /** Get last item from stream, ignore others */
     toLast: () => wseToPromise(sflow(r).tail(1)),
+    /** Get one item from stream, throw if more than 1 items emitted */
     toOne: async () => {
       const a = await wseToArray(r);
       if (a.length !== 1) DIE(`Expect only 1 Item, got ${a.length}`);
       return a[0];
     },
+    /** call console.log on every item */
     toLog: (...args: Parameters<typeof logs<T>>) =>
       sflow(r.pipeThrough(logs(...args))).done(),
     // toLatest: () => {
