@@ -1,10 +1,10 @@
 import { sf } from ".";
 import { distributeBys } from "./distributeBys";
-import { ranges } from "./ranges";
+import { rangeStream } from "./ranges";
 
 it("works", async () => {
   expect(
-    await sf(ranges(10))
+    await sf(rangeStream(10))
       .through(distributeBys((e: number) => e % 3))
       .pMap((s) => sf(s).toArray())
       .toArray()
