@@ -45,10 +45,7 @@ export function throttles<T>(
     },
     flush: async (ctrl) => {
       // wait for last item enqueue, and then allow stream termination
-      while (timerId) {
-        await new Promise((r) => setTimeout(r, interval / 2));
-      }
-      console.log({ lasts });
+      while (timerId) await new Promise((r) => setTimeout(r, interval / 2));
       lasts.map((e) => ctrl.enqueue(e));
     },
   });
