@@ -3,12 +3,12 @@ import type { Awaitable } from "./Awaitable";
 import { nils } from "./nils";
 import { pMaps } from "./pMaps";
 
-export const distributesBy = <T>(
+export const distributeBys = <T>(
   groupFn: (x: T) => Awaitable<Ord>
 ): TransformStream<T, ReadableStream<T>> => {
   const streams = new Map<
     Ord,
-    TransformStream<T, T> & { writer: WritableStreamDefaultWriter<T>; }
+    TransformStream<T, T> & { writer: WritableStreamDefaultWriter<T> }
   >();
   const { writable: srcs, readable } = new TransformStream<
     ReadableStream<T>,
