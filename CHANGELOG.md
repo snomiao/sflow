@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.7](https://github.com/snomiao/webstream-kernel/compare/v1.15.6...v1.15.7) (2024-07-22)
+
+
+### Bug Fixes
+
+* **main:** add todo doc ([9a4ed5c](https://github.com/snomiao/webstream-kernel/commit/9a4ed5cf8e705928fe549e8ac683ddcc93fec0ea))
+* **main:** removelogs ([f90f69b](https://github.com/snomiao/webstream-kernel/commit/f90f69bf3d30b606862594f346e02a2980ea3d92))
+
 ### [1.15.6](https://github.com/snomiao/webstream-kernel/compare/v1.15.5...v1.15.6) (2024-07-22)
 
 
