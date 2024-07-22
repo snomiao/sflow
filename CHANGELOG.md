@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.15.0](https://github.com/snomiao/webstream-kernel/compare/v1.14.1...v1.15.0) (2024-07-22)
+
+
+### Features
+
+* **convolve:** init ([2ebcf0d](https://github.com/snomiao/webstream-kernel/commit/2ebcf0d4de4e1b8d5a30d371c42e5dc6b73683bd))
+* **main:** toone ([b6ab364](https://github.com/snomiao/webstream-kernel/commit/b6ab3648a211906c6d295c5cdbb0ec2575ea0a76))
+
+
+### Bug Fixes
+
+* **main:** better error info ([1081994](https://github.com/snomiao/webstream-kernel/commit/1081994217d972816651e98072846b426496a5c1))
+* **sflow:** type ([4ae8856](https://github.com/snomiao/webstream-kernel/commit/4ae8856fa6dc204f8ccc6046672db7308f8e973c))
+
 ### [1.14.1](https://github.com/snomiao/webstream-kernel/compare/v1.14.0...v1.14.1) (2024-07-19)
 
 
