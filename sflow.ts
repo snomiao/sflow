@@ -156,7 +156,7 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
   const r: ReadableStream<T> = froms(src);
   // @ts-ignore todo
   return Object.assign(r, {
-    _type: null as T,
+    _type: null as T, 
     get readable() {
       return r;
     },

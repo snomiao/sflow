@@ -9,6 +9,13 @@ it("async iteratable", async () => {
   }
   expect(req).toEqual(acc);
 });
+it("string stream", async () => {
+  expect(
+    await sflow(["asdf"])
+      .map((e) => e.replace("asdf", "zxcv"))
+      .toOne()
+  ).toEqual("zxcv");
+});
 
 it("works", async () => {
   await sflow([1, 2, 3])
