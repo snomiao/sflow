@@ -1,17 +1,24 @@
 import type { Awaitable } from "./Awaitable";
 import { sflow } from "./sflow";
-type PageFetcher<T> = (lastPage?: T) => Awaitable<T | null | undefined>;
-export function pageStream<T>(fetcher: PageFetcher<T>): ReadableStream<T> {
-  let lastPage: T;
+type PageFetcher<Data, Cursor> = (
+  cursor: Cursor
+) => Awaitable<{ data: Data; next?: Cursor | null }>;
+export function pageStream<Data, Cursor>(
+  fetcher: PageFetcher<Data, Cursor>
+): ReadableStream<Data> {
+  let curr: Cursor;
   return new ReadableStream({
     pull: async (ctrl) => {
-      const page = await fetcher(lastPage);
-      if (null == page) return ctrl.close();
-      ctrl.enqueue((lastPage = page));
+      const { data, next } = await fetcher(curr);
+      if (null == next) return ctrl.close();
+      curr = next;
+      ctrl.enqueue(data);
     },
   });
 }
 
-export function pageFlow<T>(fetcher: PageFetcher<T>): sflow<T> {
+export function pageFlow<Data, Cursor>(
+  fetcher: PageFetcher<Data, Cursor>
+): sflow<Data> {
   return sflow(pageStream(fetcher));
 }
