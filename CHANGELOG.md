@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.1](https://github.com/snomiao/webstream-kernel/compare/v1.15.0...v1.15.1) (2024-07-22)
+
+
+### Bug Fixes
+
+* **main:** strings tream ([90a80f7](https://github.com/snomiao/webstream-kernel/commit/90a80f7043ba2447130bda1f3a5adebaa8bf2227))
+* **ranges:** export ([50d557d](https://github.com/snomiao/webstream-kernel/commit/50d557daf886ddbb35b9d8be2cd2228f9eb398cf))
+
 ## [1.15.0](https://github.com/snomiao/webstream-kernel/compare/v1.14.1...v1.15.0) (2024-07-22)
 
 
