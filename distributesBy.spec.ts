@@ -1,6 +1,6 @@
 import { sf } from ".";
 import { distributeBys } from "./distributeBys";
-import { rangeStream } from "./ranges";
+import { rangeStream } from "./rangeStream";
 
 it("works", async () => {
   expect(
