@@ -1,6 +1,8 @@
 import { sleep } from "bun";
 import { sflow } from "./";
 
+// todo: check this issue
+// - [Implement `test.concurrent` · Issue #5585 · oven-sh/bun]( https://github.com/oven-sh/bun/issues/5585 )
 it("works with drop", async () => {
   // emit: 0, 50, 100, 150
   // pass: 0, __, 100, ___

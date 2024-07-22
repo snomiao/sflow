@@ -1,6 +1,17 @@
+type ThrottleOption = {
+  /** drop=true: Drop chunks by interval, will ensure last item emit by default. set keepLast=false to drop last */
+  drop?: boolean;
+  /**
+   * drop=true: Drop chunks by interval, will ensure last item emit by default. set keepLast=false to drop last
+   * has no effect when drop=false
+   */
+  keepLast?: boolean;
+};
 /**
- * Drop chunks by interval, will ensure last item emit by default.
- * pass false to drop last
+ * ```ts
+ * drop=true: Drop chunks by interval, will ensure last item emit by default.
+ * set keepLast=false to drop last
+ *
  * @example
  * if you dont want item drops, please use forEach to limit speed
  * sth like:
@@ -8,11 +19,7 @@
  */
 export function throttles<T>(
   interval: number,
-  /**
-   * drop items if drop=true
-   * keepLast=true only works on drop=true
-   */
-  { drop = false, keepLast = false } = {}
+  { drop = false, keepLast = true }: ThrottleOption = {}
 ) {
   let timerId: number | null | Timer = null;
   let cdPromise = Promise.withResolvers();
