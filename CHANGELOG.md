@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.5](https://github.com/snomiao/webstream-kernel/compare/v1.15.4...v1.15.5) (2024-07-22)
+
+
+### Bug Fixes
+
+* **pageflow:** type ([f27928c](https://github.com/snomiao/webstream-kernel/commit/f27928c84ee2d273074e13cfbab92a4782ded968))
+
 ### [1.15.4](https://github.com/snomiao/webstream-kernel/compare/v1.15.3...v1.15.4) (2024-07-22)
 
 
