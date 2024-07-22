@@ -46,11 +46,13 @@
     "web-streams-extensions": "^0.12.0"
   },
   "devDependencies": {
-    "peek-log": "^0.0.11",
     "@snomiao/die": "^1.0.9",
     "@types/bun": "latest",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.9",
+    "keyv": "^4.5.4",
+    "keyv-cached-with": "^0.0.17",
+    "peek-log": "^0.0.11",
     "rambda": "^9.2.1",
     "typescript": "^5.5.2"
   },
