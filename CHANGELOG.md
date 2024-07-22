@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.2](https://github.com/snomiao/webstream-kernel/compare/v1.15.1...v1.15.2) (2024-07-22)
+
+
+### Bug Fixes
+
+* **main:** rangeFlow ([48d011a](https://github.com/snomiao/webstream-kernel/commit/48d011aab0a5ca1e40978de9bd538a9fb3d1a050))
+
 ### [1.15.1](https://github.com/snomiao/webstream-kernel/compare/v1.15.0...v1.15.1) (2024-07-22)
 
 
