@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.6](https://github.com/snomiao/webstream-kernel/compare/v1.15.5...v1.15.6) (2024-07-22)
+
+
+### Bug Fixes
+
+* **throttles:** better queue ([f72ec6a](https://github.com/snomiao/webstream-kernel/commit/f72ec6ae4d5235088e5eb0463270d77758d34272))
+* **throttles:** ensure last emit ([81f610e](https://github.com/snomiao/webstream-kernel/commit/81f610ed1579cf1698c45be1ba7abfd7ffd55bb0))
+
 ### [1.15.5](https://github.com/snomiao/webstream-kernel/compare/v1.15.4...v1.15.5) (2024-07-22)
 
 
