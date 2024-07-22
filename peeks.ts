@@ -1,10 +1,12 @@
-/** Note: peeks will not await peek fn, use forEachs if you want promise tobe awaited  */
-export function peeks<T>(fn: (x: T, i: number) => void) {
+import type { Awaitable } from "./Awaitable";
+
+/** Note: peeks will not await peek fn, use forEachs if you want downstream tobe awaited  */
+export function peeks<T>(fn: (x: T, i: number) => Awaitable<void>) {
   let i = 0;
   return new TransformStream<T, T>({
-    transform: (chunk, ctrl) => {
-      fn(chunk, i++);
+    transform: async (chunk, ctrl) => {
       ctrl.enqueue(chunk);
+      await fn(chunk, i++);
     },
   });
 }

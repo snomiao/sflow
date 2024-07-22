@@ -6,25 +6,39 @@
  * sth like:
  * sflow().forEach(sleep(1000)).forEach(sleep(1000)).log().done()
  */
-export function throttles<T>(interval: number, { keepLast = true } = {}) {
-  let id: number | null | Timer = null;
+export function throttles<T>(
+  interval: number,
+  /**
+   * drop items if drop=true
+   * keepLast=true only works on drop=true
+   */
+  { drop = false, keepLast = false } = {}
+) {
+  let timerId: number | null | Timer = null;
+  let cdPromise = Promise.withResolvers();
   let lasts: T[] = [];
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
-      if (id) {
+      if (timerId) {
         if (keepLast) lasts = [chunk];
-        return; // drop current chunk an continue streaming
+        if (drop) return; // drop current chunk an continue streaming.
+        await cdPromise.promise;
       }
       lasts = [];
       ctrl.enqueue(chunk);
-      id = setTimeout(() => {
-        id = null;
-        // lasts.map((e) => ctrl.enqueue(e));
-      }, interval);
+      //
+      [cdPromise, timerId] = [
+        Promise.withResolvers(),
+        setTimeout(() => {
+          timerId = null;
+          cdPromise.resolve();
+          // lasts.map((e) => ctrl.enqueue(e));
+        }, interval),
+      ] as const;
     },
     flush: async (ctrl) => {
       // wait for last item enqueue, and then allow stream termination
-      while (id) {
+      while (timerId) {
         await new Promise((r) => setTimeout(r, interval / 2));
       }
       console.log({ lasts });
