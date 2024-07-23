@@ -8,7 +8,6 @@ export const confluences = <T>(): TransformStream<ReadableStream<T>, T> => {
   const readable = new ReadableStream({
     async pull(ctrl) {
       while (true) {
-        // console.log('pull')
         const src = await (async function () {
           // get from source first
           const r = sources.getReader();

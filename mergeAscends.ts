@@ -1,7 +1,6 @@
 import DIE from "@snomiao/die";
 import { sortBy, type Ord } from "rambda";
-import { type FlowSource } from ".";
-import { sflow } from "./sflow";
+import { sflow, type FlowSource } from ".";
 /**
  * merge multiple stream by ascend order, assume all input stream is sorted by ascend
  * output stream will be sorted by ascend too.
@@ -14,14 +13,14 @@ import { sflow } from "./sflow";
  */
 export const mergeAscends: {
   <T>(ordFn: (input: T) => Ord): {
-    (srcs: FlowSource<FlowSource<T>>): snoflow<T>;
+    (srcs: FlowSource<FlowSource<T>>): sflow<T>;
   };
-  <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): snoflow<T>;
+  <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): sflow<T>;
 } = <T>(ordFn: (input: T) => Ord, _srcs?: FlowSource<FlowSource<T>>) => {
   if (!_srcs) return ((srcs: any) => mergeAscends(ordFn, srcs)) as any;
   return sflow(
     new ReadableStream({
-      start: async (ctrl) => {
+      pull: async (ctrl) => {
         const srcs = await sflow(_srcs).toArray();
         const slots = srcs.map(() => undefined as { value: T } | undefined);
         const pendingSlotRemoval = srcs.map(
@@ -88,9 +87,9 @@ export const mergeAscends: {
 
 export const mergeDescends: {
   <T>(ordFn: (input: T) => Ord): {
-    (srcs: FlowSource<FlowSource<T>>): snoflow<T>;
+    (srcs: FlowSource<FlowSource<T>>): sflow<T>;
   };
-  <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): snoflow<T>;
+  <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): sflow<T>;
 } = <T>(ordFn: (input: T) => Ord, srcs?: FlowSource<FlowSource<T>>) => {
   if (!srcs) return ((srcs: any) => mergeDescends(ordFn, srcs)) as any;
   return mergeAscends((x) => -ordFn(x), srcs);
