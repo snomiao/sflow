@@ -65,7 +65,9 @@ export const mergeAscends: {
                 (ordered[0] === lastMinValue && ordered[1] === minValue) ||
                   DIE(`
 mergeAscends Error: one of source stream is not ascending ordered.
+
 prev: ${JSON.stringify(lastMinValue)}
+
 curr: ${JSON.stringify(minValue)}
 `);
               }
@@ -148,7 +150,9 @@ export const mergeDescends: {
                 (ordered[0] === maxValue && ordered[1] === lastMaxValue) ||
                   DIE(`
 mergeDescends Error: one of source stream is not descending ordered.
+
 prev: ${JSON.stringify(lastMaxValue)}
+
 curr: ${JSON.stringify(maxValue)}
 `);
               }
