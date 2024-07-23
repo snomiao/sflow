@@ -106,6 +106,7 @@ export type sflow<T> = ReadableStream<T> &
     preventClose: () => sflow<T>;
     preventCancel: () => sflow<T>;
     // to promises
+    toEnd: () => Promise<void>;
     toNil: () => Promise<void>;
     toArray: () => Promise<T[]>;
     toCount: () => Promise<number>;
@@ -252,6 +253,7 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     preventCancel: () =>
       sflow(r.pipeThrough(throughs(), { preventCancel: true })),
     // to promises
+    toEnd: () => r.pipeTo(nils<T>()),
     toNil: () => r.pipeTo(nils<T>()),
     toArray: () => wseToArray(r),
     /** Get count of stream items */
