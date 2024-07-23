@@ -90,7 +90,9 @@ export type sflow<T> = ReadableStream<T> &
     forEach(...args: Parameters<typeof forEachs<T>>): sflow<T>;
     pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>; // fn must fisrt
     pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
-    reduce<S>(fn: (state: S | null, x: T, i: number) => Awaitable<S>): sflow<S>; // fn must fisrt
+    reduce(fn: (state: T | undefined, x: T, i: number) => Awaitable<T>): sflow<T>; // fn must fisrt
+    reduce(state: T, fn: Reducer<T, T>): sflow<T>;
+    reduce<S>(fn: (state: S | undefined, x: T, i: number) => Awaitable<S>): sflow<S>; // fn must fisrt
     reduce<S>(state: S, fn: Reducer<S, T>): sflow<S>;
     reduceEmits<S, R>(state: S, fn: EmitReducer<S, T, R>): sflow<R>;
     skip: (...args: Parameters<typeof skips<T>>) => sflow<T>;
@@ -157,7 +159,7 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
   const r: ReadableStream<T> = froms(src);
   // @ts-ignore todo
   return Object.assign(r, {
-    _type: null as T, 
+    _type: null as T,
     get readable() {
       return r;
     },
