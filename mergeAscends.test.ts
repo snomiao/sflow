@@ -1,6 +1,5 @@
 import { range } from "rambda";
-import { mergeAscends, mergeDescends } from "./";
-import { sflow } from "./";
+import { mergeAscends, mergeDescends, sflow } from "./";
 
 it("merge asc", async () => {
   const req1 = sflow([0, 1, 2]);
