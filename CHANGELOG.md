@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.10](https://github.com/snomiao/webstream-kernel/compare/v1.15.9...v1.15.10) (2024-07-23)
+
+
+### Bug Fixes
+
+* **main:** add tests ([7f1f29e](https://github.com/snomiao/webstream-kernel/commit/7f1f29e936a52f2c297051977d5aad165a5a44e8))
+
 ### [1.15.9](https://github.com/snomiao/webstream-kernel/compare/v1.15.8...v1.15.9) (2024-07-23)
 
 
