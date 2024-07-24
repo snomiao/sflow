@@ -1,0 +1,2310 @@
+export type Awaitable<T> = Promise<T> | T;
+import { type ReadableLike } from "web-streams-extensions";
+import type sflow from ".";
+
+export type FlowSource<T> =
+  | Promise<T>
+  | Iterable<T>
+  | AsyncIterable<T>
+  | (() => Iterable<T> | AsyncIterable<T>)
+  | ReadableLike<T>
+  | ReadableStream<T>
+  | sflow<T>;
+// | (T extends Uint8Array ? XMLHttpRequestBodyInit : never);
+import type { FieldPathByValue, FieldPathValue } from "react-hook-form";
+
+export type Unwinded<T, K> = T extends Record<string, any>
+  ? K extends FieldPathByValue<T, ReadonlyArray<any>>
+    ? {
+        [key in K]: FieldPathValue<T, K>[number];
+      } & Omit<T, K>
+    : never
+  : never;
+import { sflow } from "./sflow";
+it("chunkBy", async () => {
+  const out = await sflow([1, 1.1, 1.00002, 1.9, 3, 3, 3, 3, 4, 5, 4, 3])
+    .chunkBy((x) => Math.floor(x))
+    .toArray();
+  console.log(out);
+  expect(out).toEqual([
+    [1, 1.1, 1.00002, 1.9], // same floor will chunk together
+    [3, 3, 3, 3], // same ord will chunk together
+    [4], // single item
+    [5], // break order
+    [4], // only chunk continues order
+    [3], // chunk single item
+  ]);
+});
+import type { Ord } from "rambda";
+
+/** chunk items by compareFn, group items with same Ord */
+
+export function chunkBys<T>(compareFn: (x: T) => Ord) {
+  let chunks: T[] = [];
+  let lastOrder: Ord;
+  return new TransformStream<T, T[]>({
+    transform: async (chunk, ctrl) => {
+      const order = compareFn(chunk);
+      if (lastOrder && lastOrder !== order)
+        ctrl.enqueue(chunks.splice(0, Infinity)); // clear chunks;
+      chunks.push(chunk);
+      lastOrder = order;
+    },
+    flush: async (ctrl) => void (chunks.length && ctrl.enqueue(chunks)),
+  });
+}
+import { maps, sflow } from ".";
+import { chunkIfs } from "./chunkIfs";
+it("chunkIfs", async () => {
+  const out = await sflow("a,b,c\n1,2,3\nd,s,f".split(""))
+    .through(chunkIfs((e: string) => e.indexOf("\n") === -1))
+    .map((chars) => chars.join(""))
+    .toArray();
+  expect(out).toEqual(["a,b,c\n", "1,2,3\n", "d,s,f"]);
+});
+import type { Ord } from "rambda";
+import type { Awaitable } from "./Awaitable";
+
+/** chunk items if condition is true */
+export function chunkIfs<T>(
+  predicate: (x: T, i: number, chunks: T[]) => Awaitable<boolean>
+): TransformStream<T, T[]> {
+  let chunks: T[] = [];
+  let i = 0;
+  return new TransformStream<T, T[]>({
+    transform: async (chunk, ctrl) => {
+      chunks.push(chunk);
+      if (!(await predicate(chunk, i++, chunks)))
+        ctrl.enqueue(chunks.splice(0, Infinity)); // clear chunks;
+    },
+    flush: async (ctrl) => void (chunks.length && ctrl.enqueue(chunks)),
+  });
+}
+/** like buffer, but collect item[] in interval (ms) */
+export function chunkIntervals<T>(interval?: number) {
+  let chunks: T[] = [];
+  let id: null | ReturnType<typeof setInterval> = null;
+  return new TransformStream<T, T[]>({
+    start: (ctrl) => {
+      if (interval) id = setInterval(() => ctrl.enqueue(chunks), interval);
+    },
+    transform: async (chunk, ctrl) => {
+      if (!interval) ctrl.enqueue([chunk]);
+      chunks.push(chunk);
+    },
+    flush: async (ctrl) => {
+      if (chunks.length) ctrl.enqueue(chunks);
+      id !== null && clearInterval(id);
+    },
+  });
+}
+/** you could use flats to re-join buffers, default buffer length is Infinity, which will enqueue when upstream drain */
+export const buffers = chunks;
+export function chunks<T>(n: number = Infinity) {
+  let chunks: T[] = [];
+  if (n <= 0) throw new Error("Buffer size must be greater than 0");
+  return new TransformStream<T, T[]>({
+    transform: async (chunk, ctrl) => {
+      chunks.push(chunk);
+      if (chunks.length >= n) ctrl.enqueue(chunks.splice(0, Infinity)); // clear chunks
+    },
+    flush: async (ctrl) => void (chunks.length && ctrl.enqueue(chunks)),
+  });
+}
+import { sleep } from "bun";
+import { sf } from ".";
+import { confluences } from "./confluences";
+
+it("As stream kernel", async () => {
+  const flow1 = sf([1, 2, 3]);
+  const flow2 = sf([4, 5, 6]);
+  expect(
+    await sf([flow1, flow2])
+      .through((e) => e.pipeThrough(confluences()))
+      .peek((e) => expect(typeof e === "number").toBeTruthy())
+      .toArray()
+  ).toEqual([1, 4, 2, 5, 3, 6]);
+});
+it("As pipeline kernel", async () => {
+  expect(
+    await sf([sf([1, 2, 3]), sf([4, 5, 6])])
+      .through(confluences())
+      .toArray()
+  ).toEqual([1, 4, 2, 5, 3, 6]);
+});
+it("As pipeline", async () => {
+  expect(
+    await sf([sf([1, 2, 3]), sf([4, 5, 6])])
+      .confluence()
+      .toArray()
+  ).toEqual([1, 4, 2, 5, 3, 6]);
+});
+it("breadth first search", async () => {
+  expect(
+    await sf([sf([1, 2, 3]), sf([4, 5, 6]), sf([7, 8, 9])])
+      .confluence()
+      .toArray()
+  ).toEqual([1, 4, 7, 2, 5, 8, 3, 6, 9]);
+});
+it("works for different length flow", async () => {
+  expect(
+    await sf([sf([1]), sf([4, 5]), sf([7, 8, 9])])
+      .confluence()
+      .toArray()
+  ).toEqual([1, 4, 7, 5, 8, 9]);
+});
+it("lazy read", async () => {
+  const fn1 = jest.fn();
+  const fn2 = jest.fn();
+
+  const flow = sf([
+    sf([1]).forEach(fn1),
+    sf([4, 5]).forEach(fn2),
+    sf([7, 8, 9]),
+  ]);
+  await sleep(10);
+  expect(fn1).not.toHaveBeenCalled();
+  expect(fn2).not.toHaveBeenCalled();
+  console.log("conf");
+  const conFlow = flow.confluence(); // will read only 1 src
+  await sleep(10);
+  expect(fn1).toHaveBeenCalled();
+  expect(fn2).not.toHaveBeenCalled();
+
+  console.log("conf2");
+  const res = await conFlow.toArray();
+  await sleep(10);
+  expect(fn1).toHaveBeenCalled();
+  expect(fn2).toHaveBeenCalled();
+
+  expect(res).toEqual([1, 4, 7, 5, 8, 9]);
+});
+/** Confluence of multiple flow sources by breadth first */
+export const confluences = <T>(): TransformStream<ReadableStream<T>, T> => {
+  const { writable, readable: sources } = new TransformStream<
+    ReadableStream<T>,
+    ReadableStream<T>
+  >();
+  const srcsQueue: ReadableStream<T>[] = [];
+  const readable = new ReadableStream({
+    async pull(ctrl) {
+      while (true) {
+        const src = await (async function () {
+          // get from source first
+          const r = sources.getReader();
+          const { done, value: src } = await r.read();
+          r.releaseLock();
+          if (done) return srcsQueue.shift(); // use queue if sources drain
+          return src;
+        })();
+        if (!src) return ctrl.close();
+        const r = src.getReader();
+        const { done, value } = await r.read();
+        r.releaseLock();
+        if (done) continue; // try next src
+        srcsQueue.push(src); // enqueue this src if not done
+        ctrl.enqueue(value);
+        return;
+      }
+    },
+  });
+  return { writable, readable };
+};
+import { toArray } from "web-streams-extensions";
+import sflow from ".";
+import { convolves } from "./convolves";
+
+it("convolve 1 in pipeline", async () => {
+  expect(await sflow([1, 2, 3, 4]).convolve(1).toArray()).toEqual([
+    [1],
+    [2],
+    [3],
+    [4],
+  ]);
+});
+it("convolve 1", async () => {
+  expect(await sflow([1, 2, 3, 4]).through(convolves(1)).toArray()).toEqual([
+    [1],
+    [2],
+    [3],
+    [4],
+  ]);
+});
+it("convolve 2", async () => {
+  expect(await sflow([1, 2, 3, 4]).through(convolves(2)).toArray()).toEqual([
+    [1, 2],
+    [2, 3],
+    [3, 4],
+  ]);
+});
+it("convolve 3", async () => {
+  expect(await sflow([1, 2, 3, 4]).through(convolves(3)).toArray()).toEqual([
+    [1, 2, 3],
+    [2, 3, 4],
+  ]);
+});
+it("convolve smaller array", async () => {
+  expect(await sflow([1, 2, 3, 4]).through(convolves(5)).toArray()).toEqual([]);
+});
+// implement this function in typescript, 使用最精简的写法, dont write comments
+export function convolves<T>(n: number): TransformStream<T, T[]> {
+  const buffer: T[] = [];
+  return new TransformStream({
+    transform(chunk, controller) {
+      buffer.push(chunk);
+      if (buffer.length > n) buffer.shift();
+      if (buffer.length === n) controller.enqueue([...buffer]);
+    },
+    flush(controller) {
+      while (buffer.length > 1) {
+        buffer.shift();
+        if (buffer.length === n) controller.enqueue([...buffer]);
+      }
+    },
+  });
+}
+
+export function debounces<T>(t: number) {
+  let id: number | null | Timer = null;
+  return new TransformStream<T, T>({
+    transform: async (chunk, ctrl) => {
+      if (id) clearTimeout(id);
+      id = setTimeout(() => {
+        ctrl.enqueue(chunk);
+        id = null;
+      }, t);
+    },
+    flush: async () => {
+      while (id) await new Promise((r) => setTimeout(r, t / 2));
+    },
+  });
+}
+import type { Ord } from "rambda";
+import type { Awaitable } from "./Awaitable";
+import { nils } from "./nils";
+import { pMaps } from "./pMaps";
+
+export const distributeBys = <T>(
+  groupFn: (x: T) => Awaitable<Ord>
+): TransformStream<T, ReadableStream<T>> => {
+  const streams = new Map<
+    Ord,
+    TransformStream<T, T> & { writer: WritableStreamDefaultWriter<T> }
+  >();
+  const { writable: srcs, readable } = new TransformStream<
+    ReadableStream<T>,
+    ReadableStream<T>
+  >();
+  const { writable, readable: chunks } = new TransformStream<T, T>();
+  const w = srcs.getWriter();
+  chunks
+    .pipeThrough(
+      pMaps<T, void>(async (chunk) => {
+        const ord = await groupFn(chunk);
+        // create stream
+        if (!streams.has(ord))
+          await (async function () {
+            const t = new TransformStream();
+            await w.write(t.readable);
+            const r = { ...t, writer: t.writable.getWriter() };
+            streams.set(ord, r);
+            return r;
+          })();
+        const t = streams.get(ord)!;
+        await t.writer.write(chunk);
+      })
+    )
+    .pipeTo(nils())
+    .finally(() => {
+      w.close();
+      [...streams.values()].map((e) => e.writer.close());
+    });
+  return { writable, readable };
+};
+import { sf } from ".";
+import { distributeBys } from "./distributeBys";
+import { rangeStream } from "./rangeStream";
+
+it("distributeBys", async () => {
+  expect(
+    await sf(rangeStream(10))
+      .through(distributeBys((e: number) => e % 3))
+      .pMap((s) => sf(s).toArray())
+      .toArray()
+  ).toEqual([
+    [0, 3, 6, 9],
+    [1, 4, 7],
+    [2, 5, 8],
+  ]);
+});
+
+import type { Awaitable } from "./Awaitable";
+
+
+export const filters: {
+  <T>(): TransformStream<T, NonNullable<T>>;
+  <T>(fn: (x: T, i: number) => Awaitable<any>): TransformStream<T, T>;
+} = (fn?: (...args: any[]) => any) => {
+  let i = 0;
+  return new TransformStream({
+    transform: async (chunk, ctrl) => {
+      if (fn) {
+        const shouldEnqueue = await fn(chunk, i++);
+        if (shouldEnqueue) ctrl.enqueue(chunk);
+      } else {
+        const isNull = undefined === chunk || null === chunk;
+        if (!isNull) ctrl.enqueue(chunk);
+      }
+    },
+  });
+};
+import { limits } from "./limits.1";
+
+
+export const firsts = limits;
+import type { Awaitable } from "./Awaitable";
+
+// from([1, 2, 3]).pipeThrough(filters());
+
+export function flatMaps<T, R>(fn: (x: T, i: number) => Awaitable<R[]>) {
+  let i = 0;
+  return new TransformStream<T, R>({
+    transform: async (chunk, ctrl) => {
+      (await fn(chunk, i++)).map((e) => ctrl.enqueue(e));
+    },
+  });
+}
+export function flats<T>() {
+  return new TransformStream<T[], T>({
+    transform: async (chunk, ctrl) => {
+      chunk.map((e) => ctrl.enqueue(e));
+    },
+  });
+}
+import type { Awaitable } from "./Awaitable";
+
+/** For each loop on stream, you can modify the item by x.property = 123 */
+export function forEachs<T>(fn: (x: T, i: number) => Awaitable<void | any>) {
+  let i = 0;
+  return new TransformStream<T, T>({
+    transform: async (chunk, ctrl) => {
+      await fn(chunk, i++);
+      ctrl.enqueue(chunk);
+    },
+  });
+}
+import { Readable, Writable } from "node:stream";
+
+export function fromReadable<T extends string | Uint8Array>(
+  i: Readable | NodeJS.ReadableStream
+): ReadableStream<T> {
+  return new ReadableStream({
+    start: (c) => {
+      i.on("data", (data) => c.enqueue(data));
+      i.on("close", () => c.close());
+      i.on("error", (err) => c.error(err));
+    },
+    cancel: (reason) => (
+      (i as Partial<Readable> & Partial<NodeJS.ReadableStream>).destroy?.(
+        reason
+      ),
+      undefined
+    ),
+  });
+}
+
+export function fromWritable<T extends string | Uint8Array>(
+  i: Writable | NodeJS.WritableStream
+): WritableStream<T> {
+  return new WritableStream({
+    start: (c) => (i.on("error", (err) => c.error(err)), undefined),
+    abort: (reason) => (
+      (i as Partial<Writable> & Partial<NodeJS.WritableStream>).destroy?.(
+        reason
+      ),
+      undefined
+    ),
+    write: (data: string | Uint8Array, c) => (i.write(data), undefined),
+    close: () => (i.end(), undefined),
+  });
+}
+
+// export function toReadable<T>(i: ReadableStream<T>): Readable {
+//     const i = new Readable()
+//     i.pipeTo(Readable)
+//   return new Readable({
+//     start: (c) => {
+//     },
+//     cancel: (reason) => (i.destroy(reason), undefined),
+//   });
+// }
+
+// export function toWritable(i: Writable) {
+//   return new WritableStream({
+//     start: (c) => (i.on("error", (err) => c.error(err)), undefined),
+//     abort: (reason) => (i.destroy(reason), undefined),
+//     write: (data, c) => (i.write(data), undefined),
+//     close: () => (i.end(), undefined),
+//   });
+// }
+import type { FlowSource } from ".";
+import { wseFrom } from "./wse";
+
+export const froms: {
+  <T>(src: FlowSource<T>): ReadableStream<T>;
+} = (src) => (src instanceof ReadableStream ? src : wseFrom(src));
+import { never } from "./never";
+export function heads<T>(n = 1) {
+  return new TransformStream<T, T>({
+    transform: async (chunk, ctrl) => {
+      return n-- > 0 ? ctrl.enqueue(chunk) : await never();
+    },
+  });
+}
+// snoflow
+import { nils, sflow } from ".";
+
+it("async iteratable", async () => {
+  const req = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const acc = [];
+  for await (const iterator of sflow(req)) {
+    acc.push(iterator);
+  }
+  expect(req).toEqual(acc);
+});
+it("string stream", async () => {
+  expect(
+    await sflow(["asdf"])
+      .map((e) => e.replace("asdf", "zxcv"))
+      .toOne()
+  ).toEqual("zxcv");
+});
+
+it("works", async () => {
+  await sflow([1, 2, 3])
+    .buffer(2)
+    .debounce(100)
+    .filter()
+    .map((n) => [String(n)])
+    .flat()
+    .flatMap((n) => [String(n)])
+    .tees((s) => s.pipeTo(nils())) // Warn: read a flow with different speed may cause memory leak
+    .limit(1)
+    .map(() => 1)
+    .peek(() => {})
+    .reduce((a, b) => a + b, 0)
+    .skip(1)
+    .tail(1)
+    .throttle(100)
+    .done();
+});
+import { sflow } from "./sflow";
+export { chunkBys } from "./chunkBys";
+export { chunkIfs } from "./chunkIfs";
+export { chunkIntervals as intervals } from "./chunkIntervals";
+export { chunks as buffers, chunks } from "./chunks";
+export { confluences } from "./confluences";
+export { debounces } from "./debounces";
+export { distributeBys as distributesBy } from "./distributeBys";
+export { filters } from "./filters";
+export { flatMaps } from "./flatMaps";
+export { flats } from "./flats";
+export type { FlowSource } from "./FlowSource";
+export { forEachs } from "./forEachs";
+export { lines } from "./lines";
+export { logs } from "./logs";
+export { mapAddFields } from "./mapAddFields";
+export { maps } from "./maps";
+export { mergeAscends, mergeDescends } from "./mergeAscends";
+export { merges as joins } from "./merges";
+export { nil, nils } from "./nils";
+export { pageFlow } from "./pageFlow";
+export { pageStream } from "./pageStream";
+export { peeks } from "./peeks";
+export { pMaps } from "./pMaps";
+export { rangeFlow, ranges, rangeStream } from "./rangeStream";
+export { reduces } from "./reduces";
+export { skips } from "./skips";
+export { slices } from "./slices";
+export { streamAsyncIterator } from "./streamAsyncIterator";
+export { tails } from "./tails";
+export { tees } from "./tees";
+export { terminates as aborts } from "./terminates";
+export { throttles } from "./throttles";
+export { throughs } from "./throughs";
+export { uniqBys, uniqs } from "./uniqs";
+export { unpromises } from "./unpromises";
+export type { Unwinded as Unwinded } from "./Unwinded";
+export { unwinds } from "./unwinds";
+export { sflow as sf, sflow as sflow, sflow as snoflow };
+export default sflow;
+
+/** @deprecated */
+export type { FlowSource as flowSource } from "./FlowSource";
+export const isXMLHTTPRequestBodyInit = (v: any): v is XMLHttpRequestBodyInit => v instanceof Blob ||
+  v instanceof ArrayBuffer ||
+  v instanceof FormData ||
+  v instanceof URLSearchParams ||
+  typeof v === "string";
+/** pull upstream when downstream pulled */
+export function lazyMergeStream(streams: ReadableStream[]) {
+  const never = new Promise<never>(() => {});
+  const readers = streams.map((s) => s.getReader());
+  const reads = streams.map(() => null as null | Promise<never | undefined>);
+  const dones: (() => void)[] = [];
+  const allDone = Promise.all(
+    streams.map(
+      (s) =>
+        new Promise<void>((resolve) => {
+          dones.push(resolve);
+        })
+    )
+  );
+  return new ReadableStream({
+    start: (controller) => {
+      allDone.then(() => controller.close());
+    },
+    pull: (controller) =>
+      Promise.race(
+        readers.map(
+          (r, i) =>
+            (reads[i] ??= r.read().then(({ value, done }) => {
+              if (done) {
+                dones[i]();
+                return never;
+              }
+              controller.enqueue(value);
+              reads[i] = null;
+            }))
+        )
+      ),
+    cancel: (reason) => {
+      readers.map((r) => r.cancel(reason));
+    },
+  });
+}
+import { never } from "./never";
+
+/** Currently will not pipe down more items after count satisfied */
+export function limits<T>(n = 1, { terminate = false } = {}) {
+  return new TransformStream<T, T>({
+    transform: async (chunk, ctrl) => {
+      if (n-- > 0) {
+        ctrl.enqueue(chunk);
+        return;
+      }
+      terminate && ctrl.terminate();
+      return await never();
+    },
+    flush: () => {},
+  });
+}
+import { sf } from ".";
+import { lines } from "./lines";
+
+it("split string stream into lines stream", async () => {
+  expect(
+    await sf("a,b,c\n1,2,3\n\nd,s,f".split("")).through(lines()).toArray()
+  ).toEqual(["a,b,c", "1,2,3", "", "d,s,f"]);
+  expect(await sf("a,b,c\n1,2,3\n\nd,s,f").through(lines()).toArray()).toEqual([
+    "a,b,c",
+    "1,2,3",
+    "",
+    "d,s,f",
+  ]);
+  expect(await sf(["a,b,c\n1,", "2,3\n\nd,s,f"]).lines().toArray()).toEqual([
+    "a,b,c",
+    "1,2,3",
+    "",
+    "d,s,f",
+  ]);
+});
+import { chunkIfs } from "./chunkIfs";
+import { flatMaps } from "./flatMaps";
+import { maps } from "./maps";
+import { throughs } from "./throughs";
+/** split string stream into lines stream, handy to concat LLM's tokens stream into line by line stream or split a long string by lines */
+export const lines: {
+  (): TransformStream<string, string>;
+} = () => {
+  return throughs<string, string>((r) =>
+    r
+      .pipeThrough(flatMaps((s: string) => s.split(/(?<=\n)/g)))
+      .pipeThrough(chunkIfs((ch: string) => ch.indexOf("\n") === -1))
+      .pipeThrough(maps((chunks) => chunks.join("").replace(/\r?\n$/, "")))
+  );
+};
+import type { Awaitable } from "./Awaitable";
+import { peeks } from "./peeks";
+import { throughs } from "./throughs";
+
+/**
+ * log the value and index and return as original stream, handy to debug.
+ * Note: stream won't await the log function.
+ */
+export function logs<T>(
+  mapFn: (x: T, i: number) => Awaitable<any> = (s, i) => s
+) {
+  return throughs(peeks<T>(async (e, i) => console.log(await mapFn(e, i))));
+}
+import type { Awaitable } from "./Awaitable";
+
+
+export function mapAddFields<
+  K extends string,
+  T extends Record<string, any>,
+  R extends any
+>(key: K, fn: (x: T, i: number) => Awaitable<R>) {
+  let i = 0;
+  return new TransformStream<T, Omit<T, K> & {
+    [key in K]: R;
+  }>({
+    transform: async (chunk, ctrl) => ctrl.enqueue({ ...chunk, [key]: await fn(chunk, i++) }),
+  });
+}
+import type { Awaitable } from "./Awaitable";
+
+
+export function maps<T, R>(fn: (x: T, i: number) => Awaitable<R>) {
+  let i = 0;
+  return new TransformStream<T, R>({
+    transform: async (chunk, ctrl) => ctrl.enqueue(await fn(chunk, i++)),
+  });
+}
+import { range } from "rambda";
+import { mergeAscends, mergeDescends, sflow } from "./";
+
+it("merge asc", async () => {
+  const req1 = sflow([0, 1, 2]);
+  const req2 = sflow([1, 2, 3]);
+  const req3 = sflow([0, 4, 5]);
+  const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5];
+
+  expect(
+    await mergeAscends((x) => x, [req1, req2, req3])
+      // .peek(console.log)
+      .toArray()
+  ).toEqual(ret);
+});
+
+it("curried", async () => {
+  const req1 = sflow([0, 1, 2]);
+  const req2 = sflow([1, 2, 3]);
+  const req3 = sflow([0, 4, 5]);
+  const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5];
+
+  expect(
+    await sflow([req1, req2, req3])
+      .through(mergeAscends((x) => x)) // merge all flows into one by ascend order
+      .toArray()
+  ).toEqual(ret);
+});
+
+it("merge desc by invert use of asc", async () => {
+  const req1 = sflow([0, 1, 2].toReversed());
+  const req2 = sflow([1, 2, 3].toReversed());
+  const req3 = sflow([0, 4, 5].toReversed());
+  const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5].toReversed();
+
+  expect(
+    await mergeAscends((x) => -x, [req1, req2, req3])
+      // .peek(console.log)
+      .toArray()
+  ).toEqual(ret);
+});
+it("merge desc by desc export", async () => {
+  const req1 = sflow([0, 1, 2].toReversed());
+  const req2 = sflow([1, 2, 3].toReversed());
+  const req3 = sflow([0, 4, 5].toReversed());
+  const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5].toReversed();
+
+  expect(
+    await mergeDescends((x) => x, [req1, req2, req3])
+      // .peek(console.log)
+      .toArray()
+  ).toEqual(ret);
+});
+
+it("merge a super long asc", async () => {
+  const req1 = sflow(range(0, 9999).map((e) => 1 + e * 2)); // 1, 3, 5, 7, 9, 11, 13, 15, 17, 19 ...
+  const req2 = sflow(range(0, 9999).map((e) => 2 + e * 3)); // 2, 5, 8, 11, 14, 17, 20, 23, 26, 29 ...
+  const req3 = sflow(range(0, 9999).map((e) => 3 + e * 5)); // 3, 8, 13, 18, 23, 28, 33, 38, 43, 48 ...
+  const ret = range(0, 9999)
+    .flatMap((e) => [1 + e * 2, 2 + e * 3, 3 + e * 5])
+    .sort((a, b) => a - b);
+
+  expect(
+    await mergeAscends((x) => x, [req1, req2, req3])
+      // .peek(console.log)
+      .toArray()
+  ).toEqual(ret); // cost about 60ms in my machine
+});
+
+it("not throws asc", async () => {
+  const req1 = sflow([1, 2, 3]);
+  const req2 = sflow([0, 4, 5]);
+  expect(
+    await mergeAscends((x) => x, [req1, req2])
+      // .peek(console.log)
+      .toArray()
+  ).toEqual([0, 1, 2, 3, 4, 5]);
+});
+
+it("throws not asc", async () => {
+  const req1 = sflow([1, 2, 0]); // not asc
+  const req2 = sflow([0, 4, 5]);
+  expect(() =>
+    mergeAscends((x) => x, [req1, req2])
+      // .peek(console.log)
+      .toArray()
+  ).toThrow(/ascending/);
+});
+import DIE from "@snomiao/die";
+import { sortBy, type Ord } from "rambda";
+import { sflow, type FlowSource } from ".";
+/**
+ * merge multiple stream by ascend order, assume all input stream is sorted by ascend
+ * output stream will be sorted by ascend too.
+ *
+ * if one of input stream is not sorted by ascend, it will throw an error.
+ *
+ * @param ordFn a function to get the order of input
+ * @param srcs a list of input stream
+ * @returns a new stream that merge all input stream by ascend order
+ */
+export const mergeAscends: {
+  <T>(ordFn: (input: T) => Ord): {
+    (srcs: FlowSource<FlowSource<T>>): sflow<T>;
+  };
+  <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): sflow<T>;
+} = <T>(ordFn: (input: T) => Ord, _srcs?: FlowSource<FlowSource<T>>) => {
+  if (!_srcs) return ((srcs: any) => mergeAscends(ordFn, srcs)) as any;
+  return sflow(
+    new ReadableStream({
+      pull: async (ctrl) => {
+        const srcs = await sflow(_srcs).toArray();
+        const slots = srcs.map(() => undefined as { value: T } | undefined);
+        const pendingSlotRemoval = srcs.map(
+          () => undefined as PromiseWithResolvers<void> | undefined
+        );
+        const drains = srcs.map(() => false);
+        let lastMinValue: T | undefined = undefined;
+        await Promise.all(
+          srcs.map(async (src, i) => {
+            for await (const value of sflow(src)) {
+              while (slots[i] !== undefined) {
+                if (shiftMinValueIfFull()) continue;
+                pendingSlotRemoval[i] = Promise.withResolvers<void>();
+                await pendingSlotRemoval[i]!.promise; // wait for this slot empty;
+              }
+              slots[i] = { value };
+              shiftMinValueIfFull();
+            }
+            // done
+            drains[i] = true;
+            pendingSlotRemoval.map((e) => e?.resolve());
+            await Promise.all(pendingSlotRemoval.map((e) => e?.promise));
+            const allDrain = drains.every(Boolean);
+
+            if (allDrain) {
+              while (slots.some((e) => e !== undefined)) shiftMinValueIfFull();
+              ctrl.close();
+            }
+
+            function shiftMinValueIfFull() {
+              const isFull = slots.every(
+                (slot, i) => slot !== undefined || drains[i]
+              );
+              if (!isFull) return false;
+              const fullSlots = slots
+                .flatMap((e) => (e !== undefined ? [e] : []))
+                .map((e) => e.value);
+              const minValue = sortBy(ordFn, fullSlots)[0];
+              const minIndex = slots.findIndex((e) => e?.value === minValue);
+              if (lastMinValue !== undefined) {
+                const ordered = sortBy(ordFn, [lastMinValue, minValue]);
+                (ordered[0] === lastMinValue && ordered[1] === minValue) ||
+                  DIE(`
+mergeAscends Error: one of source stream is not ascending ordered.
+
+prev: ${JSON.stringify(lastMinValue)}
+
+curr: ${JSON.stringify(minValue)}
+`);
+              }
+              lastMinValue = minValue;
+              // @ts-expect-error minValue could be undefined
+              ctrl.enqueue(minValue);
+              slots[minIndex] = undefined;
+              pendingSlotRemoval[minIndex]?.resolve();
+              pendingSlotRemoval[minIndex] = undefined;
+              return true;
+            }
+          })
+        );
+      },
+    })
+  );
+};
+
+/**
+ * merge multiple stream by ascend order, assume all input stream is sorted by ascend
+ * output stream will be sorted by ascend too.
+ *
+ * if one of input stream is not sorted by ascend, it will throw an error.
+ *
+ * @param ordFn a function to get the order of input
+ * @param srcs a list of input stream
+ * @returns a new stream that merge all input stream by ascend order
+ */
+export const mergeDescends: {
+  <T>(ordFn: (input: T) => Ord): {
+    (srcs: FlowSource<FlowSource<T>>): sflow<T>;
+  };
+  <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): sflow<T>;
+} = <T>(ordFn: (input: T) => Ord, _srcs?: FlowSource<FlowSource<T>>) => {
+  if (!_srcs) return ((srcs: any) => mergeDescends(ordFn, srcs)) as any;
+  return sflow(
+    new ReadableStream({
+      pull: async (ctrl) => {
+        const srcs = await sflow(_srcs).toArray();
+        const slots = srcs.map(() => undefined as { value: T } | undefined);
+        const pendingSlotRemoval = srcs.map(
+          () => undefined as PromiseWithResolvers<void> | undefined
+        );
+        const drains = srcs.map(() => false);
+        let lastMaxValue: T | undefined = undefined;
+        await Promise.all(
+          srcs.map(async (src, i) => {
+            for await (const value of sflow(src)) {
+              while (slots[i] !== undefined) {
+                if (shiftMaxValueIfFull()) continue;
+                pendingSlotRemoval[i] = Promise.withResolvers<void>();
+                await pendingSlotRemoval[i]!.promise; // wait for this slot empty;
+              }
+              slots[i] = { value };
+              shiftMaxValueIfFull();
+            }
+            // done
+            drains[i] = true;
+            pendingSlotRemoval.map((e) => e?.resolve());
+            await Promise.all(pendingSlotRemoval.map((e) => e?.promise));
+            const allDrain = drains.every(Boolean);
+
+            if (allDrain) {
+              while (slots.some((e) => e !== undefined)) shiftMaxValueIfFull();
+              ctrl.close();
+            }
+
+            function shiftMaxValueIfFull() {
+              const isFull = slots.every(
+                (slot, i) => slot !== undefined || drains[i]
+              );
+              if (!isFull) return false;
+              const fullSlots = slots
+                .flatMap((e) => (e !== undefined ? [e] : []))
+                .map((e) => e.value);
+              const maxValue = sortBy(ordFn, fullSlots).toReversed()[0];
+              const maxIndex = slots.findIndex((e) => e?.value === maxValue);
+              if (lastMaxValue !== undefined) {
+                const ordered = sortBy(ordFn, [maxValue, lastMaxValue]);
+                (ordered[0] === maxValue && ordered[1] === lastMaxValue) ||
+                  DIE(`
+mergeDescends Error: one of source stream is not descending ordered.
+
+prev: ${JSON.stringify(lastMaxValue)}
+
+curr: ${JSON.stringify(maxValue)}
+`);
+              }
+              lastMaxValue = maxValue;
+              // @ts-expect-error maxValue could be undefined
+              ctrl.enqueue(maxValue);
+              slots[maxIndex] = undefined;
+              pendingSlotRemoval[maxIndex]?.resolve();
+              pendingSlotRemoval[maxIndex] = undefined;
+              return true;
+            }
+          })
+        );
+      },
+    })
+  );
+};
+import { parallels } from "./parallels";
+/** return a transform stream that merges streams from args */
+export const merges: {
+  <T>(fn: (s: WritableStream<T>) => void): TransformStream<T, T>;
+  <T>(stream?: ReadableStream<T>): TransformStream<T, T>;
+  <T>(streams?: ReadableStream<T>[]): TransformStream<T, T>;
+} = (...args) => {
+  const arg = args[0];
+  if (!arg) return new TransformStream();
+  if (arg instanceof ReadableStream) return merges((s) => arg.pipeTo(s));
+  const fn = arg as (s: WritableStream) => void;
+  const upstream = new TransformStream();
+  const s2 = new TransformStream();
+  // writes
+  const writable = upstream.writable;
+  fn(s2.writable);
+  // reads
+  const readable = parallels(upstream.readable, s2.readable);
+  return { writable, readable };
+};
+export const never = () => new Promise<void>(() => null);
+export function nils<T = null>() {
+  return new WritableStream<T>();
+}
+
+export function nil<T = null>() {
+  return null as T;
+}
+import { sleep } from "bun";
+import { sflow } from "./sflow";
+
+it("Infinity concurrent", async () => {
+  const runOrder: number[] = [];
+  const finishOrder: number[] = [];
+  const returnOrder = await sflow([1, 2, 3, 4, 4, 3, 2, 1])
+    .pMap(async (e, i) => {
+      runOrder.push(e);
+      await sleep(e * 20);
+      finishOrder.push(e);
+      console.log(e, i);
+      return e;
+    })
+    .toArray();
+  expect(runOrder).toEqual([1, 2, 3, 4, 4, 3, 2, 1]);
+  expect(finishOrder).toEqual([1, 1, 2, 2, 3, 3, 4, 4]);
+  expect(returnOrder).toEqual([1, 2, 3, 4, 4, 3, 2, 1]);
+});
+it("pMaps", async () => {
+  const t = Date.now();
+  const req = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const acc = sflow(req.toReversed())
+    .pMap(3, async (n) => {
+      await new Promise((r) => setTimeout(r, n * 10));
+      return n;
+    })
+    .toArray();
+  expect(acc).resolves.toEqual(req.toReversed());
+})import DIE from "@snomiao/die";
+import type { Awaitable } from "./Awaitable";
+
+/* map a stream by parallel, return them in original order */
+
+export const pMaps: {
+  <T, R>(
+    concurrent: number,
+    fn: (x: T, i: number) => Awaitable<R>
+  ): TransformStream<T, R>;
+  <T, R>(fn: (x: T, i: number) => Awaitable<R>): TransformStream<T, R>;
+} = <T, R>(
+  arg1: number | ((x: T, i: number) => Awaitable<R>),
+  arg2?: (x: T, i: number) => Awaitable<R>
+) => {
+    const concurrent = typeof arg1 === "number" ? arg1 : Infinity;
+    const fn = typeof arg2 === "function"
+      ? arg2
+      : typeof arg1 === "function"
+        ? arg1
+        : DIE("NEVER");
+    let i = 0;
+    let promises: Awaitable<R>[] = [];
+    return new TransformStream<T, R>({
+      transform: async (chunk, ctrl) => {
+        promises.push(fn(chunk, i++));
+        if (promises.length >= concurrent) ctrl.enqueue(await promises.shift());
+      },
+      flush: async (ctrl) => {
+        while (promises.length) ctrl.enqueue(await promises.shift());
+      },
+    });
+  };
+import { expectTypeOf } from "expect-type";
+import Keyv from "keyv";
+import { KeyvCachedWith } from "keyv-cached-with";
+import { pageFlow } from "./";
+it("works with number", async () => {
+  await pageFlow(0, (page) => {
+    expectTypeOf(page).toBeNumber();
+    const data = [1, 2, 3, 4, 5][page];
+    return {
+      data,
+      next: (!!data && page + 1) || null,
+    };
+  })
+    .map((e) => e)
+    .done();
+});
+it("works with cache", async () => {
+  const cache1d = KeyvCachedWith(new Keyv<unknown>({ ttl: 86400e3 }));
+  await pageFlow(
+    0,
+    cache1d((page) => {
+      const data = [1, 2, 3, 4, 5][page];
+      expectTypeOf(page).toBeNumber();
+      return {
+        data,
+        next: (!!data && page + 1) || null,
+      };
+    })
+  )
+    .map((e) => e)
+    .done();
+});
+import { type PageFetcher, pageStream } from "./pageStream";
+import { sflow } from "./sflow";
+
+export function pageFlow<Data, Cursor>(
+  initialCursor: Cursor,
+  fetcher: PageFetcher<Data, Cursor>
+): sflow<Data> {
+  return sflow(pageStream(initialCursor, fetcher));
+}
+import { expectTypeOf } from "expect-type";
+import Keyv from "keyv";
+import { KeyvCachedWith } from "keyv-cached-with";
+import sflow, { pageStream } from "./";
+it("works with number", async () => {
+  await sflow(
+    pageStream(0, (page) => {
+      expectTypeOf(page).toBeNumber();
+      const data = [1, 2, 3, 4, 5][page];
+      return {
+        data,
+        next: (!!data && page + 1) || null,
+      };
+    })
+  )
+    .map((e) => e)
+    .done();
+});
+it.skip("works with cache with wrapper", async () => {
+  const cache1d = KeyvCachedWith(new Keyv<unknown>({ ttl: 86400e3 }));
+  await sflow(
+    pageStream(0, (page) => {
+      expectTypeOf(page).toBeNumber();
+      return cache1d((page) => {
+        const data = [1, 2, 3, 4][page] as number | undefined;
+        // expectTypeOf(page).toBeNumber(); // fail
+        return { data, next: (!!data && page + 1) || null };
+      }, page);
+    })
+  )
+    .map((e) => e)
+    .filter()
+    .map((e) => e)
+    .done();
+});
+it.skip("works with cache without wrapper", async () => {
+  const cache1d = KeyvCachedWith(new Keyv<unknown>({ ttl: 86400e3 }));
+  await sflow(
+    pageStream(
+      0,
+      cache1d((page) => {
+        const data = [1, 2, 3, 4][page] as number | undefined;
+        // expectTypeOf(page).toBeNumber(); // fail
+        return { data, next: (!!data && page + 1) || null };
+      })
+    )
+  )
+    .map((e) => e)
+    .filter()
+    .map((e) => e)
+    .done();
+});
+import type { Awaitable } from "./Awaitable";
+export type PageFetcher<Data, Cursor> = (
+  cursor: Cursor
+) => Awaitable<{ data: Data; next?: Cursor | null }>;
+export function pageStream<Data, Cursor>(
+  initialCursor: Cursor,
+  fetcher: PageFetcher<Data, Cursor>
+): ReadableStream<Data> {
+  let curr: Cursor = initialCursor;
+  return new ReadableStream({
+    pull: async (ctrl) => {
+      const { data, next } = await fetcher(curr);
+      if (null == next) return ctrl.close();
+      curr = next;
+      ctrl.enqueue(data);
+    },
+  });
+}
+import { sf } from ".";
+
+it("Works merge parallel", async () => {
+  const { readable, writable } = new TransformStream<number, number>();
+  (async function () {
+    const w = writable.getWriter();
+    console.log("writing");
+    await Promise.all([
+      sf([1, 2, 3])
+        .map((e) => w.write(e))
+        .done(),
+      sf([4, 5, 6])
+        .map((e) => w.write(e))
+        .done(),
+    ]);
+    console.log("written");
+    await w.close();
+  })();
+  expect(await sf(readable).toArray()).toEqual([1, 4, 2, 5, 3, 6]);
+});
+
+it("Works merge parallel 2", async () => {
+  const srcs = [sf([1, 2, 3]), sf([4, 5, 6])];
+
+  const { readable, writable } = new TransformStream<number, number>();
+  (async function () {
+    const w = writable.getWriter();
+    console.log("writing");
+    await sf(srcs)
+      .pMap((s) => s.map((e) => w.write(e)).done())
+      .done();
+    console.log("written");
+    await w.close();
+  })();
+
+  expect(await sf(readable).toArray()).toEqual([1, 4, 2, 5, 3, 6]);
+});
+import { wseFrom } from "./wse";
+import { wseMerges } from "./wseMerges";
+
+export const parallels = <SRCS extends ReadableStream<any>[]>(...srcs: SRCS) =>
+  wseMerges()(wseFrom(srcs)) as ReadableStream<
+    {
+      [key in keyof SRCS]: SRCS[key] extends ReadableStream<infer T>
+        ? T
+        : never;
+    }[number]
+  >;
+import { sleep } from "bun";
+import { sflow } from ".";
+
+/* wip */
+
+it("eager", () => {
+  sflow(
+    new ReadableStream({
+      start: (ctrl) => {
+        ctrl.enqueue(1);
+        ctrl.enqueue(2);
+        ctrl.enqueue(3);
+        ctrl.close();
+      },
+    })
+  ).pipeTo(new WritableStream({ write: (c) => console.log(c) }));
+});
+it("passive", () => {
+  let i = 0;
+  sflow(
+    new ReadableStream({
+      pull: (ctrl) => {
+        console.log("pulling", i);
+        ctrl.enqueue(i++);
+      },
+    })
+  ).pipeTo(
+    new WritableStream(
+      {
+        start: (e) => {
+          e.signal;
+        },
+        write: async (c, ctrl) => {
+          await sleep(100);
+          console.log(c);
+        },
+      },
+      { highWaterMark: 2 }
+    )
+  );
+});
+import type { Awaitable } from "./Awaitable";
+
+/** Note: peeks will not await peek fn, use forEachs if you want downstream tobe awaited  */
+export function peeks<T>(fn: (x: T, i: number) => Awaitable<void>) {
+  let i = 0;
+  return new TransformStream<T, T>({
+    transform: async (chunk, ctrl) => {
+      ctrl.enqueue(chunk);
+      await fn(chunk, i++);
+    },
+  });
+}
+import { sflow } from "./sflow";
+
+/** @deprecated use rangeStream or rangeFlow*/
+export function ranges(
+  minInclusive: number,
+  maxExclusive: number
+): ReadableStream<number>;
+export function ranges(maxExclusive: number): ReadableStream<number>;
+export function ranges(...args: number[]) {
+  const [min, max]: [number, number] =
+    args[1] != null ? [args[0], args[1]] : [0, args[0]];
+  let i = min;
+  return new ReadableStream({
+    pull: (ctrl) => {
+      ctrl.enqueue(i);
+      if (++i >= max) ctrl.close();
+    },
+  });
+}
+
+export function rangeStream(
+  minInclusive: number,
+  maxExclusive: number
+): ReadableStream<number>;
+export function rangeStream(maxExclusive: number): ReadableStream<number>;
+export function rangeStream(...args: number[]) {
+  const [min, max]: [number, number] =
+    args[1] != null ? [args[0], args[1]] : [0, args[0]];
+  let i = min;
+  return new ReadableStream({
+    pull: (ctrl) => {
+      ctrl.enqueue(i);
+      if (++i >= max) ctrl.close();
+    },
+  });
+}
+export function rangeFlow(
+  minInclusive: number,
+  maxExclusive: number
+): ReadableStream<number>;
+export function rangeFlow(maxExclusive: number): ReadableStream<number>;
+export function rangeFlow(...args: number[]) {
+  // @ts-ignore
+  return sflow(rangeStream(...args));
+}
+import { sf } from ".";
+import { rangeStream } from "./rangeStream";
+
+it("works", async () => {
+  expect(await sf(rangeStream(5)).toArray()).toEqual([0, 1, 2, 3, 4]);
+  expect(await sf(rangeStream(0, 5)).toArray()).toEqual([0, 1, 2, 3, 4]);
+});
+
+
+import { sleep } from "bun";
+import { reduceEmits } from "./reduceEmits";
+
+describe("reduceEmits", () => {
+  test("should reduce and emit correctly for a simple case", async () => {
+    const state = 0;
+    const reducer = (state = 0, x = 0) => ({
+      next: state + x,
+      emit: state + x,
+    });
+
+    const transform = reduceEmits(reducer, state);
+    const writer = transform.writable.getWriter();
+    const reader = transform.readable.getReader();
+
+    writer.write(1);
+    writer.write(2);
+    writer.write(3);
+    writer.close();
+
+    const results = [];
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      results.push(value);
+    }
+
+    expect(results).toEqual([1, 3, 6]);
+  });
+
+  test("should handle async functions correctly", async () => {
+    const state = 0;
+    const reducer = async (state = 0, x = 0) => {
+      await sleep(10); // Adding a small sleep for testing async
+      return { next: state + x, emit: state + x };
+    };
+
+    const transform = reduceEmits(reducer, state);
+    const writer = transform.writable.getWriter();
+    const reader = transform.readable.getReader();
+
+    writer.write(1);
+    writer.write(2);
+    writer.write(3);
+    writer.close();
+
+    const results = [];
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      results.push(value);
+    }
+
+    expect(results).toEqual([1, 3, 6]);
+  });
+
+  test("should transform state and emit different types", async () => {
+    const init = { count: 0, items: [] as string[] };
+
+    const transform = reduceEmits((state = init, x: string) => {
+      const newState = {
+        count: state.count + 1,
+        items: [...state.items, x],
+      };
+      const emit = { currentCount: newState.count, item: x };
+      return { next: newState, emit: emit };
+    }, init);
+    const writer = transform.writable.getWriter();
+    const reader = transform.readable.getReader();
+
+    writer.write("a");
+    writer.write("b");
+    writer.write("c");
+    writer.close();
+
+    const results = [];
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      results.push(value);
+    }
+
+    expect(results).toEqual([
+      { currentCount: 1, item: "a" },
+      { currentCount: 2, item: "b" },
+      { currentCount: 3, item: "c" },
+    ]);
+  });
+});
+import type { Awaitable } from "./Awaitable";
+export const reduceEmits: {
+  <T, S, R>(
+    fn: (state: S, x: T, i: number) => Awaitable<{ next: S; emit: R }>,
+    state: S
+  ): TransformStream<T, R>;
+} = (fn, state) => {
+  let i = 0;
+  return new TransformStream({
+    transform: async (chunk, ctrl) => {
+      const { next, emit } = await fn(state, chunk, i++);
+      state = next;
+      ctrl.enqueue(emit);
+    },
+  });
+};
+import { reduces } from "./reduces";
+import { sflow } from "./sflow";
+
+describe("reduces function", () => {
+  it("accumulates state based on initial state", async () => {
+    const initialState = 0;
+    const transformStream = reduces(
+      (state, x: number) => state + x,
+      initialState
+    );
+    const writer = transformStream.writable.getWriter();
+    const reader = transformStream.readable.getReader();
+
+    writer.write(1);
+    writer.write(2);
+    writer.write(3);
+    writer.close();
+
+    const results = [];
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      results.push(value);
+    }
+
+    expect(results).toEqual([1, 3, 6]);
+  });
+
+  it("accumulates state without initial state", async () => {
+    const transformStream = reduces(
+      (state: number = 0, x: number) => state + x
+    );
+    const writer = transformStream.writable.getWriter();
+    const reader = transformStream.readable.getReader();
+
+    writer.write(1);
+    writer.write(2);
+    writer.write(3);
+    writer.close();
+
+    const results = [];
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      results.push(value);
+    }
+
+    expect(results).toEqual([1, 3, 6]);
+  });
+
+  it("supports different types for state and chunks", async () => {
+    const initialState = "";
+    const transformStream = reduces((state, x) => state + x, initialState);
+    const writer = transformStream.writable.getWriter();
+    const reader = transformStream.readable.getReader();
+
+    writer.write("a");
+    writer.write("b");
+    writer.write("c");
+    writer.close();
+
+    const results = [];
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      results.push(value);
+    }
+
+    expect(results).toEqual(["a", "ab", "abc"]);
+  });
+
+  it("accumulates state asynchronously", async () => {
+    const initialState = 1;
+    const transformStream = reduces(async (state, x) => {
+      return new Promise((resolve) => setTimeout(() => resolve(state * x), 50));
+    }, initialState);
+    const writer = transformStream.writable.getWriter();
+    const reader = transformStream.readable.getReader();
+
+    writer.write(1);
+    writer.write(2);
+    writer.write(3);
+    writer.close();
+
+    const results = [];
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      results.push(value);
+    }
+
+    expect(results).toEqual([1, 2, 6]);
+  });
+
+  it("works with pipeline with initialState", async () => {
+    expect(
+      await sflow([1, 2, 3, 4])
+        .reduce((a, b) => a + b, 0)
+        .toLast()
+    ).toBe(1 + 2 + 3 + 4);
+  });
+  it("works with pipeline without initialState", async () => {
+    expect(
+      await sflow([1, 2, 3, 4])
+        .reduce((a = 0, b) => a + b)
+        .toLast()
+    ).toBe(1 + 2 + 3 + 4);
+  });
+});
+import type { Awaitable } from "./Awaitable";
+type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
+type ReducerWithUndefinedInitialState<T> = (
+  state: T | undefined,
+  x: T,
+  i: number
+) => Awaitable<T>;
+
+/** return undefined to skip emit */
+export const reduces: {
+  // 
+  <T>(fn: ReducerWithUndefinedInitialState<T>): TransformStream<T, T>;
+  <T>(fn: Reducer<T, T>, initialState: T): TransformStream<T, T>;
+  // 
+  <T, S>(fn: Reducer<S, T>): TransformStream<T, S>;
+  <T, S>(fn: Reducer<S, T>, initialState: S): TransformStream<T, S>;
+} = <S>(fn: Function, state?: S) => {
+  let i = 0;
+  return new TransformStream({
+    transform: async (chunk, ctrl) => {
+      state = await fn(state, chunk, i++);
+      ctrl.enqueue(state);
+    },
+  });
+};
+import { sflow } from ".";
+import { riffles } from "./riffles";
+it("riffles", async () => {
+  const out = await sflow(["a", "b", "c"]).through(riffles("\n")).text();
+  console.log(out);
+  expect(out).toEqual("a\nb\nc\n");
+});
+
+import { flatMaps } from "./flatMaps";
+
+export function riffles<T>(sep: T): TransformStream<T, T> {
+    return flatMaps((e) => [e, sep]);
+}
+import sflow, { uniqs } from ".";
+
+it("tees", async () => {
+  let flow1 = sflow([1, 2, 3]);
+  const flow2 = flow1.tees((x) => (flow1 = x));
+  expect(flow1.locked).toEqual(false);
+  const flow3 = flow1.tees((b) => (flow1 = b));
+  expect(flow1.locked).toEqual(false);
+  const flow4 = flow1.tees();
+  expect(flow1.locked).toEqual(true);
+  expect(await flow2.toArray()).toEqual([1, 2, 3]);
+  expect(await flow3.toArray()).toEqual([1, 2, 3]);
+  expect(await flow4.toArray()).toEqual([1, 2, 3]);
+});
+
+it("uniqs", async () => {
+  let flow0 = sflow([1, 4, 2, 2, 3, 3, {}, {}]);
+  expect(await flow0.through(uniqs()).toArray()).toEqual([1, 4, 2, 3, {}, {}]);
+});
+
+function lasts<T>(): TransformStream<T, T> {
+  let last: T;
+  const ready = Promise.withResolvers();
+  const writable = new WritableStream<T>({
+    write: (chunk) => {
+      last = chunk;
+      ready.resolve();
+    },
+  });
+  const readable = new ReadableStream<T>({
+    pull: async (ctrl) => {
+      await ready.promise;
+      ctrl.enqueue(last);
+    },
+  });
+  return { writable, readable };
+}
+// it("using", async () => {
+//   let p: snoflow<number>;
+//   await (async function () {
+//     await using f = snoflow([1, 2, 3]);
+//     p = f;
+//     expect(f.locked).toBe(false);
+//   })();
+//   expect(await p!.toArray()).toEqual([1, 2, 3]);
+//   expect(p!.locked).toBe(true);
+//   // expect(f.locked).toBe(true);
+// });
+import DIE from "@snomiao/die";
+import type { FieldPathByValue } from "react-hook-form";
+import type { Awaitable } from "./Awaitable";
+import { chunkBys } from "./chunkBys";
+import { chunkIfs } from "./chunkIfs";
+import { chunkIntervals } from "./chunkIntervals";
+import { chunks } from "./chunks";
+import { confluences } from "./confluences";
+import { convolves } from "./convolves";
+import { debounces } from "./debounces";
+import { filters } from "./filters";
+import { flatMaps } from "./flatMaps";
+import { flats } from "./flats";
+import type { FlowSource } from "./FlowSource";
+import { forEachs } from "./forEachs";
+import { froms } from "./froms";
+import { heads } from "./heads";
+import { limits } from "./limits";
+import { lines } from "./lines";
+import { logs } from "./logs";
+import { mapAddFields } from "./mapAddFields";
+import { maps } from "./maps";
+import { merges } from "./merges";
+import { nils } from "./nils";
+import { peeks } from "./peeks";
+import { pMaps } from "./pMaps";
+import { reduceEmits } from "./reduceEmits";
+import { reduces } from "./reduces";
+import { riffles } from "./riffles";
+import { skips } from "./skips";
+import { slices } from "./slices";
+import { streamAsyncIterator } from "./streamAsyncIterator";
+import { tails } from "./tails";
+import { tees } from "./tees";
+import { terminates } from "./terminates";
+import { throttles } from "./throttles";
+import { throughs } from "./throughs";
+import { uniqBys, uniqs } from "./uniqs";
+import type { Unwinded } from "./Unwinded";
+import { unwinds } from "./unwinds";
+import { wseToArray, wseToPromise } from "./wse";
+export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
+export type EmitReducer<S, T, R> = (
+  state: S,
+  x: T,
+  i: number
+) => Awaitable<{ next: S; emit: R }>;
+// maybe:
+// subscribe (forEach+nils)
+// find (filter+limit)
+// distinct=uniq
+//
+// todo:
+// catch, retry
+export type sflow<T> = ReadableStream<T> &
+  AsyncIterableIterator<T> & {
+    // { [Symbol.asyncDispose]: () => Promise<void> } &
+    _type: T;
+    readable: ReadableStream<T>;
+    writable: WritableStream<T>;
+    /** @deprecated use chunk*/
+    buffer(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
+    chunk(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
+    convolve(...args: Parameters<typeof convolves<T>>): sflow<T[]>;
+    chunkBy(...args: Parameters<typeof chunkBys<T>>): sflow<T[]>;
+    chunkIf(...args: Parameters<typeof chunkIfs<T>>): sflow<T[]>;
+    abort(...args: Parameters<typeof terminates<T>>): sflow<T>;
+    through<R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
+    through<R>(stream: TransformStream<T, R>): sflow<R>;
+    through(stream?: TransformStream<T, T>): sflow<T>;
+    /** @deprecated use chunkInterval */
+    interval(...args: Parameters<typeof chunkIntervals<T>>): sflow<T[]>;
+    chunkInterval(...args: Parameters<typeof chunkIntervals<T>>): sflow<T[]>;
+    debounce(...args: Parameters<typeof debounces<T>>): sflow<T>;
+    done: (pipeTo?: WritableStream<T>) => Promise<void>;
+    end: (pipeTo?: WritableStream<T>) => Promise<void>;
+    filter(fn: (x: T, i: number) => Awaitable<any>): sflow<T>; // fn must fisrt
+    filter(): sflow<NonNullable<T>>;
+    flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): sflow<R>;
+    join(fn: (s: WritableStream<T>) => void | any): sflow<T>;
+    join(stream?: ReadableStream<T>): sflow<T>;
+    merge(fn: (s: WritableStream<T>) => void | any): sflow<T>;
+    merge(stream?: ReadableStream<T>): sflow<T>;
+    limit(...args: Parameters<typeof limits<T>>): sflow<T>;
+    head(...args: Parameters<typeof heads<T>>): sflow<T>;
+    map<R>(...args: Parameters<typeof maps<T, R>>): sflow<R>;
+    log(...args: Parameters<typeof logs<T>>): sflow<T>;
+    peek(...args: Parameters<typeof peeks<T>>): sflow<T>;
+    riffle(...args: Parameters<typeof riffles<T>>): sflow<T>;
+    forEach(...args: Parameters<typeof forEachs<T>>): sflow<T>;
+    pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>; // fn must fisrt
+    pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
+    reduce(
+      fn: (state: T | undefined, x: T, i: number) => Awaitable<T>
+    ): sflow<T>; // fn must fisrt
+    reduce(fn: Reducer<T, T>, initialState: T): sflow<T>;
+    reduce<S>(
+      fn: (state: S | undefined, x: T, i: number) => Awaitable<S>
+    ): sflow<S>; // fn must fisrt
+    reduce<S>(fn: Reducer<S, T>, initialState: S): sflow<S>;
+    reduceEmits<S, R>(fn: EmitReducer<S, T, R>, state: S): sflow<R>;
+    skip: (...args: Parameters<typeof skips<T>>) => sflow<T>;
+    slice: (...args: Parameters<typeof slices<T>>) => sflow<T>;
+    tail: (...args: Parameters<typeof tails<T>>) => sflow<T>;
+    uniq: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
+    uniqBy: <K>(...args: Parameters<typeof uniqBys<T, K>>) => sflow<T>;
+    tees(fn: (s: sflow<T>) => void | any): sflow<T>; // fn must fisrt
+    tees(stream?: WritableStream<T>): sflow<T>;
+    throttle: (...args: Parameters<typeof throttles<T>>) => sflow<T>;
+    // prevents
+    preventAbort: () => sflow<T>;
+    preventClose: () => sflow<T>;
+    preventCancel: () => sflow<T>;
+    // to promises
+    toEnd: () => Promise<void>;
+    toNil: () => Promise<void>;
+    toArray: () => Promise<T[]>;
+    toCount: () => Promise<number>;
+    toFirst: () => Promise<T>;
+    /** Will throw an error if multple items emitted */
+    toOne: () => Promise<T>;
+    /** Returns a promise that always give you latest value of the stream */
+    // toLatest: () => Promise<{ value: T; readable: sflow<T> }>;
+    toLast: () => Promise<T>;
+    toLog(...args: Parameters<typeof logs<T>>): Promise<void>;
+  } & (T extends ReadonlyArray<any> // Array Process
+    ? {
+        flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
+      }
+    : {}) &
+  // Dictionary process
+  (T extends Record<string, any>
+    ? {
+        unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
+          key: K
+        ): sflow<Unwinded<T, K>>;
+        mapAddField: <K extends string, R>(
+          ...args: Parameters<typeof mapAddFields<K, T, R>>
+        ) => sflow<
+          Omit<T, K> & {
+            [key in K]: R;
+          }
+        >;
+      }
+    : {}) &
+  // Streams
+  (T extends ReadableStream<infer T>
+    ? { confluence(...args: Parameters<typeof confluences<T>>): sflow<T> }
+    : {}) &
+  // text process
+  (T extends string ? { lines: () => sflow<string> } : {}) &
+  // toResponse
+  (T extends string | Uint8Array
+    ? {
+        toResponse: () => Response;
+        text: () => Promise<string>;
+        json: () => Promise<any>;
+        blob: () => Promise<Blob>;
+        arrayBuffer: () => Promise<ArrayBuffer>;
+      }
+    : {});
+export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
+  const r: ReadableStream<T> = froms(src);
+  // @ts-ignore todo
+  return Object.assign(r, {
+    _type: null as T,
+    get readable() {
+      return r;
+    },
+    // get writable() {
+    //   DIE(new Error("WIP"));
+    //   return new WritableStream();
+    // },
+    through: (...args: Parameters<typeof _throughs>) =>
+      sflow(r.pipeThrough(_throughs(...args))),
+    mapAddField: (
+      ...args: Parameters<typeof mapAddFields> // @ts-ignore
+    ) => sflow(r.pipeThrough(mapAddFields(...args))),
+    chunkBy: (...args: Parameters<typeof chunkBys>) =>
+      sflow(r.pipeThrough(chunkBys(...args))),
+    chunkIf: (...args: Parameters<typeof chunkIfs>) =>
+      sflow(r.pipeThrough(chunkIfs(...args))),
+    buffer: (...args: Parameters<typeof chunks>) =>
+      sflow(r.pipeThrough(chunks(...args))),
+    chunk: (...args: Parameters<typeof chunks>) =>
+      sflow(r.pipeThrough(chunks(...args))),
+    convolve: (...args: Parameters<typeof convolves>) =>
+      sflow(r.pipeThrough(convolves(...args))),
+    abort: (...args: Parameters<typeof terminates>) =>
+      sflow(r.pipeThrough(terminates(...args))),
+    chunkInterval: (...args: Parameters<typeof chunkIntervals>) =>
+      sflow(r.pipeThrough(chunkIntervals(...args))),
+    /** @deprecated */
+    interval: (...args: Parameters<typeof chunkIntervals>) =>
+      sflow(r.pipeThrough(chunkIntervals(...args))),
+    debounce: (...args: Parameters<typeof debounces>) =>
+      sflow(r.pipeThrough(debounces(...args))),
+    done: (dst = nils<T>()) => r.pipeTo(dst),
+    end: (dst = nils<T>()) => r.pipeTo(dst),
+    filter: (...args: Parameters<typeof filters>) =>
+      sflow(r.pipeThrough(filters(...args))),
+    flatMap: (...args: Parameters<typeof flatMaps>) =>
+      sflow(r.pipeThrough(flatMaps(...args))),
+    flat: (
+      ...args: Parameters<typeof flats> // @ts-ignore
+    ) => sflow(r.pipeThrough(flats(...args))),
+    /** @deprecated will be remove next major version, please use merge */
+    join: (...args: Parameters<typeof merges>) =>
+      sflow(r.pipeThrough(merges(...args))),
+    merge: (...args: Parameters<typeof merges>) =>
+      sflow(r.pipeThrough(merges(...args))),
+    confluence: (
+      ...args: Parameters<typeof confluences> // @ts-ignore
+    ) => sflow(r.pipeThrough(confluences(...args))),
+    limit: (...args: Parameters<typeof limits>) =>
+      sflow(r.pipeThrough(limits(...args))),
+    head: (...args: Parameters<typeof heads>) =>
+      sflow(r.pipeThrough(heads(...args))),
+    map: (...args: Parameters<typeof maps>) =>
+      sflow(r.pipeThrough(maps(...args))),
+    log: (...args: Parameters<typeof logs>) =>
+      sflow(r.pipeThrough(logs(...args))),
+    uniq: (...args: Parameters<typeof uniqs>) =>
+      sflow(r.pipeThrough(uniqs(...args))),
+    uniqBy: (...args: Parameters<typeof uniqBys>) =>
+      sflow(r.pipeThrough(uniqBys(...args))),
+    unwind: (
+      ...args: Parameters<typeof unwinds> // @ts-ignore
+    ) => sflow(r.pipeThrough(unwinds(...args))),
+    pMap: (...args: Parameters<typeof pMaps>) =>
+      sflow(r.pipeThrough(pMaps(...args))),
+    peek: (...args: Parameters<typeof peeks>) =>
+      sflow(r.pipeThrough(peeks(...args))),
+    riffle: (...args: Parameters<typeof riffles>) =>
+      sflow(r.pipeThrough(riffles(...args))),
+    forEach: (...args: Parameters<typeof forEachs>) =>
+      sflow(r.pipeThrough(forEachs(...args))),
+    reduce: (...args: Parameters<typeof reduces>) =>
+      sflow(r.pipeThrough(reduces(...args))),
+    reduceEmit: (...args: Parameters<typeof reduceEmits>) =>
+      sflow(r.pipeThrough(reduceEmits(...args))),
+    skip: (...args: Parameters<typeof skips>) =>
+      sflow(r.pipeThrough(skips(...args))),
+    slice: (...args: Parameters<typeof slices>) =>
+      sflow(r.pipeThrough(slices(...args))),
+    tail: (...args: Parameters<typeof tails>) =>
+      sflow(r.pipeThrough(tails(...args))),
+    tees: (...args: Parameters<typeof _tees>) =>
+      sflow(r.pipeThrough(_tees(...args))),
+    throttle: (...args: Parameters<typeof throttles>) =>
+      sflow(r.pipeThrough(throttles(...args))),
+    /** prevent upstream abort, ignore upstream errors   */
+    preventAbort: () =>
+      sflow(r.pipeThrough(throughs(), { preventAbort: true })),
+    /** prevent upstream close */
+    preventClose: () =>
+      sflow(r.pipeThrough(throughs(), { preventClose: true })),
+    /** prevent downstream cancel, ignore downstream errors */
+    preventCancel: () =>
+      sflow(r.pipeThrough(throughs(), { preventCancel: true })),
+    // to promises
+    toEnd: () => r.pipeTo(nils<T>()),
+    toNil: () => r.pipeTo(nils<T>()),
+    toArray: () => wseToArray(r),
+    /** Get count of stream items */
+    toCount: async () => (await wseToArray(r)).length,
+    /** Get first item from stream, ignore others */
+    toFirst: () => wseToPromise(sflow(r).limit(1, { terminate: true })),
+    /** Get last item from stream, ignore others */
+    toLast: () => wseToPromise(sflow(r).tail(1)),
+    /** Get one item from stream, throw if more than 1 items emitted */
+    toOne: async () => {
+      const a = await wseToArray(r);
+      if (a.length !== 1) DIE(`Expect only 1 Item, got ${a.length}`);
+      return a[0];
+    },
+    /** call console.log on every item */
+    toLog: (...args: Parameters<typeof logs<T>>) =>
+      sflow(r.pipeThrough(logs(...args))).done(),
+    // toLatest: () => {
+    //   const store = { value: undefined as T, readable: ReadableStream };
+    //   const proxy = new DeepProxy(store, {
+    //     get(target, key, receiver) {
+    //       const val = Reflect.get(target, key, receiver);
+    //       if (typeof val === "object" && val !== null) return this.nest(val);
+    //       return val;
+    //     },
+    //   });
+    //   const initialPromise = Promise.withResolvers();
+
+    //   let initialized = false;
+    //   store.readable = sflow(r).tees((r) =>
+    //     r
+    //       .forEach((e) => {
+    //         store.value = e as T; // update store
+    //         if (initialized) return;
+    //         initialized = true;
+    //         initialPromise.resolve(proxy);
+    //       })
+    //       .done()
+    //   );
+    //   return initialPromise.promise;
+    // },
+    // string stream process
+    lines: () =>
+      // @ts-expect-error should be string
+      sflow(r.pipeThrough(lines())),
+    // as response (only ReadableStream<string | UInt8Array>)
+    toResponse: (init?: ResponseInit) => new Response(r, init),
+    text: (init?: ResponseInit) => new Response(r, init).text(),
+    json: (init?: ResponseInit) => new Response(r, init).json(),
+    blob: (init?: ResponseInit) => new Response(r, init).blob(),
+    arrayBuffer: (init?: ResponseInit) => new Response(r, init).arrayBuffer(),
+    // as iterator
+    // [Symbol.asyncDispose]: async () => await r.pipeTo(nils()),
+    [Symbol.asyncIterator]: streamAsyncIterator<T>,
+  });
+};
+export const _tees: {
+  <T>(fn: (s: sflow<T>) => void | any): TransformStream<T, T>;
+  <T>(stream?: WritableStream<T>): TransformStream<T, T>;
+} = (arg) => {
+  if (!arg) return new TransformStream();
+  if (arg instanceof WritableStream) return tees((s) => s.pipeTo(arg));
+  const fn = arg;
+  const { writable, readable } = new TransformStream();
+  const [a, b] = readable.tee();
+  // @ts-ignore
+  fn(sflow(a));
+  return { writable, readable: b };
+};
+export const _throughs: {
+  <T>(stream?: TransformStream<T, T>): TransformStream<T, T>;
+  <T, R>(stream: TransformStream<T, R>): TransformStream<T, R>;
+  <T, R>(fn: (s: sflow<T>) => FlowSource<R>): TransformStream<T, R>;
+} = (arg: any) => {
+  if (!arg) return new TransformStream();
+  if (typeof arg !== "function") return throughs((s) => s.pipeThrough(arg));
+  const fn = arg;
+  const { writable, readable } = new TransformStream();
+  return { writable, readable: sflow(fn(sflow(readable))) };
+};
+export function skips<T>(n = 1) {
+  return new TransformStream<T, T>({
+    transform: async (chunk, ctrl) => {
+      if (n <= 0) ctrl.enqueue(chunk);
+      else n--;
+    },
+  });
+}
+import { limits } from "./limits";
+import { skips } from "./skips";
+
+export function slices<T>(start = 0, end = Infinity) {
+  const count = end - start;
+  const { readable, writable } = new TransformStream<T, T>();
+  return {
+    writable,
+    readable: readable.pipeThrough(skips(start)).pipeThrough(limits(count)),
+  };
+}
+export async function* streamAsyncIterator<T>(this: ReadableStream<T>) {
+  const reader = this.getReader();
+  try {
+    while (1) {
+      const { done, value } = await reader.read();
+      if (done) return;
+      yield value;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+export function tails<T>(n = 1) {
+  let chunks: T[] = [];
+  return new TransformStream<T, T>({
+    transform: (chunk) => {
+      chunks.push(chunk);
+      if (chunks.length > n) chunks.shift();
+    },
+    flush: (ctrl) => {
+      chunks.map((e) => ctrl.enqueue(e));
+    },
+  });
+}
+
+export const tees: {
+  <T>(fn: (s: ReadableStream<T>) => void | any): TransformStream<T, T>;
+  <T>(stream?: WritableStream<T>): TransformStream<T, T>;
+} = (arg) => {
+  if (!arg) return new TransformStream();
+  if (arg instanceof WritableStream) return tees((s) => s.pipeTo(arg));
+  const fn = arg;
+  const { writable, readable } = new TransformStream();
+  const [a, b] = readable.tee();
+  // @ts-ignore
+  fn(a);
+  return { writable, readable: b };
+};
+yimport { throughs } from "./throughs";
+
+/* terminate the stream when signal is aborted. */
+export function terminates<T>(signal: AbortSignal) {
+  return throughs((r) => r.pipeThrough(new TransformStream(), { signal }));
+}
+/** @deprecated use terminates */
+export function aborts(signal: AbortSignal) {
+  return throughs((r) => r.pipeThrough(new TransformStream(), { signal }));
+}
+import { sleep } from "bun";
+import { sflow } from "./";
+
+// todo: check this issue
+// - [Implement `test.concurrent` · Issue #5585 · oven-sh/bun]( https://github.com/oven-sh/bun/issues/5585 )
+it("works with drop", async () => {
+  // emit: 0, 50, 100, 150
+  // pass: 0, __, 100, ___
+  expect(
+    await sflow([1, 2, 3, 4])
+      .forEach(() => sleep(50))
+      .throttle(80, { drop: true, keepLast: false })
+      .toArray()
+  ).toEqual([1, 3]);
+});
+it("works with drop keep last", async () => {
+  const r = await sflow([1, 2, 3, 4])
+    .forEach(() => sleep(50))
+    .throttle(80, { drop: true, keepLast: true })
+    .toArray();
+  // emit: 0, 50, 100, 150
+  // pass: 0, __, 100, ___
+  // pass: 0, __, 100, ___, 180(150) send last item
+  console.log(r);
+  expect(r).toEqual([1, 3, 4]);
+});
+it("works without drop", async () => {
+  // emit: 0, 50, 100, 150
+  // pass: 0, __, 100, ___
+  expect(
+    await sflow([1, 2, 3, 4])
+      .forEach(() => sleep(50))
+      .throttle(80)
+      .toArray()
+  ).toEqual([1, 2, 3, 4]);
+});
+it("works correct interval", async () => {
+  // emit: 0, 50, 100, 150
+  // pass: 0, __, 100, ___
+  await sflow([1, 2, 3, 4])
+    .forEach(() => sleep(20))
+    .throttle(80)
+    // calculate interval
+    .map(() => +new Date())
+    .convolve(2)
+    .forEach(([a, b]) => {
+      const interval = b - a;
+      expect(Math.abs(interval - 80)).toBeLessThan(10);
+    })
+    .done();
+});
+it("works keep last", async () => {
+  const r = await sflow([1, 2, 3, 4])
+    .forEach(() => sleep(50))
+    .throttle(80)
+    .toArray();
+  // emit: 0, 50, 100, 150
+  // pass: 0, __, 100, ___
+  // pass: 0, __, 100, ___, 180(150) send last item
+  console.log(r);
+  expect(r).toEqual([1, 2, 3, 4]);
+});
+it("works", async () => {
+  expect(
+    await sflow([1, 2, 3, 4])
+      .forEach(() => sleep(100))
+      .forEach(() => sleep(100))
+      .log()
+      .toArray()
+  ).toEqual([1, 2, 3, 4]);
+});
+
+it("interval should be 80", async () => {
+  await sflow([1, 2, 3, 4])
+    .forEach(() => sleep(80))
+    // .forEach(() => sleep(80))
+    // calculate interval
+    .map(() => +new Date())
+    .convolve(2)
+    .forEach(([a, b]) => {
+      const interval = b - a;
+      expect(interval).toBeGreaterThan(70);
+      expect(interval).toBeLessThan(90);
+      expect(Math.abs(interval - 80)).toBeLessThan(10);
+    })
+    .done();
+});
+it("interval should still be 80 with double peek", async () => {
+  await sflow([1, 2, 3, 4])
+    .peek(() => sleep(80))
+    .peek(() => sleep(80))
+    // calculate interval
+    .map(() => +new Date())
+    .convolve(2)
+    .forEach(([a, b]) => {
+      const interval = b - a;
+      console.log(interval);
+      expect(Math.abs(interval - 80)).toBeLessThan(20);
+    })
+    .done();
+});
+type ThrottleOption = {
+  /** drop=true: Drop chunks by interval, will ensure last item emit by default. set keepLast=false to drop last */
+  drop?: boolean;
+  /**
+   * drop=true: Drop chunks by interval, will ensure last item emit by default. set keepLast=false to drop last
+   * has no effect when drop=false
+   */
+  keepLast?: boolean;
+};
+/**
+ * ```ts
+ * drop=true: Drop chunks by interval, will ensure last item emit by default.
+ * set keepLast=false to drop last
+ *
+ * @example
+ * if you dont want item drops, please use forEach to limit speed
+ * sth like:
+ * sflow().forEach(sleep(1000)).forEach(sleep(1000)).log().done()
+ */
+export function throttles<T>(
+  interval: number,
+  { drop = false, keepLast = true }: ThrottleOption = {}
+) {
+  let timerId: number | null | Timer = null;
+  let cdPromise = Promise.withResolvers();
+  let lasts: T[] = [];
+  return new TransformStream<T, T>({
+    transform: async (chunk, ctrl) => {
+      if (timerId) {
+        if (keepLast) lasts = [chunk];
+        if (drop) return; // drop current chunk an continue streaming.
+        await cdPromise.promise;
+      }
+      lasts = [];
+      ctrl.enqueue(chunk);
+      //
+      [cdPromise, timerId] = [
+        Promise.withResolvers(),
+        setTimeout(() => {
+          timerId = null;
+          cdPromise.resolve();
+          // lasts.map((e) => ctrl.enqueue(e));
+        }, interval),
+      ] as const;
+    },
+    flush: async (ctrl) => {
+      // wait for last item enqueue, and then allow stream termination
+      while (timerId) await new Promise((r) => setTimeout(r, interval / 2));
+      lasts.map((e) => ctrl.enqueue(e));
+    },
+  });
+}
+
+export const throughs: {
+  <T>(stream?: TransformStream<T, T>): TransformStream<T, T>;
+  <T, R>(stream: TransformStream<T, R>): TransformStream<T, R>;
+  <T, R>(fn: (s: ReadableStream<T>) => ReadableStream<R>): TransformStream<
+    T, R
+  >;
+} = (arg: any) => {
+  if (!arg) return new TransformStream();
+  if (typeof arg !== "function") return throughs((s) => s.pipeThrough(arg));
+  const fn = arg;
+  const { writable, readable } = new TransformStream();
+  return { writable, readable: fn(readable) };
+};
+// import { sleep } from "bun";
+// import sflow from ".";
+// it("works number", async () => {
+//   const { value, readable } = await sflow([1, 2, 3])
+//     .forEach(async (e) => {
+//       await sleep(10);
+//     })
+//     .toLatest();
+//   readable.done();
+//   // wait for first emit
+
+//   await sleep(5);
+//   expect(await value).toEqual(1);
+//   // expect(await obj).toEqual(false);
+
+//   await sleep(10);
+//   expect(await value).toEqual(2);
+//   // expect(await obj).toEqual(false);
+
+//   await sleep(10);
+//   expect(await value).toEqual(3);
+//   // expect(await obj).toEqual(true);
+// });
+
+// it("works obj", async () => {
+//   const { value, readable } = await sflow([
+//     { a: 1 },
+//     { a: { b: { c: 2 } } },
+//     { a: 3 },
+//   ])
+//     .forEach(async () => {
+//       await sleep(10);
+//     })
+//     .toLatest();
+//   readable.done();
+//   // wait for first emit
+
+//   await sleep(5);
+//   expect(value).toEqual({ a: 1 });
+
+//   await sleep(10);
+//   // @ts-ignore
+//   expect(value.a.b.c).toEqual(2);
+//   expect(value).toEqual({ a: { b: { c: 2 } } });
+
+//   await sleep(10);
+//   expect(value).toEqual({ a: 3 });
+// });
+import type { Awaitable } from "./Awaitable";
+import { filters } from "./filters";
+import { throughs } from "./throughs";
+
+/** uniq by a new Set(), note: use === to compare */
+export const uniqs = <T>(): TransformStream<T, T> => {
+  const set = new Set<T>();
+  return throughs((s) =>
+    s.pipeThrough(
+      filters((x: T) => {
+        if (set.has(x)) return false;
+        set.add(x);
+        return true;
+      })
+    )
+  );
+};
+
+/** uniq by a new Map(), Note: use === to compare keys */
+export const uniqBys = <T, K>(
+  keyFn: (x: T) => Awaitable<K>
+): TransformStream<T, T> => {
+  const set = new Set<K>();
+  return throughs((s) =>
+    s.pipeThrough(
+      filters(async (x: T) => {
+        const key = await keyFn(x);
+        if (set.has(key)) return false;
+        set.add(key);
+        return true;
+      })
+    )
+  );
+};
+import { sf } from ".";
+import { sflow } from "./sflow";
+import { unpromises } from "./unpromises";
+
+it("works", async () => {
+  const p = getStream();
+  expect(p).toBeInstanceOf(Promise);
+  expect(await sf(unpromises(p)).toArray()).toEqual([1, 2, 3]);
+});
+async function getStream() {
+  return sflow([1, 2, 3]);
+}
+/** unwrap promises of readable stream */
+export function unpromises<T>(
+  promise: Promise<ReadableStream<T>>
+): ReadableStream<T> {
+  const tr = new TransformStream<T, T>();
+  (async function () {
+    const s = await promise;
+    await s.pipeTo(tr.writable);
+  })().catch((error) => {
+    tr.readable.cancel(error).catch(() => {
+      throw error;
+    });
+  });
+  return tr.readable;
+}
+import { sflow } from "./sflow";
+it("works", async () => {
+  expect(
+    await sflow([{ a: 1, b: [1, 2, 3], c: [1, 2, 3] }])
+      .unwind("b")
+      .map((e) => e)
+      .toArray()
+  ).toEqual([
+    { a: 1, b: 1, c: [1, 2, 3] },
+    { a: 1, b: 2, c: [1, 2, 3] },
+    { a: 1, b: 3, c: [1, 2, 3] },
+  ]);
+});
+import { unwind } from "unwind-array";
+import type { Unwinded } from "./Unwinded";
+import { flatMaps } from "./flatMaps";
+
+export function unwinds<
+  T extends Record<string, any>,
+  K extends keyof T & string
+>(key: K) {
+  return flatMaps<T, Unwinded<T, K>>(
+    (e) => unwind(e, { path: key }) as Unwinded<T, K>[]
+  );
+}
+export { toArray as wseToArray } from "web-streams-extensions";
+export { toPromise as wseToPromise } from "web-streams-extensions";
+export { merge as wseMerge } from "web-streams-extensions";
+export { from as wseFrom } from "web-streams-extensions";
+import { wseMerge } from "./wse";
+
+export const wseMerges: (
+  concurrent?: number
+) => <T>(
+  src: ReadableStream<ReadableStream<T> | Promise<T>>
+) => ReadableStream<T> = wseMerge as any;
