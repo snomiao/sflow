@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.15](https://github.com/snomiao/sflow/compare/v1.15.14...v1.15.15) (2024-07-24)
+
+
+### Bug Fixes
+
+* **main:** add nodestream export ([99ec6e1](https://github.com/snomiao/sflow/commit/99ec6e14332cfb51b0f7ed4869925ce07baa6e98))
+
 ### [1.15.14](https://github.com/snomiao/sflow/compare/v1.15.13...v1.15.14) (2024-07-24)
 
 
