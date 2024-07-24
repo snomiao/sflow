@@ -30,6 +30,7 @@ import { riffles } from "./riffles";
 import { skips } from "./skips";
 import { slices } from "./slices";
 import { streamAsyncIterator } from "./streamAsyncIterator";
+import { matchAlls, matchs, replaceAlls, replaces } from "./strings";
 import { tails } from "./tails";
 import { tees } from "./tees";
 import { terminates } from "./terminates";
@@ -50,8 +51,15 @@ export type EmitReducer<S, T, R> = (
 // find (filter+limit)
 // distinct=uniq
 //
+
 // todo:
 // catch, retry
+//
+// string stream process
+// match
+// replace
+// join
+//
 export type sflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> & {
     // { [Symbol.asyncDispose]: () => Promise<void> } &
@@ -77,7 +85,9 @@ export type sflow<T> = ReadableStream<T> &
     filter(fn: (x: T, i: number) => Awaitable<any>): sflow<T>; // fn must fisrt
     filter(): sflow<NonNullable<T>>;
     flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): sflow<R>;
+    /** @deprecated to join another stream, use merge instead  */
     join(fn: (s: WritableStream<T>) => void | any): sflow<T>;
+    /** @deprecated to join another stream, use merge instead  */
     join(stream?: ReadableStream<T>): sflow<T>;
     merge(fn: (s: WritableStream<T>) => void | any): sflow<T>;
     merge(stream?: ReadableStream<T>): sflow<T>;
@@ -148,7 +158,41 @@ export type sflow<T> = ReadableStream<T> &
     ? { confluence(...args: Parameters<typeof confluences<T>>): sflow<T> }
     : {}) &
   // text process
-  (T extends string ? { lines: () => sflow<string> } : {}) &
+  (T extends string
+    ? {
+        lines: () => sflow<string>;
+
+        join: (sep: string) => sflow<string>;
+        match: (
+          ...args: Parameters<typeof matchs>
+        ) => sflow<
+          ReturnType<typeof matchs> extends TransformStream<any, infer R>
+            ? R
+            : never
+        >;
+        matchAll: (
+          ...args: Parameters<typeof matchAlls>
+        ) => sflow<
+          ReturnType<typeof matchAlls> extends TransformStream<any, infer R>
+            ? R
+            : never
+        >;
+        replace: (
+          ...args: Parameters<typeof replaces>
+        ) => sflow<
+          ReturnType<typeof replaces> extends TransformStream<any, infer R>
+            ? R
+            : never
+        >;
+        replaceAll: (
+          ...args: Parameters<typeof replaceAlls>
+        ) => sflow<
+          ReturnType<typeof replaceAlls> extends TransformStream<any, infer R>
+            ? R
+            : never
+        >;
+      }
+    : {}) &
   // toResponse
   (T extends string | Uint8Array
     ? {
@@ -202,15 +246,26 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     flatMap: (...args: Parameters<typeof flatMaps>) =>
       sflow(r.pipeThrough(flatMaps(...args))),
     flat: (
-      ...args: Parameters<typeof flats> // @ts-ignore
+      ...args: Parameters<typeof flats> // @ts-expect-error array only
     ) => sflow(r.pipeThrough(flats(...args))),
-    /** @deprecated will be remove next major version, please use merge */
-    join: (...args: Parameters<typeof merges>) =>
-      sflow(r.pipeThrough(merges(...args))),
+    join: (...args: Parameters<typeof riffles>) =>
+      sflow(r.pipeThrough(riffles(...args))),
+    match: (
+      ...args: Parameters<typeof matchs> // @ts-expect-error string only
+    ) => sflow(r.pipeThrough(matchs(...args))),
+    matchAll: (
+      ...args: Parameters<typeof matchAlls> // @ts-expect-error string only
+    ) => sflow(r.pipeThrough(matchAlls(...args))),
+    replace: (
+      ...args: Parameters<typeof replaces> // @ts-expect-error string only
+    ) => sflow(r.pipeThrough(replaces(...args))),
+    replaceAll: (
+      ...args: Parameters<typeof replaceAlls> // @ts-expect-error string only
+    ) => sflow(r.pipeThrough(replaceAlls(...args))),
     merge: (...args: Parameters<typeof merges>) =>
       sflow(r.pipeThrough(merges(...args))),
     confluence: (
-      ...args: Parameters<typeof confluences> // @ts-ignore
+      ...args: Parameters<typeof confluences> // @ts-expect-error streams only
     ) => sflow(r.pipeThrough(confluences(...args))),
     limit: (...args: Parameters<typeof limits>) =>
       sflow(r.pipeThrough(limits(...args))),

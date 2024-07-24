@@ -1,6 +1,6 @@
-import TextDecoderStream from "polyfill-text-decoder-stream";
-import TextEncoderStream from "polyfill-text-encoder-stream";
 import { sflow } from "./sflow";
+export { default as TextDecoderStream } from "polyfill-text-decoder-stream";
+export { default as TextEncoderStream } from "polyfill-text-encoder-stream";
 export { chunkBys } from "./chunkBys";
 export { chunkIfs } from "./chunkIfs";
 export { chunkIntervals as intervals } from "./chunkIntervals";
@@ -30,6 +30,7 @@ export { reduces } from "./reduces";
 export { skips } from "./skips";
 export { slices } from "./slices";
 export { streamAsyncIterator } from "./streamAsyncIterator";
+export { matchAlls, matchs, replaceAlls, replaces } from "./strings";
 export { tails } from "./tails";
 export { tees } from "./tees";
 export { terminates as aborts } from "./terminates";
@@ -39,13 +40,7 @@ export { uniqBys, uniqs } from "./uniqs";
 export { unpromises } from "./unpromises";
 export type { Unwinded as Unwinded } from "./Unwinded";
 export { unwinds } from "./unwinds";
-export {
-    sflow as sf,
-    sflow as sflow,
-    sflow as snoflow,
-    TextDecoderStream,
-    TextEncoderStream
-};
+export { sflow as sf, sflow as sflow, sflow as snoflow };
 export default sflow;
 
 /** @deprecated */

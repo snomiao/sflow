@@ -1,5 +1,13 @@
-import { flatMaps } from "./flatMaps";
-
 export function riffles<T>(sep: T): TransformStream<T, T> {
-    return flatMaps((e) => [e, sep]);
+  let last: T;
+  return new TransformStream({
+    transform: (chunk, ctrl) => {
+      if (undefined !== last) {
+        ctrl.enqueue(last);
+        ctrl.enqueue(sep);
+      }
+      last = chunk;
+    },
+    flush: (ctrl) => ctrl.enqueue(last),
+  });
 }

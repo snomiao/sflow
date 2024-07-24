@@ -1,5 +1,9 @@
+import { TextDecoderStream } from ".";
 import { sflow } from "./sflow";
-
-await sflow(Bun.file("./README.md").stream())
-  .through(new TextDecoderStream())
-  .toLog();
+it("works", async () => {
+  await sflow(Bun.file("./README.md").stream())
+    .through(new TextDecoderStream())
+    .lines()
+    .riffle(">")
+    .toLog();
+});
