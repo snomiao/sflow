@@ -1,3 +1,5 @@
+import TextDecoderStream from "polyfill-text-decoder-stream";
+import TextEncoderStream from "polyfill-text-encoder-stream";
 import { sflow } from "./sflow";
 export { chunkBys } from "./chunkBys";
 export { chunkIfs } from "./chunkIfs";
@@ -11,6 +13,7 @@ export { flatMaps } from "./flatMaps";
 export { flats } from "./flats";
 export type { FlowSource } from "./FlowSource";
 export { forEachs } from "./forEachs";
+export { fromReadable, fromWritable } from "./fromNodeStream";
 export { lines } from "./lines";
 export { logs } from "./logs";
 export { mapAddFields } from "./mapAddFields";
@@ -36,7 +39,13 @@ export { uniqBys, uniqs } from "./uniqs";
 export { unpromises } from "./unpromises";
 export type { Unwinded as Unwinded } from "./Unwinded";
 export { unwinds } from "./unwinds";
-export { sflow as sf, sflow as sflow, sflow as snoflow };
+export {
+    sflow as sf,
+    sflow as sflow,
+    sflow as snoflow,
+    TextDecoderStream,
+    TextEncoderStream
+};
 export default sflow;
 
 /** @deprecated */

@@ -42,6 +42,8 @@
   },
   "dependencies": {
     "expect-type": "^0.19.0",
+    "polyfill-text-decoder-stream": "^0.0.9",
+    "polyfill-text-encoder-stream": "^0.0.6",
     "proxy-deep": "^4.0.1",
     "unwind-array": "^1.1.4",
     "web-streams-extensions": "^0.12.0"
