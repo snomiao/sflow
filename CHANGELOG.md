@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.14](https://github.com/snomiao/sflow/compare/v1.15.13...v1.15.14) (2024-07-24)
+
+
+### Bug Fixes
+
+* **main:** reduces type ([68839f6](https://github.com/snomiao/sflow/commit/68839f62b3f0f3c52d2846758c72ed3bb8db7941))
+
 ### [1.15.13](https://github.com/snomiao/sflow/compare/v1.15.12...v1.15.13) (2024-07-24)
 
 
