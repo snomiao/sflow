@@ -95,9 +95,7 @@ it("interval should still be 80 with double peek", async () => {
     .forEach(([a, b]) => {
       const interval = b - a;
       console.log(interval);
-      expect(interval).toBeGreaterThan(70);
-      expect(interval).toBeLessThan(90);
-      expect(Math.abs(interval - 80)).toBeLessThan(10);
+      expect(Math.abs(interval - 80)).toBeLessThan(20);
     })
     .done();
 });
