@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.12](https://github.com/snomiao/webstream-kernel/compare/v1.15.11...v1.15.12) (2024-07-24)
+
 ### [1.15.11](https://github.com/snomiao/sflow/compare/v1.15.10...v1.15.11) (2024-07-24)
 
 
