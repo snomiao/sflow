@@ -17,13 +17,6 @@ it("uniqs", async () => {
   let flow0 = sflow([1, 4, 2, 2, 3, 3, {}, {}]);
   expect(await flow0.through(uniqs()).toArray()).toEqual([1, 4, 2, 3, {}, {}]);
 });
-it("latests", async () => {
-  let flow0 = sflow([1, 2, 3, 3]);
-  // reduces(new Set(), (s, x) => s.add(s))
-  // .through((function() {
-  //     new
-  // })())
-});
 
 function lasts<T>(): TransformStream<T, T> {
   let last: T;

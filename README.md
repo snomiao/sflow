@@ -43,7 +43,7 @@ await new ReadableStream({
     .pipeThrough(limits(1))
     .pipeThrough(maps(() => 1))
     .pipeThrough(peeks(() => {}))
-    .pipeThrough(reduces(0, (a, b) => a + b))
+    .pipeThrough(reduces((a, b) => a + b), 0)
     .pipeThrough(skips(1))
     .pipeThrough(tails(1))
     .pipeThrough(throttles(100))

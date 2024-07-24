@@ -90,11 +90,15 @@ export type sflow<T> = ReadableStream<T> &
     forEach(...args: Parameters<typeof forEachs<T>>): sflow<T>;
     pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>; // fn must fisrt
     pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
-    reduce(fn: (state: T | undefined, x: T, i: number) => Awaitable<T>): sflow<T>; // fn must fisrt
-    reduce(state: T, fn: Reducer<T, T>): sflow<T>;
-    reduce<S>(fn: (state: S | undefined, x: T, i: number) => Awaitable<S>): sflow<S>; // fn must fisrt
-    reduce<S>(state: S, fn: Reducer<S, T>): sflow<S>;
-    reduceEmits<S, R>(state: S, fn: EmitReducer<S, T, R>): sflow<R>;
+    reduce(
+      fn: (state: T | undefined, x: T, i: number) => Awaitable<T>
+    ): sflow<T>; // fn must fisrt
+    reduce(fn: Reducer<T, T>, initialState: T): sflow<T>;
+    reduce<S>(
+      fn: (state: S | undefined, x: T, i: number) => Awaitable<S>
+    ): sflow<S>; // fn must fisrt
+    reduce<S>(fn: Reducer<S, T>, initialState: S): sflow<S>;
+    reduceEmits<S, R>(fn: EmitReducer<S, T, R>, state: S): sflow<R>;
     skip: (...args: Parameters<typeof skips<T>>) => sflow<T>;
     slice: (...args: Parameters<typeof slices<T>>) => sflow<T>;
     tail: (...args: Parameters<typeof tails<T>>) => sflow<T>;

@@ -9,7 +9,7 @@ describe("reduceEmits", () => {
       emit: state + x,
     });
 
-    const transform = reduceEmits(state, reducer);
+    const transform = reduceEmits(reducer, state);
     const writer = transform.writable.getWriter();
     const reader = transform.readable.getReader();
 
@@ -35,7 +35,7 @@ describe("reduceEmits", () => {
       return { next: state + x, emit: state + x };
     };
 
-    const transform = reduceEmits(state, reducer);
+    const transform = reduceEmits(reducer, state);
     const writer = transform.writable.getWriter();
     const reader = transform.readable.getReader();
 
@@ -57,14 +57,14 @@ describe("reduceEmits", () => {
   test("should transform state and emit different types", async () => {
     const init = { count: 0, items: [] as string[] };
 
-    const transform = reduceEmits(init, (state = init, x: string) => {
+    const transform = reduceEmits((state = init, x: string) => {
       const newState = {
         count: state.count + 1,
         items: [...state.items, x],
       };
       const emit = { currentCount: newState.count, item: x };
       return { next: newState, emit: emit };
-    });
+    }, init);
     const writer = transform.writable.getWriter();
     const reader = transform.readable.getReader();
 

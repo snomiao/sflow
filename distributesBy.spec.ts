@@ -2,7 +2,7 @@ import { sf } from ".";
 import { distributeBys } from "./distributeBys";
 import { rangeStream } from "./rangeStream";
 
-it("works", async () => {
+it("distributeBys", async () => {
   expect(
     await sf(rangeStream(10))
       .through(distributeBys((e: number) => e % 3))

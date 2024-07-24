@@ -1,10 +1,10 @@
 import type { Awaitable } from "./Awaitable";
 export const reduceEmits: {
   <T, S, R>(
-    state: S,
-    fn: (state: S, x: T, i: number) => Awaitable<{ next: S; emit: R }>
+    fn: (state: S, x: T, i: number) => Awaitable<{ next: S; emit: R }>,
+    state: S
   ): TransformStream<T, R>;
-} = (state, fn) => {
+} = (fn, state) => {
   let i = 0;
   return new TransformStream({
     transform: async (chunk, ctrl) => {

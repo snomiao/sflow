@@ -29,7 +29,7 @@ it("works", async () => {
     .limit(1)
     .map(() => 1)
     .peek(() => {})
-    .reduce(0, (a, b) => a + b)
+    .reduce((a, b) => a + b, 0)
     .skip(1)
     .tail(1)
     .throttle(100)
