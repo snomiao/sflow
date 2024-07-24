@@ -32,7 +32,7 @@ yarn add snoflow
 Here's a basic example of how to use sflow to process a stream:
 
 ```typescript
-import { sflow } from "snoflow";
+import { sflow } from "sflow";
 
 async function run() {
   let result = await sflow([1, 2, 3, 4])
@@ -54,7 +54,7 @@ run();
 Initialize a flow from various types of data sources:
 
 ```typescript
-import { sflow } from "snoflow";
+import { sflow } from "sflow";
 
 // From an array
 const flow1 = sflow([1, 2, 3, 4]);
@@ -124,7 +124,7 @@ const mergedFlow = sflow([flow1, flow2]).merge();
 With TypeScript, sflow ensures your transformations are type-safe:
 
 ```typescript
-import { sflow } from "snoflow";
+import { sflow } from "sflow";
 
 const typedFlow = sflow([{ a: 1, b: [1, 2, 3] }])
   .unwind("b") // Use `unwind` for objects with nested arrays
