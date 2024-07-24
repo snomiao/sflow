@@ -63,7 +63,7 @@ describe("reduceEmits", () => {
         items: [...state.items, x],
       };
       const emit = { currentCount: newState.count, item: x };
-      return { next: newState, emit: emit };
+      return { state: newState, emit: emit };
     }, init);
     const writer = transform.writable.getWriter();
     const reader = transform.readable.getReader();

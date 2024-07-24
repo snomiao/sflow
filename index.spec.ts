@@ -35,3 +35,15 @@ it("works", async () => {
     .throttle(100)
     .done();
 });
+it("works", async () => {
+  expect(
+    await sflow([1, 2, 3, 4])
+      .map((n) => n * 2)
+      .log() // prints 2, 4, 6, 8
+      .filter((n) => n > 4)
+      .log() // prints 6, 8
+      .reduce((a, b) => a + b, 0)
+      .log() // prints 6, 14
+      .toArray()
+  ).toEqual([6, 14]);
+});

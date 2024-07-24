@@ -37,11 +37,14 @@ import { sflow } from "sflow";
 async function run() {
   let result = await sflow([1, 2, 3, 4])
     .map((n) => n * 2)
+    .log() // prints 2, 4, 6, 8
     .filter((n) => n > 4)
-    .reduce((a, b) => a + b, 0)
+    .log() // prints 6, 8
+    .reduce((a, b) => a + b, 0) // first emit 0+6, second emit 0+6+8
+    .log() // prints 6, 14
     .toArray();
 
-  console.log(result); // Outputs: [6, 8]
+  console.log(result); // Outputs: [6, 14]
 }
 
 run();
@@ -95,7 +98,7 @@ sflow provides methods for chunking, buffering, and grouping data:
 flow1.chunk(2); // [[1, 2], [3, 4]]
 
 // Buffering within a time interval
-flow1.interval(1000);
+flow1.chunkByInterval(1000);
 
 // Custom chunking
 flow1.chunkBy((x) => Math.floor(x / 2));
@@ -117,6 +120,13 @@ flow1.toArray();
 
 // Merging multiple streams
 const mergedFlow = sflow([flow1, flow2]).merge();
+
+// Use chunkIf to split tokens by line
+await sflow("a,b,c\n\n1,2,3\nd,s,f".split(""))
+  .through(chunkIfs((e: string) => e.indexOf("\n") === -1))
+  .map((chars) => chars.join(""))
+  .toArray(); // ["a,b,c\n",'\n', "1,2,3\n", "d,s,f"]
+
 ```
 
 ### Type-Safe Enhancements
