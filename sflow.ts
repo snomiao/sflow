@@ -108,7 +108,9 @@ export type sflow<T> = ReadableStream<T> &
       fn: (state: S | undefined, x: T, i: number) => Awaitable<S>
     ): sflow<S>; // fn must fisrt
     reduce<S>(fn: Reducer<S, T>, initialState: S): sflow<S>;
-    reduceEmits<S, R>(fn: EmitReducer<S, T, R>, state: S): sflow<R>;
+    reduceEmit(fn: EmitReducer<T, T, T>): sflow<T>;
+    reduceEmit<R>(fn: EmitReducer<T, T, R>): sflow<R>;
+    reduceEmit<S, R>(fn: EmitReducer<S, T, R>, state: S): sflow<R>;
     skip: (...args: Parameters<typeof skips<T>>) => sflow<T>;
     slice: (...args: Parameters<typeof slices<T>>) => sflow<T>;
     tail: (...args: Parameters<typeof tails<T>>) => sflow<T>;
