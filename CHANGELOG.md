@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.17](https://github.com/snomiao/sflow/compare/v1.15.16...v1.15.17) (2024-07-26)
+
+
+### Bug Fixes
+
+* **main:** enqueue order ([44211dc](https://github.com/snomiao/sflow/commit/44211dcec079f80d4af0e4d7773946f544483460))
+* **reduce:** emitter ([f3b5143](https://github.com/snomiao/sflow/commit/f3b51436eb329920d8d92ab144e39de08d289bf9))
+
 ### [1.15.16](https://github.com/snomiao/sflow/compare/v1.15.15...v1.15.16) (2024-07-24)
 
 
