@@ -18,7 +18,7 @@ it("works with cache", async () => {
   const cache1d = KeyvCachedWith(new Keyv<unknown>({ ttl: 86400e3 }));
   await pageFlow(
     0,
-    cache1d((page) => {
+    cache1d(async (page) => {
       const data = [1, 2, 3, 4, 5][page];
       expectTypeOf(page).toBeNumber();
       return {

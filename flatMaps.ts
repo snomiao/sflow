@@ -6,7 +6,12 @@ export function flatMaps<T, R>(fn: (x: T, i: number) => Awaitable<R[]>) {
   let i = 0;
   return new TransformStream<T, R>({
     transform: async (chunk, ctrl) => {
-      (await fn(chunk, i++)).map((e) => ctrl.enqueue(e));
+      const ret = fn(chunk, i++);
+
+      // await only if ret is promise, to ensure performance
+      const val = ret instanceof Promise ? await ret : ret;
+
+      val.map((e) => ctrl.enqueue(e));
     },
   });
 }

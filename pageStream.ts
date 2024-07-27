@@ -9,7 +9,12 @@ export function pageStream<Data, Cursor>(
   let query: Cursor = initialQuery;
   return new ReadableStream({
     pull: async (ctrl) => {
-      const { data, next } = await fetcher(query);
+      const ret = fetcher(query);
+
+      // await only if ret is promise, to ensure performance
+      const val = ret instanceof Promise ? await ret : ret;
+
+      const { data, next } = val;
       ctrl.enqueue(data);
       if (null == next) return ctrl.close();
       query = next;

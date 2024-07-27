@@ -18,7 +18,12 @@ export const reduces: {
   let i = 0;
   return new TransformStream({
     transform: async (chunk, ctrl) => {
-      state = await fn(state, chunk, i++);
+      const ret = fn(state, chunk, i++);
+      
+      // await only if ret is promise, to ensure performance
+      const val = ret instanceof Promise ? await ret : ret;
+      
+      state = await val;
       ctrl.enqueue(state);
     },
   });
