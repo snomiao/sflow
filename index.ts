@@ -1,4 +1,4 @@
-import { sflow } from "./sflow";
+import { sflow, svector } from "./sflow";
 export { default as TextDecoderStream } from "polyfill-text-decoder-stream";
 export { default as TextEncoderStream } from "polyfill-text-encoder-stream";
 export { chunkBys } from "./chunkBys";
@@ -40,7 +40,7 @@ export { uniqBys, uniqs } from "./uniqs";
 export { unpromises } from "./unpromises";
 export type { Unwinded as Unwinded } from "./Unwinded";
 export { unwinds } from "./unwinds";
-export { sflow as sf, sflow as sflow, sflow as snoflow };
+export { sflow as sf, sflow as sflow, sflow as snoflow, svector as sv, svector as svector };
 export default sflow;
 
 /** @deprecated */

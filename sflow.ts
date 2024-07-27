@@ -205,6 +205,11 @@ export type sflow<T> = ReadableStream<T> &
         arrayBuffer: () => Promise<ArrayBuffer>;
       }
     : {});
+
+/** stream vector */
+export const svector = <T>(...src: ReadonlyArray<T>) => sflow<T>(src);
+
+/** stream flow */
 export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
   const r: ReadableStream<T> = froms(src);
   // @ts-ignore todo

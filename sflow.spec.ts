@@ -1,4 +1,5 @@
 import sflow, { uniqs } from ".";
+import { svector } from "./sflow";
 
 it("tees", async () => {
   let flow1 = sflow([1, 2, 3]);
@@ -16,6 +17,11 @@ it("tees", async () => {
 it("uniqs", async () => {
   let flow0 = sflow([1, 4, 2, 2, 3, 3, {}, {}]);
   expect(await flow0.through(uniqs()).toArray()).toEqual([1, 4, 2, 3, {}, {}]);
+});
+
+it("stream vector", async () => {
+  let flow0 = svector(1, 4, 2, 2, 3, 3);
+  expect(await flow0.through(uniqs()).toArray()).toEqual([1, 4, 2, 3]);
 });
 
 function lasts<T>(): TransformStream<T, T> {
