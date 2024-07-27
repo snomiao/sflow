@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.18](https://github.com/snomiao/sflow/compare/v1.15.17...v1.15.18) (2024-07-27)
+
+
+### Bug Fixes
+
+* **svector:** add ([3680bec](https://github.com/snomiao/sflow/commit/3680beceaaee84dcf53077a993c1c97c1a10a22c))
+
 ### [1.15.17](https://github.com/snomiao/sflow/compare/v1.15.16...v1.15.17) (2024-07-26)
 
 

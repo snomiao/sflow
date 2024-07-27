@@ -1,6 +1,6 @@
 {
   "name": "sflow",
-  "version": "1.15.17",
+  "version": "1.15.18",
   "description": "stream-flow with type-safety piping paradigram through web-stream-kernels.",
   "keywords": [
     "web-stream",
@@ -46,6 +46,7 @@
     "polyfill-text-encoder-stream": "^0.0.6",
     "proxy-deep": "^4.0.1",
     "string-replace-async": "^3.0.2",
+    "ts-essentials": "^10.0.1",
     "ts-pattern": "^5.2.0",
     "unwind-array": "^1.1.4",
     "web-streams-extensions": "^0.12.0"
