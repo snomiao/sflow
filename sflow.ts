@@ -99,7 +99,7 @@ export type sflow<T> = ReadableStream<T> &
     riffle(...args: Parameters<typeof riffles<T>>): sflow<T>;
     forEach(...args: Parameters<typeof forEachs<T>>): sflow<T>;
     pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>; // fn must fisrt
-    pMap<R>(concurr: number, fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
+    pMap<R>(fn: (x: T, i: number) => Awaitable<R>, options?: { concurrency?: number },): sflow<R>;
     reduce(
       fn: (state: T | undefined, x: T, i: number) => Awaitable<T>
     ): sflow<T>; // fn must fisrt
@@ -137,23 +137,23 @@ export type sflow<T> = ReadableStream<T> &
     toLog(...args: Parameters<typeof logs<T>>): Promise<void>;
   } & (T extends ReadonlyArray<any> // Array Process
     ? {
-        flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
-      }
+      flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
+    }
     : {}) &
   // Dictionary process
   (T extends Record<string, any>
     ? {
-        unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
-          key: K
-        ): sflow<Unwinded<T, K>>;
-        mapAddField: <K extends string, R>(
-          ...args: Parameters<typeof mapAddFields<K, T, R>>
-        ) => sflow<
-          Omit<T, K> & {
-            [key in K]: R;
-          }
-        >;
-      }
+      unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
+        key: K
+      ): sflow<Unwinded<T, K>>;
+      mapAddField: <K extends string, R>(
+        ...args: Parameters<typeof mapAddFields<K, T, R>>
+      ) => sflow<
+        Omit<T, K> & {
+          [key in K]: R;
+        }
+      >;
+    }
     : {}) &
   // Streams
   (T extends ReadableStream<infer T>
@@ -162,48 +162,48 @@ export type sflow<T> = ReadableStream<T> &
   // text process
   (T extends string
     ? {
-        lines: () => sflow<string>;
+      lines: () => sflow<string>;
 
-        join: (sep: string) => sflow<string>;
-        match: (
-          ...args: Parameters<typeof matchs>
-        ) => sflow<
-          ReturnType<typeof matchs> extends TransformStream<any, infer R>
-            ? R
-            : never
-        >;
-        matchAll: (
-          ...args: Parameters<typeof matchAlls>
-        ) => sflow<
-          ReturnType<typeof matchAlls> extends TransformStream<any, infer R>
-            ? R
-            : never
-        >;
-        replace: (
-          ...args: Parameters<typeof replaces>
-        ) => sflow<
-          ReturnType<typeof replaces> extends TransformStream<any, infer R>
-            ? R
-            : never
-        >;
-        replaceAll: (
-          ...args: Parameters<typeof replaceAlls>
-        ) => sflow<
-          ReturnType<typeof replaceAlls> extends TransformStream<any, infer R>
-            ? R
-            : never
-        >;
-      }
+      join: (sep: string) => sflow<string>;
+      match: (
+        ...args: Parameters<typeof matchs>
+      ) => sflow<
+        ReturnType<typeof matchs> extends TransformStream<any, infer R>
+        ? R
+        : never
+      >;
+      matchAll: (
+        ...args: Parameters<typeof matchAlls>
+      ) => sflow<
+        ReturnType<typeof matchAlls> extends TransformStream<any, infer R>
+        ? R
+        : never
+      >;
+      replace: (
+        ...args: Parameters<typeof replaces>
+      ) => sflow<
+        ReturnType<typeof replaces> extends TransformStream<any, infer R>
+        ? R
+        : never
+      >;
+      replaceAll: (
+        ...args: Parameters<typeof replaceAlls>
+      ) => sflow<
+        ReturnType<typeof replaceAlls> extends TransformStream<any, infer R>
+        ? R
+        : never
+      >;
+    }
     : {}) &
   // toResponse
   (T extends string | Uint8Array
     ? {
-        toResponse: () => Response;
-        text: () => Promise<string>;
-        json: () => Promise<any>;
-        blob: () => Promise<Blob>;
-        arrayBuffer: () => Promise<ArrayBuffer>;
-      }
+      toResponse: () => Response;
+      text: () => Promise<string>;
+      json: () => Promise<any>;
+      blob: () => Promise<Blob>;
+      arrayBuffer: () => Promise<ArrayBuffer>;
+    }
     : {});
 
 /** stream vector */
