@@ -9,5 +9,9 @@ import { throughs } from "./throughs";
 export function logs<T>(
   mapFn: (x: T, i: number) => Awaitable<any> = (s, i) => s
 ) {
-  return throughs(peeks<T>(async (e, i) => console.log(await mapFn(e, i))));
+  return throughs(peeks<T>(async (e, i) => {
+    const ret = mapFn(e, i)
+    const val = ret instanceof Promise ? await ret : ret;
+    console.log(val)
+  }));
 }

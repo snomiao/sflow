@@ -6,7 +6,8 @@ export function peeks<T>(fn: (x: T, i: number) => Awaitable<void>) {
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
       ctrl.enqueue(chunk);
-      await fn(chunk, i++);
+      const ret = fn(chunk, i++);
+      const val = ret instanceof Promise ? await ret : ret;
     },
   });
 }
