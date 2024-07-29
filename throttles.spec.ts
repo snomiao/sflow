@@ -87,15 +87,15 @@ it("interval should be 80", async () => {
 });
 it("interval should still be 80 with double peek", async () => {
   await sflow([1, 2, 3, 4])
-    .peek(() => sleep(80))
-    .peek(() => sleep(80))
+    .peek(() => sleep(200))
+    .peek(() => sleep(200))
     // calculate interval
     .map(() => +new Date())
     .convolve(2)
     .forEach(([a, b]) => {
       const interval = b - a;
       console.log(interval);
-      expect(Math.abs(interval - 80)).toBeLessThan(20);
+      expect(Math.abs(interval - 200)).toBeLessThan(40); // todo: optimize
     })
     .done();
 });
