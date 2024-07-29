@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.20](https://github.com/snomiao/sflow/compare/v1.15.19...v1.15.20) (2024-07-29)
+
+
+### Bug Fixes
+
+* **main:** concurrency as options ([43ee2bf](https://github.com/snomiao/sflow/commit/43ee2bf807a5b38a3f0a1c596f5458f740d3212e))
+* **main:** concurrency as options ([53840d2](https://github.com/snomiao/sflow/commit/53840d2bfb90ab86763d26c8295ed1382dbc7e8b))
+* **promise:** optional await ret ([4989b8c](https://github.com/snomiao/sflow/commit/4989b8c38ea4c93d500f137c9f6882bf3b0e8311))
+
 ### [1.15.19](https://github.com/snomiao/sflow/compare/v1.15.18...v1.15.19) (2024-07-27)
 
 ### [1.15.18](https://github.com/snomiao/sflow/compare/v1.15.17...v1.15.18) (2024-07-27)
