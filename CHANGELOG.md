@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.21](https://github.com/snomiao/sflow/compare/v1.15.20...v1.15.21) (2024-07-31)
+
+
+### Bug Fixes
+
+* **main:** optimize test ([4d5d2b2](https://github.com/snomiao/sflow/commit/4d5d2b208779e18db7d874d30c47abc2d45e0fe8))
+
 ### [1.15.20](https://github.com/snomiao/sflow/compare/v1.15.19...v1.15.20) (2024-07-29)
 
 
