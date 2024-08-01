@@ -1,6 +1,6 @@
 {
   "name": "sflow",
-  "version": "1.15.22",
+  "version": "1.15.23",
   "description": "stream-flow with type-safety piping paradigram through web-stream-kernels.",
   "keywords": [
     "web-stream",
@@ -41,6 +41,9 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@types/d3": "^7.4.3",
+    "bson": "^6.8.0",
+    "d3": "^7.9.0",
     "expect-type": "^0.19.0",
     "polyfill-text-decoder-stream": "^0.0.9",
     "polyfill-text-encoder-stream": "^0.0.6",
@@ -48,6 +51,7 @@
     "string-replace-async": "^3.0.2",
     "ts-essentials": "^10.0.1",
     "ts-pattern": "^5.2.0",
+    "ts-toolbelt": "^9.6.0",
     "unwind-array": "^1.1.4",
     "web-streams-extensions": "^0.12.0"
   },
