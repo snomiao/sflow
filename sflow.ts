@@ -261,6 +261,7 @@ type ToResponse<T> =
 // replace
 // join
 //
+export type sflowType<T extends sflow<any>> = T extends sflow<infer R> ? R: never;
 export type sflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> &
   BaseFlow<T> &
