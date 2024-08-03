@@ -1,5 +1,5 @@
 import sflow, { uniqs } from ".";
-import { svector } from "./sflow";
+import { svector } from "./svector";
 
 it("tees", async () => {
   let flow1 = sflow([1, 2, 3]);
