@@ -1,5 +1,6 @@
 import DIE from "@snomiao/die";
 import type { FieldPathByValue } from "react-hook-form";
+import type { Split } from "ts-toolbelt/out/String/Split";
 import type { Awaitable } from "./Awaitable";
 import { chunkBys } from "./chunkBys";
 import { chunkIfs } from "./chunkIfs";
@@ -40,12 +41,212 @@ import { uniqBys, uniqs } from "./uniqs";
 import type { Unwinded } from "./Unwinded";
 import { unwinds } from "./unwinds";
 import { wseToArray, wseToPromise } from "./wse";
+import { csvFormats, csvParses, tsvFormats, tsvParses } from "./xsvStreams";
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
   state: S,
   x: T,
   i: number
 ) => Awaitable<{ next: S; emit: R }>;
+interface BaseFlow<T> {
+  _type: T;
+  readable: ReadableStream<T>;
+  writable: WritableStream<T>;
+  
+  /** @deprecated use chunk*/
+  buffer(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
+  
+  /** inverse of flat */
+  chunk(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
+  chunkBy(...args: Parameters<typeof chunkBys<T>>): sflow<T[]>;
+  chunkIf(...args: Parameters<typeof chunkIfs<T>>): sflow<T[]>;
+
+  convolve(...args: Parameters<typeof convolves<T>>): sflow<T[]>;
+
+  abort(...args: Parameters<typeof terminates<T>>): sflow<T>;
+  
+  through(): sflow<T>;
+  through(stream: TransformStream<T, T>): sflow<T>;
+  through<R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
+  through<R>(stream: TransformStream<T, R>): sflow<R>;
+
+  /** @deprecated use chunkInterval */
+  interval(...args: Parameters<typeof chunkIntervals<T>>): sflow<T[]>;
+  chunkInterval(...args: Parameters<typeof chunkIntervals<T>>): sflow<T[]>;
+  debounce(...args: Parameters<typeof debounces<T>>): sflow<T>;
+  done: (pipeTo?: WritableStream<T>) => Promise<void>;
+  end: (pipeTo?: WritableStream<T>) => Promise<void>;
+  filter(fn: (x: T, i: number) => Awaitable<any>): sflow<T>; // fn must fisrt
+  filter(): sflow<NonNullable<T>>;
+  
+  flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): sflow<R>;
+
+  /** @deprecated to join another stream, use merge instead  */
+  join(fn: (s: WritableStream<T>) => void | any): sflow<T>;
+  /** @deprecated to join another stream, use merge instead  */
+  join(stream?: ReadableStream<T>): sflow<T>;
+  merge(fn: (s: WritableStream<T>) => void | any): sflow<T>;
+  merge(stream?: ReadableStream<T>): sflow<T>;
+  limit(...args: Parameters<typeof limits<T>>): sflow<T>;
+  head(...args: Parameters<typeof heads<T>>): sflow<T>;
+  map<R>(...args: Parameters<typeof maps<T, R>>): sflow<R>;
+  log(...args: Parameters<typeof logs<T>>): sflow<T>;
+  peek(...args: Parameters<typeof peeks<T>>): sflow<T>;
+  riffle(...args: Parameters<typeof riffles<T>>): sflow<T>;
+  forEach(...args: Parameters<typeof forEachs<T>>): sflow<T>;
+  pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>; // fn must fisrt
+  pMap<R>(
+    fn: (x: T, i: number) => Awaitable<R>,
+    options?: {
+      concurrency?: number;
+    }
+  ): sflow<R>;
+  reduce(fn: (state: T | undefined, x: T, i: number) => Awaitable<T>): sflow<T>; // fn must fisrt
+  reduce(fn: Reducer<T, T>, initialState: T): sflow<T>;
+  reduce<S>(
+    fn: (state: S | undefined, x: T, i: number) => Awaitable<S>
+  ): sflow<S>; // fn must fisrt
+  reduce<S>(fn: Reducer<S, T>, initialState: S): sflow<S>;
+  reduceEmit(fn: EmitReducer<T, T, T>): sflow<T>;
+  reduceEmit<R>(fn: EmitReducer<T, T, R>): sflow<R>;
+  reduceEmit<S, R>(fn: EmitReducer<S, T, R>, state: S): sflow<R>;
+  skip: (...args: Parameters<typeof skips<T>>) => sflow<T>;
+  slice: (...args: Parameters<typeof slices<T>>) => sflow<T>;
+  tail: (...args: Parameters<typeof tails<T>>) => sflow<T>;
+  uniq: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
+  uniqBy: <K>(...args: Parameters<typeof uniqBys<T, K>>) => sflow<T>;
+  tees(fn: (s: sflow<T>) => void | any): sflow<T>; // fn must fisrt
+  tees(stream?: WritableStream<T>): sflow<T>;
+  throttle: (...args: Parameters<typeof throttles<T>>) => sflow<T>;
+  // prevents
+  preventAbort: () => sflow<T>;
+  preventClose: () => sflow<T>;
+  preventCancel: () => sflow<T>;
+  // to promises
+  toEnd: () => Promise<void>;
+  toNil: () => Promise<void>;
+  toArray: () => Promise<T[]>;
+  toCount: () => Promise<number>;
+  toFirst: () => Promise<T>;
+  /** Will throw an error if multple items emitted */
+  toOne: () => Promise<T>;
+  /** Returns a promise that always give you latest value of the stream */
+  // toLatest: () => Promise<{ value: T; readable: sflow<T> }>;
+  toLast: () => Promise<T>;
+  toLog(...args: Parameters<typeof logs<T>>): Promise<void>;
+}
+
+type ArrayFlow<T> = T extends ReadonlyArray<any>
+  ? {
+    // inverse of chunk
+      flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
+    }
+  : {};
+
+type DictionaryFlow<T> = T extends Record<string, any>
+  ? {
+      unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
+        key: K
+      ): sflow<Unwinded<T, K>>;
+      mapAddField: <K extends string, R>(
+        ...args: Parameters<typeof mapAddFields<K, T, R>>
+      ) => sflow<
+        Omit<T, K> & {
+          [key in K]: R;
+        }
+      >;
+    }
+  : {};
+
+type StreamsFlow<T> = T extends ReadableStream<infer T>
+  ? {
+      confluence(...args: Parameters<typeof confluences<T>>): sflow<T>;
+    }
+  : {};
+
+type TextFlow<T> = T extends string
+  ? {
+      join: (sep: string) => sflow<string>;
+      lines: (
+        ...args: Parameters<typeof lines>
+      ) => sflow<
+        ReturnType<typeof lines> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+      match: (
+        ...args: Parameters<typeof matchs>
+      ) => sflow<
+        ReturnType<typeof matchs> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+      matchAll: (
+        ...args: Parameters<typeof matchAlls>
+      ) => sflow<
+        ReturnType<typeof matchAlls> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+      replace: (
+        ...args: Parameters<typeof replaces>
+      ) => sflow<
+        ReturnType<typeof replaces> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+      replaceAll: (
+        ...args: Parameters<typeof replaceAlls>
+      ) => sflow<
+        ReturnType<typeof replaceAlls> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+    }
+  : {};
+type XsvEncodeFlow<T> = T extends Record<string, any>
+  ? {
+      csvFormat: (
+        ...args: Parameters<typeof csvFormats>
+      ) => sflow<
+        ReturnType<typeof csvFormats> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+      tsvFormat: (
+        ...args: Parameters<typeof tsvFormats>
+      ) => sflow<
+        ReturnType<typeof tsvFormats> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+    }
+  : {};
+type XsvDecodeFlow<T> = T extends string
+  ? {
+      csvParse<S extends string>(
+        header: S
+      ): sflow<Record<Split<S, ",">[number], any>>;
+      csvParse<S extends string[]>(header: S): sflow<Record<S[number], any>>;
+      tsvParse<S extends string>(
+        header: S
+      ): sflow<Record<Split<S, ",">[number], any>>;
+      tsvParse<S extends string[]>(header: S): sflow<Record<S[number], any>>;
+    }
+  : {};
+
+type ToResponse<T> =
+  // toResponse
+  T extends string | Uint8Array
+    ? {
+        toResponse: () => Response;
+        text: () => Promise<string>;
+        json: () => Promise<any>;
+        blob: () => Promise<Blob>;
+        arrayBuffer: () => Promise<ArrayBuffer>;
+      }
+    : {};
+
 // maybe:
 // subscribe (forEach+nils)
 // find (filter+limit)
@@ -61,150 +262,15 @@ export type EmitReducer<S, T, R> = (
 // join
 //
 export type sflow<T> = ReadableStream<T> &
-  AsyncIterableIterator<T> & {
-    // { [Symbol.asyncDispose]: () => Promise<void> } &
-    _type: T;
-    readable: ReadableStream<T>;
-    writable: WritableStream<T>;
-    /** @deprecated use chunk*/
-    buffer(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
-    chunk(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
-    convolve(...args: Parameters<typeof convolves<T>>): sflow<T[]>;
-    chunkBy(...args: Parameters<typeof chunkBys<T>>): sflow<T[]>;
-    chunkIf(...args: Parameters<typeof chunkIfs<T>>): sflow<T[]>;
-    abort(...args: Parameters<typeof terminates<T>>): sflow<T>;
-    through<R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
-    through<R>(stream: TransformStream<T, R>): sflow<R>;
-    through(stream?: TransformStream<T, T>): sflow<T>;
-    /** @deprecated use chunkInterval */
-    interval(...args: Parameters<typeof chunkIntervals<T>>): sflow<T[]>;
-    chunkInterval(...args: Parameters<typeof chunkIntervals<T>>): sflow<T[]>;
-    debounce(...args: Parameters<typeof debounces<T>>): sflow<T>;
-    done: (pipeTo?: WritableStream<T>) => Promise<void>;
-    end: (pipeTo?: WritableStream<T>) => Promise<void>;
-    filter(fn: (x: T, i: number) => Awaitable<any>): sflow<T>; // fn must fisrt
-    filter(): sflow<NonNullable<T>>;
-    flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): sflow<R>;
-    /** @deprecated to join another stream, use merge instead  */
-    join(fn: (s: WritableStream<T>) => void | any): sflow<T>;
-    /** @deprecated to join another stream, use merge instead  */
-    join(stream?: ReadableStream<T>): sflow<T>;
-    merge(fn: (s: WritableStream<T>) => void | any): sflow<T>;
-    merge(stream?: ReadableStream<T>): sflow<T>;
-    limit(...args: Parameters<typeof limits<T>>): sflow<T>;
-    head(...args: Parameters<typeof heads<T>>): sflow<T>;
-    map<R>(...args: Parameters<typeof maps<T, R>>): sflow<R>;
-    log(...args: Parameters<typeof logs<T>>): sflow<T>;
-    peek(...args: Parameters<typeof peeks<T>>): sflow<T>;
-    riffle(...args: Parameters<typeof riffles<T>>): sflow<T>;
-    forEach(...args: Parameters<typeof forEachs<T>>): sflow<T>;
-    pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>; // fn must fisrt
-    pMap<R>(fn: (x: T, i: number) => Awaitable<R>, options?: { concurrency?: number },): sflow<R>;
-    reduce(
-      fn: (state: T | undefined, x: T, i: number) => Awaitable<T>
-    ): sflow<T>; // fn must fisrt
-    reduce(fn: Reducer<T, T>, initialState: T): sflow<T>;
-    reduce<S>(
-      fn: (state: S | undefined, x: T, i: number) => Awaitable<S>
-    ): sflow<S>; // fn must fisrt
-    reduce<S>(fn: Reducer<S, T>, initialState: S): sflow<S>;
-    reduceEmit(fn: EmitReducer<T, T, T>): sflow<T>;
-    reduceEmit<R>(fn: EmitReducer<T, T, R>): sflow<R>;
-    reduceEmit<S, R>(fn: EmitReducer<S, T, R>, state: S): sflow<R>;
-    skip: (...args: Parameters<typeof skips<T>>) => sflow<T>;
-    slice: (...args: Parameters<typeof slices<T>>) => sflow<T>;
-    tail: (...args: Parameters<typeof tails<T>>) => sflow<T>;
-    uniq: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
-    uniqBy: <K>(...args: Parameters<typeof uniqBys<T, K>>) => sflow<T>;
-    tees(fn: (s: sflow<T>) => void | any): sflow<T>; // fn must fisrt
-    tees(stream?: WritableStream<T>): sflow<T>;
-    throttle: (...args: Parameters<typeof throttles<T>>) => sflow<T>;
-    // prevents
-    preventAbort: () => sflow<T>;
-    preventClose: () => sflow<T>;
-    preventCancel: () => sflow<T>;
-    // to promises
-    toEnd: () => Promise<void>;
-    toNil: () => Promise<void>;
-    toArray: () => Promise<T[]>;
-    toCount: () => Promise<number>;
-    toFirst: () => Promise<T>;
-    /** Will throw an error if multple items emitted */
-    toOne: () => Promise<T>;
-    /** Returns a promise that always give you latest value of the stream */
-    // toLatest: () => Promise<{ value: T; readable: sflow<T> }>;
-    toLast: () => Promise<T>;
-    toLog(...args: Parameters<typeof logs<T>>): Promise<void>;
-  } & (T extends ReadonlyArray<any> // Array Process
-    ? {
-      flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
-    }
-    : {}) &
-  // Dictionary process
-  (T extends Record<string, any>
-    ? {
-      unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
-        key: K
-      ): sflow<Unwinded<T, K>>;
-      mapAddField: <K extends string, R>(
-        ...args: Parameters<typeof mapAddFields<K, T, R>>
-      ) => sflow<
-        Omit<T, K> & {
-          [key in K]: R;
-        }
-      >;
-    }
-    : {}) &
-  // Streams
-  (T extends ReadableStream<infer T>
-    ? { confluence(...args: Parameters<typeof confluences<T>>): sflow<T> }
-    : {}) &
-  // text process
-  (T extends string
-    ? {
-      lines: () => sflow<string>;
-
-      join: (sep: string) => sflow<string>;
-      match: (
-        ...args: Parameters<typeof matchs>
-      ) => sflow<
-        ReturnType<typeof matchs> extends TransformStream<any, infer R>
-        ? R
-        : never
-      >;
-      matchAll: (
-        ...args: Parameters<typeof matchAlls>
-      ) => sflow<
-        ReturnType<typeof matchAlls> extends TransformStream<any, infer R>
-        ? R
-        : never
-      >;
-      replace: (
-        ...args: Parameters<typeof replaces>
-      ) => sflow<
-        ReturnType<typeof replaces> extends TransformStream<any, infer R>
-        ? R
-        : never
-      >;
-      replaceAll: (
-        ...args: Parameters<typeof replaceAlls>
-      ) => sflow<
-        ReturnType<typeof replaceAlls> extends TransformStream<any, infer R>
-        ? R
-        : never
-      >;
-    }
-    : {}) &
-  // toResponse
-  (T extends string | Uint8Array
-    ? {
-      toResponse: () => Response;
-      text: () => Promise<string>;
-      json: () => Promise<any>;
-      blob: () => Promise<Blob>;
-      arrayBuffer: () => Promise<ArrayBuffer>;
-    }
-    : {});
+  AsyncIterableIterator<T> &
+  BaseFlow<T> &
+  ArrayFlow<T> &
+  DictionaryFlow<T> &
+  StreamsFlow<T> &
+  TextFlow<T> &
+  XsvEncodeFlow<T> &
+  XsvDecodeFlow<T> &
+  ToResponse<T>;
 
 /** stream vector */
 export const svector = <T>(...src: ReadonlyArray<T>) => sflow<T>(src);
@@ -219,7 +285,7 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
       return r;
     },
     // get writable() {
-    //   DIE(new Error("WIP"));
+    //   DIE(new Error("WIP, merge into this stream"));
     //   return new WritableStream();
     // },
     through: (...args: Parameters<typeof _throughs>) =>
@@ -311,6 +377,22 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
       sflow(r.pipeThrough(_tees(...args))),
     throttle: (...args: Parameters<typeof throttles>) =>
       sflow(r.pipeThrough(throttles(...args))),
+
+    // line based data stream
+    csvFormat: (
+      ...args: Parameters<typeof csvFormats> // @ts-expect-error xsv
+    ) => sflow(r.pipeThrough(csvFormats(...args))),
+    tsvFormat: (
+      ...args: Parameters<typeof tsvFormats> // @ts-expect-error xsv
+    ) => sflow(r.pipeThrough(tsvFormats(...args))),
+    csvParse: (
+      ...args: Parameters<typeof csvParses> // @ts-expect-error xsv
+    ) => sflow(r.pipeThrough(csvParses(...args))),
+    tsvParse: (
+      ...args: Parameters<typeof tsvParses> // @ts-expect-error xsv
+    ) => sflow(r.pipeThrough(tsvParses(...args))),
+
+    // prevents
     /** prevent upstream abort, ignore upstream errors   */
     preventAbort: () =>
       sflow(r.pipeThrough(throughs(), { preventAbort: true })),
@@ -320,6 +402,7 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     /** prevent downstream cancel, ignore downstream errors */
     preventCancel: () =>
       sflow(r.pipeThrough(throughs(), { preventCancel: true })),
+
     // to promises
     toEnd: () => r.pipeTo(nils<T>()),
     toNil: () => r.pipeTo(nils<T>()),
@@ -364,9 +447,9 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     //   return initialPromise.promise;
     // },
     // string stream process
-    lines: () =>
-      // @ts-expect-error should be string
-      sflow(r.pipeThrough(lines())),
+    lines: (...args: Parameters<typeof lines>) =>
+      // @ts-expect-error T should be string
+      sflow(r.pipeThrough(lines(...args))),
     // as response (only ReadableStream<string | UInt8Array>)
     toResponse: (init?: ResponseInit) => new Response(r, init),
     text: (init?: ResponseInit) => new Response(r, init).text(),

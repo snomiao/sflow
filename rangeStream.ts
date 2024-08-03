@@ -37,8 +37,8 @@ export function rangeStream(...args: number[]) {
 export function rangeFlow(
   minInclusive: number,
   maxExclusive: number
-): ReadableStream<number>;
-export function rangeFlow(maxExclusive: number): ReadableStream<number>;
+): sflow<number>;
+export function rangeFlow(maxExclusive: number): sflow<number>;
 export function rangeFlow(...args: number[]) {
   // @ts-ignore
   return sflow(rangeStream(...args));
