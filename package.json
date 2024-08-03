@@ -1,6 +1,6 @@
 {
   "name": "sflow",
-  "version": "1.15.27",
+  "version": "1.15.28",
   "description": "stream-flow with type-safety piping paradigram through web-stream-kernels.",
   "keywords": [
     "web-stream",
@@ -34,7 +34,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build index.ts fromNodeStream.ts --outdir=dist && bun build:umd",
+    "build": "bun build index.ts fromNodeStream.ts --sourcemap=linked --outdir=dist && bun build:umd",
     "build:umd": "bunx rollup dist/index.js --file=dist/index.umd.js --format=umd --name sflow",
     "prerelease": "bun run build && bun run test",
     "release": "bunx standard-version && git push --follow-tags && npm publish",
