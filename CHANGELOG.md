@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.27](https://github.com/snomiao/sflow/compare/v1.15.26...v1.15.27) (2024-08-03)
+
+
+### Bug Fixes
+
+* **main:** add sflowType ([040f984](https://github.com/snomiao/sflow/commit/040f984f015ae8c5e65c859b78b234bf8f89e9af))
+* **main:** mv svector ([8104815](https://github.com/snomiao/sflow/commit/81048156e38df280747015e9be6e961ca77f3a4d))
+* **main:** xsvstream ([493bde3](https://github.com/snomiao/sflow/commit/493bde3fe05b6590ba78a75caac9aa4c8e001f04))
+
 ### [1.15.26](https://github.com/snomiao/sflow/compare/v1.15.23...v1.15.26) (2024-08-03)
 
 ### [1.15.25](https://github.com/snomiao/sflow/compare/v1.15.23...v1.15.25) (2024-08-03)
