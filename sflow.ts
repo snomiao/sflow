@@ -1,4 +1,4 @@
-import DIE from "@snomiao/die";
+import { DIEError } from "phpdie";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Split } from "ts-toolbelt/out/String/Split";
 import type { Awaitable } from "./Awaitable";
@@ -52,10 +52,10 @@ interface BaseFlow<T> {
   _type: T;
   readable: ReadableStream<T>;
   writable: WritableStream<T>;
-  
+
   /** @deprecated use chunk*/
   buffer(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
-  
+
   /** inverse of flat */
   chunk(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
   chunkBy(...args: Parameters<typeof chunkBys<T>>): sflow<T[]>;
@@ -64,7 +64,7 @@ interface BaseFlow<T> {
   convolve(...args: Parameters<typeof convolves<T>>): sflow<T[]>;
 
   abort(...args: Parameters<typeof terminates<T>>): sflow<T>;
-  
+
   through(): sflow<T>;
   through(stream: TransformStream<T, T>): sflow<T>;
   through<R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
@@ -78,7 +78,7 @@ interface BaseFlow<T> {
   end: (pipeTo?: WritableStream<T>) => Promise<void>;
   filter(fn: (x: T, i: number) => Awaitable<any>): sflow<T>; // fn must fisrt
   filter(): sflow<NonNullable<T>>;
-  
+
   flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): sflow<R>;
 
   /** @deprecated to join another stream, use merge instead  */
@@ -126,19 +126,36 @@ interface BaseFlow<T> {
   toEnd: () => Promise<void>;
   toNil: () => Promise<void>;
   toArray: () => Promise<T[]>;
+
+  /** Count stream items, and drop items */
   toCount: () => Promise<number>;
+
+  /** Get first item from stream, and terminate stream */
   toFirst: () => Promise<T>;
-  /** Will throw an error if multple items emitted */
-  toOne: () => Promise<T>;
+
+  /** Get one item from stream
+   * throws if more than 1 item is emitted
+   * return undefined if no item returned
+   * return the item
+   */
+  toOne: (options?: { required?: boolean }) => Promise<T|undefined>;
+  /** Get one item from stream
+   * throws if more than 1 item is emitted
+   * throws if no items emitted, (required defaults to false)
+   * return the item
+   */
+  toAtLeastOne: (options?: { required?: boolean }) => Promise<T>;
   /** Returns a promise that always give you latest value of the stream */
   // toLatest: () => Promise<{ value: T; readable: sflow<T> }>;
+
+  /** Get last item from stream, ignore others */
   toLast: () => Promise<T>;
   toLog(...args: Parameters<typeof logs<T>>): Promise<void>;
 }
 
 type ArrayFlow<T> = T extends ReadonlyArray<any>
   ? {
-    // inverse of chunk
+      // inverse of chunk
       flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
     }
   : {};
@@ -261,7 +278,9 @@ type ToResponse<T> =
 // replace
 // join
 //
-export type sflowType<T extends sflow<any>> = T extends sflow<infer R> ? R: never;
+export type sflowType<T extends sflow<any>> = T extends sflow<infer R>
+  ? R
+  : never;
 export type sflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> &
   BaseFlow<T> &
@@ -405,16 +424,18 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     toEnd: () => r.pipeTo(nils<T>()),
     toNil: () => r.pipeTo(nils<T>()),
     toArray: () => wseToArray(r),
-    /** Get count of stream items */
-    toCount: async () => (await wseToArray(r)).length,
-    /** Get first item from stream, ignore others */
+    toCount: async () => (await wseToArray(r)).length, // TODO: optimize memory usage
     toFirst: () => wseToPromise(sflow(r).limit(1, { terminate: true })),
-    /** Get last item from stream, ignore others */
     toLast: () => wseToPromise(sflow(r).tail(1)),
-    /** Get one item from stream, throw if more than 1 items emitted */
     toOne: async () => {
       const a = await wseToArray(r);
-      if (a.length !== 1) DIE(`Expect only 1 Item, got ${a.length}`);
+      if (a.length > 1) DIEError(`Expect only 1 Item, but got ${a.length}`);
+      return a[0];
+    },
+    toAtLeastOne: async () => {
+      const a = await wseToArray(r);
+      if (a.length > 1) DIEError(`Expect only 1 Item, but got ${a.length}`);
+      if (a.length < 1) DIEError(`Expect at lest 1 Item, but got ${a.length}`);
       return a[0];
     },
     /** call console.log on every item */

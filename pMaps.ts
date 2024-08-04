@@ -1,4 +1,3 @@
-import DIE from "@snomiao/die";
 import type { Awaitable } from "./Awaitable";
 
 /* map a stream by parallel, return them in original order */

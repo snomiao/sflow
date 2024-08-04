@@ -19,11 +19,11 @@ it("curried", async () => {
   const req2 = sflow([1, 2, 3]);
   const req3 = sflow([0, 4, 5]);
   const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5];
-
+  
   expect(
     await sflow([req1, req2, req3])
-      .through(mergeAscends((x) => x)) // merge all flows into one by ascend order
-      .toArray()
+    .through(mergeAscends((x) => x)) // merge all flows into one by ascend order
+    .toArray()
   ).toEqual(ret);
 });
 
