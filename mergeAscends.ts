@@ -1,6 +1,13 @@
 import DIE from "phpdie";
 import { sortBy, type Ord } from "rambda";
 import { sflow, type FlowSource } from ".";
+interface MergeBy {
+  <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): sflow<T>;
+  <T>(ordFn: (input: T) => Ord): {
+    (srcs: FlowSource<FlowSource<T>>): sflow<T>;
+  };
+}
+
 /**
  * merge multiple stream by ascend order, assume all input stream is sorted by ascend
  * output stream will be sorted by ascend too.
@@ -11,17 +18,9 @@ import { sflow, type FlowSource } from ".";
  * @param srcs a list of input stream
  * @returns a new stream that merge all input stream by ascend order
  */
-export const mergeAscends: {
-  <T>(ordFn: (input: T) => Ord): {
-    (srcs: FlowSource<FlowSource<T>>): ReadableStream<T>;
-  };
-  <T>(
-    ordFn: (input: T) => Ord,
-    srcs: FlowSource<FlowSource<T>>
-  ): ReadableStream<T>;
-} = <T>(ordFn: (input: T) => Ord, _srcs?: FlowSource<FlowSource<T>>) => {
+export const mergeAscends: MergeBy = <T>(ordFn: (input: T) => Ord, _srcs?: FlowSource<FlowSource<T>>) => {
   if (!_srcs) return ((srcs: any) => mergeAscends(ordFn, srcs)) as any;
-  return new ReadableStream({
+  return sflow(new ReadableStream<T>({
     pull: async (ctrl) => {
       const srcs = await sflow(_srcs).toArray();
       const slots = srcs.map(() => undefined as { value: T } | undefined);
@@ -74,7 +73,6 @@ curr: ${JSON.stringify(minValue)}
 `);
             }
             lastMinValue = minValue;
-            // @ts-expect-error minValue could be undefined
             ctrl.enqueue(minValue);
             slots[minIndex] = undefined;
             pendingSlotRemoval[minIndex]?.resolve();
@@ -84,8 +82,9 @@ curr: ${JSON.stringify(minValue)}
         })
       );
     },
-  });
+  }));
 };
+
 
 /**
  * merge multiple stream by ascend order, assume all input stream is sorted by ascend
@@ -97,17 +96,9 @@ curr: ${JSON.stringify(minValue)}
  * @param srcs a list of input stream
  * @returns a new stream that merge all input stream by ascend order
  */
-export const mergeDescends: {
-  <T>(ordFn: (input: T) => Ord): {
-    (srcs: FlowSource<FlowSource<T>>): ReadableStream<T>;
-  };
-  <T>(
-    ordFn: (input: T) => Ord,
-    srcs: FlowSource<FlowSource<T>>
-  ): ReadableStream<T>;
-} = <T>(ordFn: (input: T) => Ord, _srcs?: FlowSource<FlowSource<T>>) => {
+export const mergeDescends: MergeBy = <T>(ordFn: (input: T) => Ord, _srcs?: FlowSource<FlowSource<T>>) => {
   if (!_srcs) return ((srcs: any) => mergeDescends(ordFn, srcs)) as any;
-  return new ReadableStream({
+  return sflow(new ReadableStream<T>({
     pull: async (ctrl) => {
       const srcs = await sflow(_srcs).toArray();
       const slots = srcs.map(() => undefined as { value: T } | undefined);
@@ -160,7 +151,6 @@ curr: ${JSON.stringify(maxValue)}
 `);
             }
             lastMaxValue = maxValue;
-            // @ts-expect-error maxValue could be undefined
             ctrl.enqueue(maxValue);
             slots[maxIndex] = undefined;
             pendingSlotRemoval[maxIndex]?.resolve();
@@ -170,5 +160,5 @@ curr: ${JSON.stringify(maxValue)}
         })
       );
     },
-  });
+  }));
 };

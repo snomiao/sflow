@@ -176,3 +176,4 @@ dist
 
 bun.lockb
 *.log
+tsconfig.tsbuildinfo

@@ -1,6 +1,6 @@
-export function tails<T>(n = 1) {
+export function tails<T>(n = 1): TransformStream<T, T> {
   let chunks: T[] = [];
-  return new TransformStream<T, T>({
+  return new TransformStream({
     transform: (chunk) => {
       chunks.push(chunk);
       if (chunks.length > n) chunks.shift();

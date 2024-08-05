@@ -16,7 +16,10 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outDir": "dist",
     // Best practices
     "strict": true,
     "skipLibCheck": true,
@@ -32,7 +35,9 @@
     "./*.ts"
   ],
   "exclude": [
-    "**/node_modules",
-    "**/dist"
+    "**/dist/**/*",
+    "./dist/**/*",
+    "dist",
+    "**/node_modules/**/*",
   ]
 }
