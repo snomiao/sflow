@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.31](https://github.com/snomiao/sflow/compare/v1.15.30...v1.15.31) (2024-08-05)
+
 ### [1.15.30](https://github.com/snomiao/sflow/compare/v1.15.29...v1.15.30) (2024-08-05)
 
 
