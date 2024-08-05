@@ -34,8 +34,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build index.ts fromNodeStream.ts --sourcemap=linked --outdir=dist && bun build:umd",
+    "dev": "bunx --bun tsc -w",
+    "build": "bun build index.ts fromNodeStream.ts --sourcemap=linked --outdir=dist && bun build:umd && bun build:tsc",
     "build:umd": "bunx rollup dist/index.js --file=dist/index.umd.js --format=umd --name sflow",
+    "build:tsc": "bunx --bun tsc index.ts --declaration --emitDeclarationOnly --outDir dist",
     "prerelease": "bun run build && bun run test",
     "release": "bunx standard-version && git push --follow-tags && npm publish",
     "test": "bun test"
