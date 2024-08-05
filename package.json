@@ -1,6 +1,6 @@
 {
   "name": "sflow",
-  "version": "1.15.28",
+  "version": "1.15.29",
   "description": "stream-flow with type-safety piping paradigram through web-stream-kernels.",
   "keywords": [
     "web-stream",
@@ -20,48 +20,48 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "types": "./index.ts"
+      "types": "./dist/index.d.ts"
     },
     "./fromNodeStream": {
       "import": "./dist/fromNodeStream.js",
-      "types": "./fromNodeStream.ts"
+      "types": "./dist/fromNodeStream.d.ts"
     }
   },
   "module": "index.ts",
-  "types": "./index.ts",
+  "types": "./dist/index.d.ts",
   "files": [
     "*.ts",
     "dist"
   ],
   "scripts": {
     "dev": "bunx --bun tsc -w",
-    "build": "bun build index.ts fromNodeStream.ts --sourcemap=linked --outdir=dist && bun build:umd && bun build:tsc",
+    "build": "bunx rimraf dist && bun build:tsc && bun build:esm && bun build:umd",
+    "build:esm": "bun build index.ts fromNodeStream.ts --outdir=dist",
     "build:umd": "bunx rollup dist/index.js --file=dist/index.umd.js --format=umd --name sflow",
-    "build:tsc": "bunx --bun tsc index.ts --declaration --emitDeclarationOnly --outDir dist",
+    "build:tsc": "tsc",
     "prerelease": "bun run build && bun run test",
     "release": "bunx standard-version && git push --follow-tags && npm publish",
     "test": "bun test"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@types/d3": "^7.4.3",
     "bson": "^6.8.0",
     "d3": "^7.9.0",
     "expect-type": "^0.19.0",
-    "phpdie": "^1.2.10",
+    "phpdie": "^1.2.12",
     "polyfill-text-decoder-stream": "^0.0.9",
-    "polyfill-text-encoder-stream": "^0.0.6",
+    "polyfill-text-encoder-stream": "^0.0.8",
     "proxy-deep": "^4.0.1",
     "string-replace-async": "^3.0.2",
     "ts-essentials": "^10.0.1",
     "ts-pattern": "^5.2.0",
     "ts-toolbelt": "^9.6.0",
     "unwind-array": "^1.1.4",
-    "web-streams-extensions": "^0.12.0"
-  },
-  "devDependencies": {
+    "web-streams-extensions": "^0.12.0",
     "@types/bun": "latest",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.14.12",
+    "@types/node": "^20.14.14",
     "keyv": "^4.5.4",
     "keyv-cached-with": "^0.0.17",
     "peek-log": "^0.0.11",
@@ -69,7 +69,7 @@
     "typescript": "^5.5.4"
   },
   "peerDependencies": {
-    "react-hook-form": "^7.52.0",
+    "react-hook-form": "^7.52.2",
     "rambda": "^9.2.1",
     "typescript": "^5.0.0"
   }

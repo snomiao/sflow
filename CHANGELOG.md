@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.29](https://github.com/snomiao/sflow/compare/v1.15.28...v1.15.29) (2024-08-05)
+
+
+### Bug Fixes
+
+* **main:** add tsc script ([b89af00](https://github.com/snomiao/sflow/commit/b89af00edde96e58991763be443def4c19e611c9))
+* **main:** misc ([a721356](https://github.com/snomiao/sflow/commit/a7213568f67bf4fc8aac17200b4108e987755b67))
+
 ### [1.15.28](https://github.com/snomiao/sflow/compare/v1.15.27...v1.15.28) (2024-08-03)
 
 ### [1.15.27](https://github.com/snomiao/sflow/compare/v1.15.26...v1.15.27) (2024-08-03)
