@@ -5,10 +5,8 @@ export function forEachs<T>(fn: (x: T, i: number) => Awaitable<void | any>) {
   let i = 0;
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
-      const ret =  fn(chunk, i++);
-
-      // await only if ret is promise, to ensure performance
-      const val = ret instanceof Promise ? await ret : ret;
+      const ret = fn(chunk, i++);
+      ret instanceof Promise ? await ret : ret;
 
       ctrl.enqueue(chunk);
     },

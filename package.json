@@ -44,7 +44,6 @@
     "test": "bun test"
   },
   "dependencies": {
-    "caches": "^0.0.1-5",
     "ts-essentials": "^10.0.1",
     "web-streams-extensions": "^0.12.0"
   },

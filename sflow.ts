@@ -2,6 +2,7 @@ import { DIEError } from "phpdie";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Split } from "ts-toolbelt/out/String/Split";
 import type { Awaitable } from "./Awaitable";
+import { cacheLists } from "./caches";
 import { chunkBys } from "./chunkBys";
 import { chunkIfs } from "./chunkIfs";
 import { chunkIntervals } from "./chunkIntervals";
@@ -56,19 +57,32 @@ interface BaseFlow<T> {
   /** @deprecated use chunk*/
   buffer(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
 
-  /** inverse of flat */
+  /** inverse of flat, chunk all items */
+  chunk(): sflow<T[]>;
+  /** inverse of flat, chunk or buffer a length as array */
   chunk(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
+  /** group by (only affect on concat items)*/
   chunkBy(...args: Parameters<typeof chunkBys<T>>): sflow<T[]>;
+  /** @see {@link chunkIfs} */
   chunkIf(...args: Parameters<typeof chunkIfs<T>>): sflow<T[]>;
 
+  /** @see convolves */
   convolve(...args: Parameters<typeof convolves<T>>): sflow<T[]>;
 
-  abort(...args: Parameters<typeof terminates<T>>): sflow<T>;
-
-  through(): sflow<T>;
-  through(stream: TransformStream<T, T>): sflow<T>;
-  through<R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
-  through<R>(stream: TransformStream<T, R>): sflow<R>;
+  /** act as pipeThrough, alias of by */
+  through: {
+    (): sflow<T>;
+    (stream: TransformStream<T, T>): sflow<T>;
+    <R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
+    <R>(stream: TransformStream<T, R>): sflow<R>;
+  };
+  /** act as pipeThrough, alias of through */
+  by: {
+    (): sflow<T>;
+    (stream: TransformStream<T, T>): sflow<T>;
+    <R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
+    <R>(stream: TransformStream<T, R>): sflow<R>;
+  };
 
   /** @deprecated use chunkInterval */
   interval(...args: Parameters<typeof chunkIntervals<T>>): sflow<T[]>;
@@ -125,10 +139,14 @@ interface BaseFlow<T> {
   tees(fn: (s: sflow<T>) => void | any): sflow<T>; // fn must fisrt
   tees(stream?: WritableStream<T>): sflow<T>;
   throttle: (...args: Parameters<typeof throttles<T>>) => sflow<T>;
+
   // prevents
+  abort(...args: Parameters<typeof terminates<T>>): sflow<T>;
+  terminateSignal(...args: Parameters<typeof terminates<T>>): sflow<T>;
   preventAbort: () => sflow<T>;
   preventClose: () => sflow<T>;
   preventCancel: () => sflow<T>;
+
   // to promises
   toEnd: () => Promise<void>;
   toNil: () => Promise<void>;
@@ -315,9 +333,13 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     // },
     through: (...args: Parameters<typeof _throughs>) =>
       sflow(r.pipeThrough(_throughs(...args))),
+    by: (...args: Parameters<typeof _throughs>) =>
+      sflow(r.pipeThrough(_throughs(...args))),
     mapAddField: (
       ...args: Parameters<typeof mapAddFields> // @ts-ignore
     ) => sflow(r.pipeThrough(mapAddFields(...args))),
+    cache: (...args: Parameters<typeof cacheLists>) =>
+      sflow(r.pipeThrough(cacheLists(...args))),
     chunkBy: (...args: Parameters<typeof chunkBys>) =>
       sflow(r.pipeThrough(chunkBys(...args))),
     chunkIf: (...args: Parameters<typeof chunkIfs>) =>

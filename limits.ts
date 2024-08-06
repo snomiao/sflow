@@ -1,15 +1,15 @@
 import { never } from "./never";
 
 /** Currently will not pipe down more items after count satisfied */
-export function limits<T>(n = 1, { terminate = true } = {}) {
+export function limits<T>(n: number, { terminate = true } = {}) {
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
-      if (n-- > 0) {
-        ctrl.enqueue(chunk);
-        return;
+      ctrl.enqueue(chunk);
+      // ensure not pull more items from upstream
+      if (--n === 0) {
+        terminate && ctrl.terminate();
+        return never();
       }
-      terminate && ctrl.terminate();
-      return await never();
     },
     flush: () => {},
   });
