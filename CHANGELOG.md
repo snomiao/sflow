@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.32](https://github.com/snomiao/sflow/compare/v1.15.31...v1.15.32) (2024-08-06)
+
+
+### Bug Fixes
+
+* **main:** allow flowsource in merge ([27e36e9](https://github.com/snomiao/sflow/commit/27e36e954ebe71f268c5ff43295c88a31a7e9727))
+
 ### [1.15.31](https://github.com/snomiao/sflow/compare/v1.15.30...v1.15.31) (2024-08-05)
 
 ### [1.15.30](https://github.com/snomiao/sflow/compare/v1.15.29...v1.15.30) (2024-08-05)

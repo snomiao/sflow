@@ -1,6 +1,6 @@
 {
   "name": "sflow",
-  "version": "1.15.31",
+  "version": "1.15.32",
   "description": "stream-flow with type-safety piping paradigram through web-stream-kernels.",
   "keywords": [
     "web-stream",
