@@ -68,7 +68,7 @@ describe("reduces function", () => {
 
     expect(results).toEqual(["a", "ab", "abc"]);
   });
-
+  
   it("accumulates state asynchronously", async () => {
     const initialState = 1;
     const transformStream = reduces(async (state, x) => {

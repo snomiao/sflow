@@ -352,8 +352,8 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     replaceAll: (
       ...args: Parameters<typeof replaceAlls> // @ts-expect-error string only
     ) => sflow(r.pipeThrough(replaceAlls(...args))),
-    merge: (...args: Parameters<typeof merges>) =>
-      sflow(r.pipeThrough(merges(...args))),
+    merge: (...args: FlowSource<T>[]) =>
+      sflow(r.pipeThrough(merges(...args.map(sflow)))),
     confluence: (
       ...args: Parameters<typeof confluences> // @ts-expect-error streams only
     ) => sflow(r.pipeThrough(confluences(...args))),
