@@ -14,7 +14,7 @@ import { flatMaps } from "./flatMaps";
 import { flats } from "./flats";
 import type { FlowSource } from "./FlowSource";
 import { forEachs } from "./forEachs";
-import { froms } from "./froms";
+import { toStream } from "./froms";
 import { heads } from "./heads";
 import { limits } from "./limits";
 import { lines } from "./lines";
@@ -24,7 +24,7 @@ import { maps } from "./maps";
 import { merges } from "./merges";
 import { nils } from "./nils";
 import { peeks } from "./peeks";
-import { pMaps } from "./pMaps";
+import { asyncMaps, pMaps } from "./pMaps";
 import { reduceEmits } from "./reduceEmits";
 import { reduces } from "./reduces";
 import { riffles } from "./riffles";
@@ -94,8 +94,15 @@ interface BaseFlow<T> {
   peek(...args: Parameters<typeof peeks<T>>): sflow<T>;
   riffle(...args: Parameters<typeof riffles<T>>): sflow<T>;
   forEach(...args: Parameters<typeof forEachs<T>>): sflow<T>;
-  pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>; // fn must fisrt
+  pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
   pMap<R>(
+    fn: (x: T, i: number) => Awaitable<R>,
+    options?: {
+      concurrency?: number;
+    }
+  ): sflow<R>;
+  asyncMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
+  asyncMap<R>(
     fn: (x: T, i: number) => Awaitable<R>,
     options?: {
       concurrency?: number;
@@ -138,7 +145,7 @@ interface BaseFlow<T> {
    * return undefined if no item returned
    * return the item
    */
-  toOne: (options?: { required?: boolean }) => Promise<T|undefined>;
+  toOne: (options?: { required?: boolean }) => Promise<T | undefined>;
   /** Get one item from stream
    * throws if more than 1 item is emitted
    * throws if no items emitted, (required defaults to false)
@@ -221,6 +228,7 @@ type TextFlow<T> = T extends string
       >;
     }
   : {};
+
 type XsvEncodeFlow<T> = T extends Record<string, any>
   ? {
       csvFormat: (
@@ -294,7 +302,7 @@ export type sflow<T> = ReadableStream<T> &
 
 /** stream flow */
 export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
-  const r: ReadableStream<T> = froms(src);
+  const r: ReadableStream<T> = toStream(src);
   // @ts-ignore todo
   return Object.assign(r, {
     _type: null as T,
@@ -372,6 +380,8 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     unwind: (
       ...args: Parameters<typeof unwinds> // @ts-ignore
     ) => sflow(r.pipeThrough(unwinds(...args))),
+    asyncMap: (...args: Parameters<typeof asyncMaps>) =>
+      sflow(r.pipeThrough(asyncMaps(...args))),
     pMap: (...args: Parameters<typeof pMaps>) =>
       sflow(r.pipeThrough(pMaps(...args))),
     peek: (...args: Parameters<typeof peeks>) =>
