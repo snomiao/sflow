@@ -1,5 +1,13 @@
 import { Readable, Writable } from "node:stream";
 
+export function stdinStream({ raw = false, stringify = true }) {
+  process.stdin.setRawMode(raw);
+  return fromReadable(process.stdin);
+}
+export function stdoutStream() {
+  return fromWritable(process.stdout);
+}
+
 export function fromReadable<T extends string | Uint8Array>(
   i: Readable | NodeJS.ReadableStream
 ): ReadableStream<T> {

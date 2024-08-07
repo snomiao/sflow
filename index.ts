@@ -38,7 +38,7 @@ export { tails } from "./tails";
 export { tees } from "./tees";
 export { terminates as aborts } from "./terminates";
 export { throttles } from "./throttles";
-export { throughs } from "./throughs";
+export { bys, throughs } from "./throughs";
 export { uniqBys, uniqs } from "./uniqs";
 export { unpromises } from "./unpromises";
 export type { Unwinded } from "./Unwinded";

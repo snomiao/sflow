@@ -145,6 +145,11 @@ const typedFlow = sflow([{ a: 1, b: [1, 2, 3] }])
 
 Contributions to sflow are always welcome! If you have any ideas, suggestions, or bug reports, feel free to open an issue on GitHub or submit a pull request.
 
+
+## References
+
+- [Infinite Streams with Elixir]( https://gist.github.com/mgwidmann/5e0cb590f12e2ca239564d07d7c2a572 )
+
 ## License
 
 sflow is released under the MIT License. See the [LICENSE](./LICENSE) file for more details.
