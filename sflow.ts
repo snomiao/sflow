@@ -2,7 +2,7 @@ import DIE from "phpdie";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Split } from "ts-toolbelt/out/String/Split";
 import type { Awaitable } from "./Awaitable";
-import { cacheLists } from "./caches";
+import { cacheLists, cacheTails } from "./caches";
 import { chunkBys } from "./chunkBys";
 import { chunkIfs } from "./chunkIfs";
 import { chunkIntervals } from "./chunkIntervals";
@@ -56,6 +56,10 @@ interface BaseFlow<T> {
 
   /** @deprecated use chunk*/
   buffer(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
+  
+  cacheList(...args: Parameters<typeof cacheLists<T>>): sflow<T[]>;
+  cacheTail(...args: Parameters<typeof cacheTails<T>>): sflow<T[]>;
+  chunk(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
 
   /** inverse of flat, chunk all items */
   chunk(): sflow<T[]>;
@@ -338,8 +342,10 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     mapAddField: (
       ...args: Parameters<typeof mapAddFields> // @ts-ignore
     ) => sflow(r.pipeThrough(mapAddFields(...args))),
-    cache: (...args: Parameters<typeof cacheLists>) =>
+    cacheList: (...args: Parameters<typeof cacheLists>) =>
       sflow(r.pipeThrough(cacheLists(...args))),
+    cacheTail: (...args: Parameters<typeof cacheTails>) =>
+      sflow(r.pipeThrough(cacheTails(...args))),
     chunkBy: (...args: Parameters<typeof chunkBys>) =>
       sflow(r.pipeThrough(chunkBys(...args))),
     chunkIf: (...args: Parameters<typeof chunkIfs>) =>

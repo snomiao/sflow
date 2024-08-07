@@ -36,10 +36,12 @@ export function cacheTails<T>(
   },
   _options?: CacheOptions
 ) {
-  const key =
-    typeof _options === "string"
-      ? _options
-      : _options?.key ?? new Error().stack ?? DIE("missing cache key");
+  // parse options
+  const {
+    key = new Error().stack ?? DIE("missing cache key"),
+    emitCached = true,
+  } = typeof _options === "string" ? { key: _options } : _options ?? {};
+
   const chunks: T[] = [];
   const tailChunks: T[] = [];
   // const cacheHitPromise = (store.has?.(key) || store.get(key))
@@ -55,7 +57,7 @@ export function cacheTails<T>(
           tailChunks.push(...cache);
 
           // emit whole cache as head
-          cache.map((c) => ctrl.enqueue(c));
+          if (emitCached) cache.map((c) => ctrl.enqueue(c));
 
           ctrl.terminate();
           await store.set(key, [...chunks, ...tailChunks]);
@@ -89,10 +91,12 @@ export function cacheLists<T>(
   },
   _options?: CacheOptions
 ) {
-  const key =
-    typeof _options === "string"
-      ? _options
-      : _options?.key ?? new Error().stack ?? DIE("missing cache key");
+  // parse options
+  const {
+    key = new Error().stack ?? DIE("missing cache key"),
+    emitCached = true,
+  } = typeof _options === "string" ? { key: _options } : _options ?? {};
+
   const chunks: T[] = [];
   const cacheHitPromise = store.has?.(key) || store.get(key);
   // TODO: optimize
@@ -152,7 +156,7 @@ export function cacheLists<T>(
       const cached = await store.get(key);
       if (!cached) return;
       // emit cache, return never to disable pulling upstream
-      cached.map((c) => ctrl.enqueue(c));
+      if (emitCached) cached.map((c) => ctrl.enqueue(c));
       // ctrl.terminate();
       // return never();
     },
