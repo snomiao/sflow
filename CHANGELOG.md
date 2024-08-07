@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.35](https://github.com/snomiao/sflow/compare/v1.15.34...v1.15.35) (2024-08-07)
+
+
+### Bug Fixes
+
+* **main:** cache tails ([f5c179a](https://github.com/snomiao/sflow/commit/f5c179a25d29518668b229c6bdcd770ec3c9d3cb))
+* **main:** caches done ([e330749](https://github.com/snomiao/sflow/commit/e330749218723a26117ab675b4c3f6515353b3c1))
+* **main:** optimize tocount ([297f520](https://github.com/snomiao/sflow/commit/297f52025242d2c5f265b1175dbb4625ec87e958))
+
 ### [1.15.34](https://github.com/snomiao/sflow/compare/v1.15.33...v1.15.34) (2024-08-06)
 
 ### [1.15.33](https://github.com/snomiao/sflow/compare/v1.15.32...v1.15.33) (2024-08-06)
