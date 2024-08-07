@@ -57,8 +57,8 @@ interface BaseFlow<T> {
   /** @deprecated use chunk*/
   buffer(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
 
-  cacheList(...args: Parameters<typeof cacheLists<T>>): sflow<T[]>;
-  cacheTail(...args: Parameters<typeof cacheTails<T>>): sflow<T[]>;
+  cacheList(...args: Parameters<typeof cacheLists<T>>): sflow<T>;
+  cacheTail(...args: Parameters<typeof cacheTails<T>>): sflow<T>;
   chunk(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
 
   /** inverse of flat, chunk all items */
