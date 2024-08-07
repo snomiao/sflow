@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.37](https://github.com/snomiao/sflow/compare/v1.15.36...v1.15.37) (2024-08-07)
+
+
+### Bug Fixes
+
+* **main:** add example ([7d9b730](https://github.com/snomiao/sflow/commit/7d9b73081aedd23a87af8d57249bee03efa49d6e))
+* **main:** fix tsconf ([2945f4d](https://github.com/snomiao/sflow/commit/2945f4d63ef4012fc5d6af505454064602efa267))
+* **pagestream:** add polling test ([0f604c0](https://github.com/snomiao/sflow/commit/0f604c0c699aeb6e5ba578a756d9cdbba71d0174))
+
 ### [1.15.36](https://github.com/snomiao/sflow/compare/v1.15.35...v1.15.36) (2024-08-07)
 
 
