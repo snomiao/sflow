@@ -1,5 +1,60 @@
+import { equals } from "rambda";
 import type { Awaitable } from "./Awaitable";
 import { never } from "./never";
+
+/**
+ * Assume Stream content is Ordered, plain json object, (class is not supported)
+ * And new element always insert into head
+ * 
+ * 1. cache whole list once upstream flushed
+ * 2. Stop upstream and Continue with cached list once head matched
+ */
+export function cacheTails<T>(
+  store: {
+    has?: (key: string) => Awaitable<boolean>;
+    get: (key: string) => Awaitable<T[] | undefined>;
+    set: (key: string, chunks: T[]) => Awaitable<any>;
+  },
+  /**
+   * Key could step name,
+   * or `new Error().stack` if you lazy enough
+   */
+  key: string = new Error().stack!
+) {
+  const chunks: T[] = [];
+  const tailChunks: T[] = [];
+  // const cacheHitPromise = (store.has?.(key) || store.get(key))
+  // get
+  const cachePromise = store.get(key);
+  return new TransformStream({
+    transform: async (chunk, ctrl) => {
+      const cache = await cachePromise;
+      if (cache) {
+        console.log(chunk, cache)
+        if (equals(chunk, cache[0])) {
+          // append cache into chunks, and will store on flush
+          tailChunks.push(...cache)
+          
+          // emit whole cache as head
+          cache.map((c) => ctrl.enqueue(c));
+          
+          ctrl.terminate();
+          await store.set(key, [...chunks, ...tailChunks]);
+          console.log(chunk, cache)
+          return await never();
+        }
+      }
+
+      chunks.push(chunk);
+      ctrl.enqueue(chunk);
+    },
+    flush: async () => {
+      if (!await cachePromise)
+        return await store.set(key, chunks);
+    },
+  });
+}
+
 
 /**
  * 1. cache whole list once upstream flushed
@@ -18,8 +73,7 @@ export function cacheLists<T>(
   key: string = new Error().stack!
 ) {
   const chunks: T[] = [];
-  const cacheHitPromise = (store.has || store.get)(key);
-  const t = new TransformStream();
+  const cacheHitPromise = (store.has?.(key) || store.get(key))
   // TODO: optimize
 
   //   const writable = new WritableStream({
