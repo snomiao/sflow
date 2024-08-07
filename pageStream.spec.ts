@@ -1,7 +1,8 @@
 import { expectTypeOf } from "expect-type";
 import Keyv from "keyv";
 import { KeyvCachedWith } from "keyv-cached-with";
-import sflow, { pageFlow, pageStream } from "./";
+import sflow, { nil, pageFlow, pageStream } from "./";
+import DIE from "phpdie";
 it("works with number", async () => {
   expect(
     await sflow(
@@ -18,6 +19,7 @@ it("works with number", async () => {
       .toArray()
   ).toEqual([1, 2, 3, 4, 5]);
 });
+
 it("works with cache with wrapper", async () => {
   const cache1d = KeyvCachedWith(new Keyv<unknown>({ ttl: 86400e3 }));
   expect(
@@ -105,4 +107,30 @@ it("works with cacheTails, but not emit cached items", async () => {
       .cacheTail(store, { key: "page", emitCached: false })
       .toArray()
   ).toEqual([6]);
+});
+
+it("works with polling", async () => {
+  const st = +new Date();
+  let id = 0;
+  const fetcher = async () => {
+    const now = +new Date();
+    if (st + 1000 < now) {
+      DIE("no data");
+    }
+    if (id === 3) return "END"; // done
+    return "signal" + id++;
+  };
+
+  expect(
+    await sflow(
+      pageStream(0, async (page: number) => {
+        const data = await fetcher().catch(nil);
+        if ("END" === data) return { data: null };
+        return { data, next: page };
+      })
+    )
+      .filter()
+      .map((e) => e)
+      .toArray()
+  ).toEqual(["signal0", "signal1", "signal2"]);
 });

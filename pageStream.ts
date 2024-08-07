@@ -1,7 +1,11 @@
 import type { Awaitable } from "./Awaitable";
-export type PageFetcher<Data, Cursor> = (
-  cursor: Cursor
-) => Awaitable<{ data: Data; next?: Cursor | null }>;
+/** Returns {data} */
+export type PageFetcher<Data, Cursor> = (cursor: Cursor) => Awaitable<{
+  // page data, generally should be a list that could be flatten later
+  data: Data;
+  // next page query
+  next?: Cursor | null;
+}>;
 export function pageStream<Data, Cursor>(
   initialQuery: Cursor,
   fetcher: PageFetcher<Data, Cursor>
