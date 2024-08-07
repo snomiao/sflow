@@ -1,6 +1,7 @@
 import type { FlowSource } from "./FlowSource";
 import { toStream } from "./froms";
 import { parallels } from "./parallels";
+import type { SourcesType } from "./SourcesType";
 import { streamAsyncIterator } from "./streamAsyncIterator";
 /**
  * return a transform stream that merges streams from sources
@@ -9,7 +10,6 @@ import { streamAsyncIterator } from "./streamAsyncIterator";
  * mergeStream: returns a ReadableStream, which doesnt have upstream
  */
 export const merges: {
-  // <T>(...streams: FlowSource<T>[]): TransformStream<T, T>;
   <T>(...streams: FlowSource<T>[]): TransformStream<T, T>;
 } = (...srcs: FlowSource<any>[]) => {
   if (!srcs.length) return new TransformStream();
@@ -27,10 +27,10 @@ export const merges: {
  * merges     : returns a TransformStream, which also merges upstream
  */
 export const mergeStream: {
-  <T>(...streams: FlowSource<T>[]): ReadableStream<T>;
-  // <SRCS extends FlowSource<any>[]>(...streams: SRCS): ReadableStream<
-  //   SourcesType<SRCS>
-  // >;
+  // <T>(...streams: FlowSource<T>[]): ReadableStream<T>;
+  <T, SRCS extends FlowSource<T>[]>(...streams: SRCS): ReadableStream<
+    SourcesType<SRCS>
+  >;
 } = (...srcs: FlowSource<any>[]): ReadableStream<any> => {
   if (!srcs.length) return new ReadableStream({ start: (c) => c.close() });
   // no nesscerry to merge

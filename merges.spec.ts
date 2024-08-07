@@ -2,6 +2,12 @@ import { sleep } from "bun";
 import sflow from "./";
 import { mergeStream } from "./merges";
 
+it("merge different type", async () => {
+  expect(
+    await sflow(mergeStream(["1", "2", "3", "4"], [5, 6, 7, 8])).toArray()
+  ).toEqual(["1", 5, "2", 6, "3", 7, "4", 8]);
+});
+
 it("zips when same speed", async () => {
   expect(
     await sflow(mergeStream([1, 2, 3, 4], [5, 6, 7, 8])).toArray()
