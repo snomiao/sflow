@@ -1,13 +1,31 @@
+import DIE from "phpdie";
 import { equals } from "rambda";
 import type { Awaitable } from "./Awaitable";
 import { never } from "./never";
-
+type CacheOptions =
+  | string
+  | {
+      /**
+       * Key could step name,
+       * or defaults to `new Error().stack` if you r lazy enough
+       */
+      key?: string;
+      /**
+       * true: emit cached content (default)
+       * false: just bypass, only emit contents not in cache
+       */
+      emitCached?: boolean;
+    };
 /**
  * Assume Stream content is Ordered, plain json object, (class is not supported)
  * And new element always insert into head
- * 
+ *
+ * Set ttl in your store settings
+ *
  * 1. cache whole list once upstream flushed
  * 2. Stop upstream and Continue with cached list once head matched
+ *
+ * This step should place at near the output end.
  */
 export function cacheTails<T>(
   store: {
@@ -15,12 +33,12 @@ export function cacheTails<T>(
     get: (key: string) => Awaitable<T[] | undefined>;
     set: (key: string, chunks: T[]) => Awaitable<any>;
   },
-  /**
-   * Key could step name,
-   * or `new Error().stack` if you lazy enough
-   */
-  key: string = new Error().stack!
+  _options: CacheOptions
 ) {
+  const key =
+    typeof _options === "string"
+      ? _options
+      : _options.key ?? new Error().stack ?? DIE("missing cache key");
   const chunks: T[] = [];
   const tailChunks: T[] = [];
   // const cacheHitPromise = (store.has?.(key) || store.get(key))
@@ -30,17 +48,17 @@ export function cacheTails<T>(
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
       if (cache) {
-        console.log(chunk, cache)
+        console.log(chunk, cache);
         if (equals(chunk, cache[0])) {
           // append cache into chunks, and will store on flush
-          tailChunks.push(...cache)
-          
+          tailChunks.push(...cache);
+
           // emit whole cache as head
           cache.map((c) => ctrl.enqueue(c));
-          
+
           ctrl.terminate();
           await store.set(key, [...chunks, ...tailChunks]);
-          console.log(chunk, cache)
+          console.log(chunk, cache);
           return await never();
         }
       }
@@ -49,16 +67,18 @@ export function cacheTails<T>(
       ctrl.enqueue(chunk);
     },
     flush: async () => {
-      if (!await cachePromise)
-        return await store.set(key, chunks);
+      if (!(await cachePromise)) return await store.set(key, chunks);
     },
   });
 }
 
-
 /**
  * 1. cache whole list once upstream flushed
  * 2. Replace the stream with cached list if exist
+ *
+ * Set ttl in your store settings
+ *
+ * This step should place at near the output end.
  */
 export function cacheLists<T>(
   store: {
@@ -66,14 +86,14 @@ export function cacheLists<T>(
     get: (key: string) => Awaitable<T[] | undefined>;
     set: (key: string, chunks: T[]) => Awaitable<any>;
   },
-  /**
-   * Key could step name,
-   * or `new Error().stack` if you lazy enough
-   */
-  key: string = new Error().stack!
+  _options: CacheOptions
 ) {
+  const key =
+    typeof _options === "string"
+      ? _options
+      : _options.key ?? new Error().stack ?? DIE("missing cache key");
   const chunks: T[] = [];
-  const cacheHitPromise = (store.has?.(key) || store.get(key))
+  const cacheHitPromise = store.has?.(key) || store.get(key);
   // TODO: optimize
 
   //   const writable = new WritableStream({
