@@ -10,8 +10,6 @@ export function pageStream<Data, Cursor>(
   return new ReadableStream({
     pull: async (ctrl) => {
       const ret = fetcher(query);
-
-      // await only if ret is promise, to ensure performance
       const val = ret instanceof Promise ? await ret : ret;
 
       const { data, next } = val;
