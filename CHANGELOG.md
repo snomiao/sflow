@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.39](https://github.com/snomiao/sflow/compare/v1.15.38...v1.15.39) (2024-08-07)
+
+
+### Bug Fixes
+
+* **main:** lazy page ([c16b20b](https://github.com/snomiao/sflow/commit/c16b20b241dc267a3bb2bcbd9dbad243aab79765))
+* **main:** spec import index ([75b0048](https://github.com/snomiao/sflow/commit/75b00485608db594951af9b10894c5b7745730af))
+
 ### [1.15.38](https://github.com/snomiao/sflow/compare/v1.15.37...v1.15.38) (2024-08-07)
 
 
