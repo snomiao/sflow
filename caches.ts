@@ -16,8 +16,9 @@ type CacheOptions =
        */
       emitCached?: boolean;
     };
+
 /**
- * Assume Stream content is Ordered, plain json object, (class is not supported)
+ * Assume Stream content is ordered plain json object, (class is not supported)
  * And new element always insert into head
  *
  * Set ttl in your store settings
@@ -33,12 +34,12 @@ export function cacheTails<T>(
     get: (key: string) => Awaitable<T[] | undefined>;
     set: (key: string, chunks: T[]) => Awaitable<any>;
   },
-  _options: CacheOptions
+  _options?: CacheOptions
 ) {
   const key =
     typeof _options === "string"
       ? _options
-      : _options.key ?? new Error().stack ?? DIE("missing cache key");
+      : _options?.key ?? new Error().stack ?? DIE("missing cache key");
   const chunks: T[] = [];
   const tailChunks: T[] = [];
   // const cacheHitPromise = (store.has?.(key) || store.get(key))
@@ -86,12 +87,12 @@ export function cacheLists<T>(
     get: (key: string) => Awaitable<T[] | undefined>;
     set: (key: string, chunks: T[]) => Awaitable<any>;
   },
-  _options: CacheOptions
+  _options?: CacheOptions
 ) {
   const key =
     typeof _options === "string"
       ? _options
-      : _options.key ?? new Error().stack ?? DIE("missing cache key");
+      : _options?.key ?? new Error().stack ?? DIE("missing cache key");
   const chunks: T[] = [];
   const cacheHitPromise = store.has?.(key) || store.get(key);
   // TODO: optimize
