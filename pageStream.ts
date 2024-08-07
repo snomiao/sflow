@@ -11,15 +11,18 @@ export function pageStream<Data, Cursor>(
   fetcher: PageFetcher<Data, Cursor>
 ): ReadableStream<Data> {
   let query: Cursor = initialQuery;
-  return new ReadableStream({
-    pull: async (ctrl) => {
-      const ret = fetcher(query);
-      const val = ret instanceof Promise ? await ret : ret;
+  return new ReadableStream(
+    {
+      pull: async (ctrl) => {
+        const ret = fetcher(query);
+        const val = ret instanceof Promise ? await ret : ret;
 
-      const { data, next } = val;
-      ctrl.enqueue(data);
-      if (null == next) return ctrl.close();
-      query = next;
+        const { data, next } = val;
+        ctrl.enqueue(data);
+        if (null == next) return ctrl.close();
+        query = next;
+      },
     },
-  });
+    { highWaterMark: 0 } // lazy page
+  );
 }
