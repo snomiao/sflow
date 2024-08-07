@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.36](https://github.com/snomiao/sflow/compare/v1.15.35...v1.15.36) (2024-08-07)
+
+
+### Bug Fixes
+
+* **caches:** add tests with pagestream ([9699422](https://github.com/snomiao/sflow/commit/9699422762807636d7aaaacbcd85222d4584351c))
+* **main:** allow cachekey ([c47dd89](https://github.com/snomiao/sflow/commit/c47dd892cb7b75804e364d1e8343226ed84d627f))
+* **main:** allow not emit cached ([4c69eb6](https://github.com/snomiao/sflow/commit/4c69eb6ed2263db7d7b88321a37b48a3bd820c07))
+* **main:** optional keys ([21db8e5](https://github.com/snomiao/sflow/commit/21db8e5715c6c783f0483d2108b092c9b69b7ae6))
+
 ### [1.15.35](https://github.com/snomiao/sflow/compare/v1.15.34...v1.15.35) (2024-08-07)
 
 
