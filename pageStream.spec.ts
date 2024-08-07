@@ -1,8 +1,9 @@
 import { expectTypeOf } from "expect-type";
 import Keyv from "keyv";
 import { KeyvCachedWith } from "keyv-cached-with";
-import sflow, { nil, pageFlow, pageStream } from "./";
 import DIE from "phpdie";
+import sflow, { nil, pageFlow, pageStream } from "./";
+
 it("works with number", async () => {
   expect(
     await sflow(
@@ -109,14 +110,12 @@ it("works with cacheTails, but not emit cached items", async () => {
   ).toEqual([6]);
 });
 
-it("works with polling", async () => {
+it("works with signal polling", async () => {
   const st = +new Date();
   let id = 0;
   const fetcher = async () => {
     const now = +new Date();
-    if (st + 1000 < now) {
-      DIE("no data");
-    }
+    if (st + 1000 < now) DIE("no data");
     if (id === 3) return "END"; // done
     return "signal" + id++;
   };

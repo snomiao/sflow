@@ -1,6 +1,7 @@
 import { sflow } from "./sflow";
 export { default as TextDecoderStream } from "polyfill-text-decoder-stream";
 export { default as TextEncoderStream } from "polyfill-text-encoder-stream";
+export { cacheLists, cacheTails } from "./caches";
 export { chunkBys } from "./chunkBys";
 export { chunkIfs } from "./chunkIfs";
 export { chunkIntervals as intervals } from "./chunkIntervals";
@@ -19,7 +20,7 @@ export { logs } from "./logs";
 export { mapAddFields } from "./mapAddFields";
 export { maps } from "./maps";
 export { mergeAscends, mergeDescends } from "./mergeAscends";
-export { merges as joins, merges } from "./merges";
+export { merges as joins, merges, mergeStream } from "./merges";
 export { nil, nils } from "./nils";
 export { pageFlow } from "./pageFlow";
 export { pageStream } from "./pageStream";

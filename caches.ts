@@ -51,7 +51,7 @@ export function cacheTails<T>(
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
       if (cache) {
-        console.log(chunk, cache);
+        // console.log(chunk, cache);
         if (equals(chunk, cache[0])) {
           // append cache into chunks, and will store on flush
           tailChunks.push(...cache);
@@ -61,7 +61,7 @@ export function cacheTails<T>(
 
           ctrl.terminate();
           await store.set(key, [...chunks, ...tailChunks]);
-          console.log(chunk, cache);
+          // console.log(chunk, cache);
           return await never();
         }
       }

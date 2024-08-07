@@ -2,24 +2,15 @@ import type { FlowSource } from "./FlowSource";
 import { toStream } from "./froms";
 import { parallels } from "./parallels";
 import { streamAsyncIterator } from "./streamAsyncIterator";
-type SourcesType<SRCS extends FlowSource<any>[]> = SRCS extends FlowSource<
-  infer T
->[]
-  ? T
-  : never;
-
 /**
  * return a transform stream that merges streams from sources
- * dont get confused with mergeStream
+ * don't get confused with mergeStream
  * merges     : returns a TransformStream, which also merges upstream
  * mergeStream: returns a ReadableStream, which doesnt have upstream
  */
 export const merges: {
+  // <T>(...streams: FlowSource<T>[]): TransformStream<T, T>;
   <T>(...streams: FlowSource<T>[]): TransformStream<T, T>;
-  <SRCS extends FlowSource<any>[]>(...streams: SRCS): TransformStream<
-    SourcesType<SRCS>,
-    SourcesType<SRCS>
-  >;
 } = (...srcs: FlowSource<any>[]) => {
   if (!srcs.length) return new TransformStream();
   const upstream = new TransformStream();
@@ -31,16 +22,20 @@ export const merges: {
 
 /**
  * return a readable stream that merges streams from sources
- * merges     : returns a TransformStream, which also merges upstream
+ * don't get confused with merges
  * mergeStream: returns a ReadableStream, which doesnt have upstream
+ * merges     : returns a TransformStream, which also merges upstream
  */
 export const mergeStream: {
   <T>(...streams: FlowSource<T>[]): ReadableStream<T>;
-  <SRCS extends FlowSource<any>[]>(...streams: SRCS): ReadableStream<
-    SourcesType<SRCS>
-  >;
+  // <SRCS extends FlowSource<any>[]>(...streams: SRCS): ReadableStream<
+  //   SourcesType<SRCS>
+  // >;
 } = (...srcs: FlowSource<any>[]): ReadableStream<any> => {
   if (!srcs.length) return new ReadableStream({ start: (c) => c.close() });
+  // no nesscerry to merge
+  if (srcs.length === 1) return toStream(srcs[0]);
+
   const t = new TransformStream();
   const w = t.writable.getWriter();
   const streams = srcs.map(toStream);
@@ -53,13 +48,13 @@ export const mergeStream: {
     })
   )
     .then(async () => w.close())
-    .catch(error => {console.error(error)
-    return Promise.all([
-      t.writable.abort(error),
-      ...streams.map((e) => e.cancel(error)),
-    ]);
-  }
-    );
+    .catch((error) => {
+      console.error(error);
+      return Promise.all([
+        t.writable.abort(error),
+        ...streams.map((e) => e.cancel(error)),
+      ]);
+    });
 
   return t.readable;
   // return parallels(...srcs.map(toStream));

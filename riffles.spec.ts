@@ -11,11 +11,11 @@ it("riffles number", async () => {
   console.log(out);
   expect(out).toEqual([1, 0, 2, 0, 3]);
 });
-''.match
+
 it("riffles mixed types", async () => {
-  const out = await sflow<string|number>([1, 2, 3])
-    .through(riffles(','))
+  const out = await sflow<string | number>([1, 2, 3])
+    .through(riffles(","))
     .toArray();
   console.log(out);
-  expect(out).toEqual([1, ',', 2, ',', 3]);
+  expect(out).toEqual([1, ",", 2, ",", 3]);
 });

@@ -22,7 +22,7 @@ import { lines } from "./lines";
 import { logs } from "./logs";
 import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
-import { merges } from "./merges";
+import { merges, mergeStream } from "./merges";
 import { nils } from "./nils";
 import { peeks } from "./peeks";
 import { asyncMaps, pMaps } from "./pMaps";
@@ -56,7 +56,7 @@ interface BaseFlow<T> {
 
   /** @deprecated use chunk*/
   buffer(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
-  
+
   cacheList(...args: Parameters<typeof cacheLists<T>>): sflow<T[]>;
   cacheTail(...args: Parameters<typeof cacheTails<T>>): sflow<T[]>;
   chunk(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
@@ -323,8 +323,9 @@ export type sflow<T> = ReadableStream<T> &
   ToResponse<T>;
 
 /** stream flow */
-export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
-  const r: ReadableStream<T> = toStream(src);
+export const sflow = <T>(...srcs: FlowSource<T>[]): sflow<T> => {
+  const r: ReadableStream<T> =
+    srcs.length === 1 ? toStream(srcs[0]) : mergeStream(...srcs);
   // @ts-ignore todo
   return Object.assign(r, {
     _type: null as T,
@@ -388,8 +389,7 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     replaceAll: (
       ...args: Parameters<typeof replaceAlls> // @ts-expect-error string only
     ) => sflow(r.pipeThrough(replaceAlls(...args))),
-    merge: (...args: FlowSource<T>[]) =>
-      sflow(r.pipeThrough(merges(...args.map(sflow)))),
+    merge: (...args: FlowSource<T>[]) => sflow(r.pipeThrough(merges(...args))),
     confluence: (
       ...args: Parameters<typeof confluences> // @ts-expect-error streams only
     ) => sflow(r.pipeThrough(confluences(...args))),
@@ -520,9 +520,9 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     //   return initialPromise.promise;
     // },
     // string stream process
-    lines: (...args: Parameters<typeof lines>) =>
-      // @ts-expect-error T should be string
-      sflow(r.pipeThrough(lines(...args))),
+    lines: (
+      ...args: Parameters<typeof lines> // @ts-expect-error works on string only
+    ) => sflow(r.pipeThrough(lines(...args))),
     // as response (only ReadableStream<string | UInt8Array>)
     toResponse: (init?: ResponseInit) => new Response(r, init),
     text: (init?: ResponseInit) => new Response(r, init).text(),
