@@ -1,4 +1,4 @@
-import { sf } from ".";
+import { sf } from "./index";
 
 it("Works merge parallel", async () => {
   const { readable, writable } = new TransformStream<number, number>();

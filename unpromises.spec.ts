@@ -1,4 +1,4 @@
-import { sf } from ".";
+import { sf } from "./index";
 import { sflow } from "./sflow";
 import { unpromises } from "./unpromises";
 

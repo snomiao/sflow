@@ -1,6 +1,6 @@
 import { sleep } from "bun";
-import { sf } from ".";
 import { confluences } from "./confluences";
+import { sf } from "./index";
 
 it("As stream kernel", async () => {
   const flow1 = sf([1, 2, 3]);

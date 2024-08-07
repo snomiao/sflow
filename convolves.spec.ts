@@ -1,6 +1,5 @@
-import { toArray } from "web-streams-extensions";
-import sflow from ".";
 import { convolves } from "./convolves";
+import sflow from "./index";
 
 it("convolve 1 in pipeline", async () => {
   expect(await sflow([1, 2, 3, 4]).convolve(1).toArray()).toEqual([

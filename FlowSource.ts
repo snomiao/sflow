@@ -1,5 +1,5 @@
 import { type ReadableLike } from "web-streams-extensions";
-import type sflow from ".";
+import type sflow from "./index";
 
 export type FlowSource<T> =
   | Promise<T>

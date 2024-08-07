@@ -1,5 +1,12 @@
-import sflow, { rangeStream, uniqs } from ".";
+import sflow, { rangeStream, uniqs } from "./index";
 import { svector } from "./svector";
+
+it("merge different type", async () => {
+  const out = ["1", 5, "2", 6, "3", 7, "4", 8];
+  expect(await sflow(["1", "2", "3", "4"], [5, 6, 7, 8]).toArray()).toEqual(
+    out
+  );
+});
 
 it("tees", async () => {
   let flow1 = sflow([1, 2, 3]);

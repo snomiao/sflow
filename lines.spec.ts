@@ -1,4 +1,4 @@
-import { sf } from ".";
+import { sf } from "./index";
 import { lines } from "./lines";
 
 it("split string stream into lines stream", async () => {

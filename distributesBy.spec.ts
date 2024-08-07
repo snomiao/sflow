@@ -1,5 +1,5 @@
-import { sf } from ".";
 import { distributeBys } from "./distributeBys";
+import { sf } from "./index";
 import { rangeStream } from "./rangeStream";
 
 it("distributeBys", async () => {

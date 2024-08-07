@@ -31,6 +31,7 @@ import { reduces } from "./reduces";
 import { riffles } from "./riffles";
 import { skips } from "./skips";
 import { slices } from "./slices";
+import type { SourcesType } from "./SourcesType";
 import { streamAsyncIterator } from "./streamAsyncIterator";
 import { matchAlls, matchs, replaceAlls, replaces } from "./strings";
 import { tails } from "./tails";
@@ -323,9 +324,17 @@ export type sflow<T> = ReadableStream<T> &
   ToResponse<T>;
 
 /** stream flow */
-export const sflow = <T>(...srcs: FlowSource<T>[]): sflow<T> => {
+// <T, SRCS extends FlowSource<T>[]>(...streams: SRCS): ReadableStream<
+// SourcesType<SRCS>
+// >
+export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
+  ...srcs: SRCS
+): sflow<SourcesType<SRCS>> => {
+  type T = SourcesType<SRCS>;
   const r: ReadableStream<T> =
-    srcs.length === 1 ? toStream(srcs[0]) : mergeStream(...srcs);
+    srcs.length === 1
+      ? (toStream(srcs[0]) as ReadableStream<T>)
+      : (mergeStream(...srcs) as ReadableStream<T>);
   // @ts-ignore todo
   return Object.assign(r, {
     _type: null as T,

@@ -1,4 +1,4 @@
-import type { FlowSource } from ".";
+import type { FlowSource } from "./index";
 import { wseFrom } from "./wse";
 
 export const toStream: {

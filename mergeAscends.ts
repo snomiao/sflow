@@ -1,6 +1,6 @@
 import DIE from "phpdie";
 import { sortBy, type Ord } from "rambda";
-import { sflow, type FlowSource } from ".";
+import { sflow, type FlowSource } from "./index";
 interface MergeBy {
   <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): sflow<T>;
   <T>(ordFn: (input: T) => Ord): {

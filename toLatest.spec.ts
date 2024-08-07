@@ -1,5 +1,5 @@
 // import { sleep } from "bun";
-// import sflow from ".";
+// import sflow from "./index";
 // it("works number", async () => {
 //   const { value, readable } = await sflow([1, 2, 3])
 //     .forEach(async (e) => {

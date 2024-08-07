@@ -1,7 +1,7 @@
 import { sleep } from "bun";
 import Keyv from "keyv";
-import { sf } from ".";
 import { cacheLists, cacheTails } from "./caches";
+import { sf } from "./index";
 
 it("caches stream", async () => {
   const store = new Keyv<any>({ ttl: 10e3 });

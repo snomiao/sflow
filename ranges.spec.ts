@@ -1,4 +1,4 @@
-import { sf } from ".";
+import { sf } from "./index";
 import { rangeStream } from "./rangeStream";
 
 it("works", async () => {
