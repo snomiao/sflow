@@ -1,4 +1,4 @@
-import sflow, { uniqs } from ".";
+import sflow, { rangeStream, uniqs } from ".";
 import { svector } from "./svector";
 
 it("tees", async () => {
@@ -12,6 +12,12 @@ it("tees", async () => {
   expect(await flow2.toArray()).toEqual([1, 2, 3]);
   expect(await flow3.toArray()).toEqual([1, 2, 3]);
   expect(await flow4.toArray()).toEqual([1, 2, 3]);
+});
+
+it("counts", async () => {
+  expect(await sflow([] as string[]).toCount()).toBe(0);
+  expect(await sflow([1, 2, 3]).toCount()).toBe(3);
+  expect(await sflow(rangeStream(0, 1000000)).toCount()).toBe(1000000);
 });
 
 it("uniqs", async () => {

@@ -1,4 +1,4 @@
-import { DIEError } from "phpdie";
+import DIE from "phpdie";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Split } from "ts-toolbelt/out/String/Split";
 import type { Awaitable } from "./Awaitable";
@@ -456,18 +456,34 @@ export const sflow = <T>(src: FlowSource<T>): sflow<T> => {
     toEnd: () => r.pipeTo(nils<T>()),
     toNil: () => r.pipeTo(nils<T>()),
     toArray: () => wseToArray(r),
-    toCount: async () => (await wseToArray(r)).length, // TODO: optimize memory usage
+    toCount: async () => {
+      let i = 0;
+      const d = r.getReader();
+      while (!(await d.read()).done) i++;
+      return i;
+    },
+    // toCount: async () =>
+    //   (async function () {
+    //     let i = 0;
+    //     await r.pipeTo(new WritableStream({ write: () => void i++ }));
+    //     return i;
+    //   })(),
+    // toCount: async () => (await wseToArray(r)).length,
+    // toCount: async () =>
+    //   (await sflow(r)
+    //     .map((_, i) => i + 1)
+    //     .toLast()) ?? 0, // TODO: optimize memory usage
     toFirst: () => wseToPromise(sflow(r).limit(1, { terminate: true })),
     toLast: () => wseToPromise(sflow(r).tail(1)),
     toOne: async () => {
       const a = await wseToArray(r);
-      if (a.length > 1) DIEError(`Expect only 1 Item, but got ${a.length}`);
+      if (a.length > 1) DIE(`Expect only 1 Item, but got ${a.length}`);
       return a[0];
     },
     toAtLeastOne: async () => {
       const a = await wseToArray(r);
-      if (a.length > 1) DIEError(`Expect only 1 Item, but got ${a.length}`);
-      if (a.length < 1) DIEError(`Expect at lest 1 Item, but got ${a.length}`);
+      if (a.length > 1) DIE(`Expect only 1 Item, but got ${a.length}`);
+      if (a.length < 1) DIE(`Expect at least 1 Item, but got ${a.length}`);
       return a[0];
     },
     /** call console.log on every item */

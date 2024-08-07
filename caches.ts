@@ -7,7 +7,7 @@ import { never } from "./never";
  */
 export function cacheLists<T>(
   store: {
-    has: (key: string) => Awaitable<boolean>;
+    has?: (key: string) => Awaitable<boolean>;
     get: (key: string) => Awaitable<T[] | undefined>;
     set: (key: string, chunks: T[]) => Awaitable<any>;
   },
@@ -18,7 +18,7 @@ export function cacheLists<T>(
   key: string = new Error().stack!
 ) {
   const chunks: T[] = [];
-  const cacheHitPromise = store.has(key);
+  const cacheHitPromise = (store.has || store.get)(key);
   const t = new TransformStream();
   // TODO: optimize
 
