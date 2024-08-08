@@ -1,5 +1,6 @@
+import { sleep } from "bun";
 import Keyv from "keyv";
-import { logs, pageFlow } from "./index";
+import { logs, maps, pageFlow } from "./index";
 
 it("caches stream", async () => {
   const pageData1 = [
@@ -19,6 +20,15 @@ it("caches stream", async () => {
     return { data, next: data ? page + 1 : null };
   })
     .flat()
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
     .cacheTail(store, "cache")
     .log()
     .toArray();
@@ -32,6 +42,15 @@ it("caches stream", async () => {
   })
     .flat()
     .byLazy(logs((e) => "head data: " + e))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
+    .byLazy(maps(async (e) => (await sleep(10), e)))
     .cacheTail(store, "cache")
     .log()
     .toArray();
