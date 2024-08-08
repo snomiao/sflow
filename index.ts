@@ -2,7 +2,7 @@ import { andIgnoreError } from "./andIgnoreError";
 import { sflow } from "./sflow";
 export { default as TextDecoderStream } from "polyfill-text-decoder-stream";
 export { default as TextEncoderStream } from "polyfill-text-encoder-stream";
-export { cacheLists, cacheTails } from "./caches";
+export { cacheLists, cacheSkips, cacheTails } from "./caches";
 export { chunkBys } from "./chunkBys";
 export { chunkIfs } from "./chunkIfs";
 export { chunkIntervals as intervals } from "./chunkIntervals";

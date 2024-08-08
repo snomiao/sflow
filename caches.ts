@@ -11,11 +11,53 @@ type CacheOptions =
        */
       key?: string;
       /**
+       * @deprecated use cacheSkips
        * true: emit cached content (default)
        * false: just bypass, only emit contents not in cache
        */
       emitCached?: boolean;
+      // /** ttl in ms */
+      // ttl?:number
     };
+
+/**
+ * Assume Stream content is ordered plain json object, (class is not supported)
+ * And new element always insert into head
+ *
+ * Only emit unmet contents
+ *
+ */
+export function cacheSkips<T>(
+  store: {
+    has?: (key: string) => Awaitable<boolean>;
+    get: (key: string) => Awaitable<T | undefined>;
+    set: (key: string, chunks: T) => Awaitable<any>;
+  },
+  _options?: CacheOptions
+) {
+  // parse options
+  const { key = new Error().stack ?? DIE("missing cache key") } =
+    typeof _options === "string" ? { key: _options } : _options ?? {};
+
+  const chunks: T[] = [];
+  const tailChunks: T[] = [];
+  const cachePromise = store.get(key);
+  return new TransformStream({
+    transform: async (chunk, ctrl) => {
+      const cache = await cachePromise;
+      if (cache && equals(chunk, cache)) {
+        // append cache into chunks, and will store on flush
+        tailChunks.push(cache);
+        ctrl.terminate();
+        await store.set(key, chunks[0]);
+        return await never();
+      }
+      chunks.push(chunk);
+      ctrl.enqueue(chunk);
+    },
+    flush: async () => await store.set(key, chunks[0]),
+  });
+}
 
 /**
  * Assume Stream content is ordered plain json object, (class is not supported)
