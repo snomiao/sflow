@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.1](https://github.com/snomiao/sflow/compare/v1.16.0...v1.16.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* **main:** add tests for page-caches ([f57cb7d](https://github.com/snomiao/sflow/commit/f57cb7d9e5dfd8913ba761b606dc50411d7b3669))
+* **main:** remove filter highWaterMark ([301e9fb](https://github.com/snomiao/sflow/commit/301e9fbf1c7bdd3874cdcd36f54b9764934a5a0f))
+
 ## [1.16.0](https://github.com/snomiao/sflow/compare/v1.15.40...v1.16.0) (2024-08-08)
 
 
