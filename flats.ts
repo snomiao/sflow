@@ -4,8 +4,6 @@ export function flats<T>() {
       transform: (chunk, ctrl) => {
         chunk.map((e) => ctrl.enqueue(e));
       },
-    },
-    { highWaterMark: 1 },
-    { highWaterMark: 0 } // lazy flats
+    }
   );
 }
