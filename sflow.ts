@@ -90,9 +90,7 @@ interface BaseFlow<T> {
   };
   /** act as pipeThrough, but lazy, only pull upstream when downstream pull */
   byLazy: {
-    (): sflow<T>;
     (stream: TransformStream<T, T>): sflow<T>;
-    <R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
     <R>(stream: TransformStream<T, R>): sflow<R>;
   };
 
@@ -361,9 +359,9 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       ...args: Parameters<typeof mapAddFields> // @ts-ignore
     ) => sflow(r.pipeThrough(mapAddFields(...args))),
     cacheList: (...args: Parameters<typeof cacheLists>) =>
-      sflow(r.pipeThrough(cacheLists(...args))),
+      sflow(r).byLazy(cacheLists(...args)),
     cacheTail: (...args: Parameters<typeof cacheTails>) =>
-      sflow(r.pipeThrough(cacheTails(...args))),
+      sflow(r).byLazy(cacheTails(...args)),
     chunkBy: (...args: Parameters<typeof chunkBys>) =>
       sflow(r.pipeThrough(chunkBys(...args))),
     chunkIf: (...args: Parameters<typeof chunkIfs>) =>
