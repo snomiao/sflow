@@ -88,6 +88,13 @@ interface BaseFlow<T> {
     <R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
     <R>(stream: TransformStream<T, R>): sflow<R>;
   };
+  /** act as pipeThrough, but lazy, only pull upstream when downstream pull */
+  byLazy: {
+    (): sflow<T>;
+    (stream: TransformStream<T, T>): sflow<T>;
+    <R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
+    <R>(stream: TransformStream<T, R>): sflow<R>;
+  };
 
   /** @deprecated use chunkInterval */
   interval(...args: Parameters<typeof chunkIntervals<T>>): sflow<T[]>;
@@ -349,6 +356,7 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r.pipeThrough(_throughs(...args))),
     by: (...args: Parameters<typeof _throughs>) =>
       sflow(r.pipeThrough(_throughs(...args))),
+    byLazy: <R>(t: TransformStream<T, R>) => _byLazy<T, R>(r, t),
     mapAddField: (
       ...args: Parameters<typeof mapAddFields> // @ts-ignore
     ) => sflow(r.pipeThrough(mapAddFields(...args))),
@@ -383,7 +391,7 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r.pipeThrough(flatMaps(...args))),
     flat: (
       ...args: Parameters<typeof flats> // @ts-expect-error array only
-    ) => sflow(r.pipeThrough(flats(...args))),
+    ) => sflow(r).byLazy(flats(...args)),
     join: (...args: Parameters<typeof riffles>) =>
       sflow(r.pipeThrough(riffles(...args))),
     match: (
@@ -403,7 +411,7 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       ...args: Parameters<typeof confluences> // @ts-expect-error streams only
     ) => sflow(r.pipeThrough(confluences(...args))),
     limit: (...args: Parameters<typeof limits>) =>
-      sflow(r.pipeThrough(limits(...args))),
+      sflow(r).byLazy(limits(...args)),
     head: (...args: Parameters<typeof heads>) =>
       sflow(r.pipeThrough(heads(...args))),
     map: (...args: Parameters<typeof maps>) =>
@@ -567,3 +575,38 @@ export const _throughs: {
   const { writable, readable } = new TransformStream();
   return { writable, readable: sflow(fn(sflow(readable))) };
 };
+
+export function _byLazy<T, R>(
+  r: ReadableStream<T>,
+  t: TransformStream<T, R>
+): sflow<R> {
+  const reader = r.getReader();
+  const tw = t.writable.getWriter();
+  const tr = t.readable.getReader();
+  return sflow<R>(
+    new ReadableStream<R>(
+      {
+        start: async (ctrl) => {
+          (async function () {
+            while (true) {
+              const { done, value } = await tr.read();
+              if (done) return ctrl.close();
+              ctrl.enqueue(value);
+            }
+          })();
+        },
+        pull: async (ctrl) => {
+          // console.log("pulling");
+          const { done, value } = await reader.read();
+          if (done) return tw.close();
+          await tw.write(value);
+        },
+        cancel: async (r) => {
+          reader.cancel(r);
+          tr.cancel(r);
+        },
+      },
+      { highWaterMark: 0 }
+    )
+  );
+}
