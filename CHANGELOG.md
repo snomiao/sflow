@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.16.0](https://github.com/snomiao/sflow/compare/v1.15.40...v1.16.0) (2024-08-08)
+
+
+### Features
+
+* **lazyflow:** init ([5581fa5](https://github.com/snomiao/sflow/commit/5581fa579b7a49fbe6032b517a44a5135df1f627))
+
 ### [1.15.40](https://github.com/snomiao/sflow/compare/v1.15.39...v1.15.40) (2024-08-08)
 
 ### [1.15.39](https://github.com/snomiao/sflow/compare/v1.15.38...v1.15.39) (2024-08-07)
