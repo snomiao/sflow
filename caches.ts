@@ -50,28 +50,22 @@ export function cacheTails<T>(
   return new TransformStream({
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
-      if (cache) {
-        // console.log(chunk, cache);
-        if (equals(chunk, cache[0])) {
-          // append cache into chunks, and will store on flush
-          tailChunks.push(...cache);
+      if (cache && equals(chunk, cache[0])) {
+        // append cache into chunks, and will store on flush
+        tailChunks.push(...cache);
 
-          // emit whole cache as head
-          if (emitCached) cache.map((c) => ctrl.enqueue(c));
+        // emit whole cache as head
+        if (emitCached) cache.map((c) => ctrl.enqueue(c));
 
-          ctrl.terminate();
-          await store.set(key, [...chunks, ...tailChunks]);
-          // console.log(chunk, cache);
-          return await never();
-        }
+        ctrl.terminate();
+        await store.set(key, [...chunks, ...tailChunks]);
+        return await never();
       }
 
       chunks.push(chunk);
       ctrl.enqueue(chunk);
     },
-    flush: async () => {
-      if (!(await cachePromise)) return await store.set(key, chunks);
-    },
+    flush: async () => await store.set(key, [...chunks, ...tailChunks]),
   });
 }
 
@@ -96,90 +90,28 @@ export function cacheLists<T>(
     key = new Error().stack ?? DIE("missing cache key"),
     emitCached = true,
   } = typeof _options === "string" ? { key: _options } : _options ?? {};
-
   const chunks: T[] = [];
   const cacheHitPromise = store.has?.(key) || store.get(key);
-  // TODO: optimize
-
-  // const t = new TransformStream();
-  // const writable = new WritableStream(
-  //   {
-  //     start: async (ctrl) => {
-  //       console.log({ chp: await cacheHitPromise });
-  //       if (await cacheHitPromise) return never();
-  //     },
-  //     write: async (chunk, ctrl) => {
-  //       // never resolve if cache hit
-  //       console.log("never resolve if cache hit");
-  //       if (await cacheHitPromise) {
-  //         await writable.close();
-  //         return never();
-  //       }
-  //       chunks.push(chunk);
-  //       const w = t.writable.getWriter();
-  //       await w.write(chunk);
-  //       w.releaseLock();
-  //     },
-  //     close: async () => {
-  //       await store.set(key, chunks);
-  //       await t.writable.close();
-  //     },
-  //   },
-  //   { highWaterMark: 0.1 }
-  // );
-  // const readable = new ReadableStream({
-  //   start: async (ctrl) => {
-  //     // get cache
-  //     console.log("get cache");
-  //     const cached = (await cacheHitPromise) && (await store.get(key));
-  //     if (!cached) return;
-  //     // emit if exist
-  //     console.log("emit if exist");
-  //     cached.map((c) => ctrl.enqueue(c));
-  //     ctrl.close();
-  //     //   await writable.close();
-  //     // return ctrl.terminate();
-  //     console.log("return ctrl.terminate();");
-  //   },
-  //   pull: async (ctrl) => {
-  //     // pull upstream when downstream pull
-  //     console.log("pull upstream when downstream pull");
-  //     const r = t.readable.getReader();
-  //     const { value, done } = await r.read();
-  //     r.releaseLock();
-  //     if (done) return ctrl.close();
-  //     ctrl.enqueue(value);
-  //   },
-  // });
-  // return { writable, readable };
-  return new TransformStream(
-    {
-      start: async (ctrl) => {
-        // check
-        if (!(await cacheHitPromise)) return;
-        // get
-        const cached = await store.get(key);
-        if (!cached) return;console.log(111)
-        // emit cache, return never to disable pulling upstream
-        if (emitCached) cached.map((c) => ctrl.enqueue(c));
+  return new TransformStream({
+    start: async (ctrl) => {
+      // check
+      if (!(await cacheHitPromise)) return;
+      // get
+      const cached = await store.get(key);
+      if (!cached) return;
+      // emit cache, return never to disable pulling upstream
+      if (emitCached) cached.map((c) => ctrl.enqueue(c));
+      ctrl.terminate();
+      return never();
+    },
+    transform: async (chunk, ctrl) => {
+      if (await cacheHitPromise) {
         ctrl.terminate();
         return never();
-      },
-      transform: async (chunk, ctrl) => {
-        if (await cacheHitPromise) {
-          ctrl.terminate();
-          return never();
-        }
-        chunks.push(chunk);
-        ctrl.enqueue(chunk);
-      },
-      flush: async () => {
-        console.log(1111);
-        
-        await store.set(key, chunks);
-      },
+      }
+      chunks.push(chunk);
+      ctrl.enqueue(chunk);
     },
-    { highWaterMark: 1 },
-    { highWaterMark: 0 }
-  );
+    flush: async () => await store.set(key, chunks),
+  });
 }
