@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.2](https://github.com/snomiao/sflow/compare/v1.16.1...v1.16.2) (2024-08-08)
+
+
+### Bug Fixes
+
+* **main:** add bylazies ([d4ce0dc](https://github.com/snomiao/sflow/commit/d4ce0dc541f49d99d1bdb277c1b7ad1aaae278a3))
+
 ### [1.16.1](https://github.com/snomiao/sflow/compare/v1.16.0...v1.16.1) (2024-08-08)
 
 
