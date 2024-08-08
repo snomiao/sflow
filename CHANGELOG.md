@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.4](https://github.com/snomiao/sflow/compare/v1.16.3...v1.16.4) (2024-08-08)
+
+
+### Bug Fixes
+
+* **main:** allow dynamic concurrency ([77c3cd5](https://github.com/snomiao/sflow/commit/77c3cd5b285f18adf068015142d00a5e2a09132b))
+
 ### [1.16.3](https://github.com/snomiao/sflow/compare/v1.16.2...v1.16.3) (2024-08-08)
 
 
