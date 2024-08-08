@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.3](https://github.com/snomiao/sflow/compare/v1.16.2...v1.16.3) (2024-08-08)
+
+
+### Bug Fixes
+
+* **main:** cacheskips ([e8e5e8c](https://github.com/snomiao/sflow/commit/e8e5e8c2648f76a550728a68a72cfd96dd67ebb6))
+
 ### [1.16.2](https://github.com/snomiao/sflow/compare/v1.16.1...v1.16.2) (2024-08-08)
 
 
