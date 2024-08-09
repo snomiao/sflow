@@ -99,8 +99,6 @@ interface BaseFlow<T> {
   interval(...args: Parameters<typeof chunkIntervals<T>>): sflow<T[]>;
   chunkInterval(...args: Parameters<typeof chunkIntervals<T>>): sflow<T[]>;
   debounce(...args: Parameters<typeof debounces<T>>): sflow<T>;
-  done: (pipeTo?: WritableStream<T>) => Promise<void>;
-  end: (pipeTo?: WritableStream<T>) => Promise<void>;
   filter(fn: (x: T, i: number) => Awaitable<any>): sflow<T>; // fn must fisrt
   filter(): sflow<NonNullable<T>>;
 
@@ -159,6 +157,8 @@ interface BaseFlow<T> {
   preventCancel: () => sflow<T>;
 
   // to promises
+  done: (pipeTo?: WritableStream<T>) => Promise<void>;
+  end: (pipeTo?: WritableStream<T>) => Promise<void>;
   toEnd: () => Promise<void>;
   toNil: () => Promise<void>;
   toArray: () => Promise<T[]>;
@@ -384,8 +384,6 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r.pipeThrough(chunkIntervals(...args))),
     debounce: (...args: Parameters<typeof debounces>) =>
       sflow(r.pipeThrough(debounces(...args))),
-    done: (dst = nils<T>()) => r.pipeTo(dst),
-    end: (dst = nils<T>()) => r.pipeTo(dst),
     filter: (...args: Parameters<typeof filters>) =>
       sflow(r.pipeThrough(filters(...args))),
     flatMap: (...args: Parameters<typeof flatMaps>) =>
@@ -477,6 +475,11 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r.pipeThrough(throughs(), { preventCancel: true })),
 
     // to promises
+    done: () => r.pipeTo(nils<T>()),
+    end: (dst = nils<T>()) => r.pipeTo(dst),
+    to: (dst = nils<T>()) => r.pipeTo(dst),
+    run: () => r.pipeTo(nils<T>()),
+
     toEnd: () => r.pipeTo(nils<T>()),
     toNil: () => r.pipeTo(nils<T>()),
     toArray: () => wseToArray(r),
