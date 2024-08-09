@@ -69,7 +69,9 @@ export const mergeAscends: MergeBy = <T>(
                 const ordered = sortBy(ordFn, [lastMinValue, minValue]);
                 (ordered[0] === lastMinValue && ordered[1] === minValue) ||
                   DIE(`
-mergeAscends Error: one of source stream is not ascending ordered.
+MergeAscendError: one of source stream is not ascending ordered.
+
+stream index: ${minIndex}
 
 prev: ${ordFn(lastMinValue)}
 prev: ${JSON.stringify(lastMinValue)}
@@ -153,7 +155,9 @@ export const mergeDescends: MergeBy = <T>(
                 const ordered = sortBy(ordFn, [maxValue, lastMaxValue]);
                 (ordered[0] === maxValue && ordered[1] === lastMaxValue) ||
                   DIE(`
-mergeDescends Error: one of source stream is not descending ordered.
+MergeDescendError: one of source stream is not descending ordered.
+
+stream index: ${maxIndex}
 
 prev: ${ordFn(lastMaxValue)}
 prev: ${JSON.stringify(lastMaxValue)}
