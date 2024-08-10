@@ -30,8 +30,8 @@ type CacheOptions =
 export function cacheSkips<T>(
   store: {
     has?: (key: string) => Awaitable<boolean>;
-    get: (key: string) => Awaitable<T | undefined>;
-    set: (key: string, chunks: T) => Awaitable<any>;
+    get: (key: string) => Awaitable<T[] | undefined>;
+    set: (key: string, chunks: T[]) => Awaitable<any>;
   },
   _options?: CacheOptions
 ) {
@@ -47,15 +47,15 @@ export function cacheSkips<T>(
       const cache = await cachePromise;
       if (cache && equals(chunk, cache)) {
         // append cache into chunks, and will store on flush
-        tailChunks.push(cache);
+        tailChunks.push(...cache);
         ctrl.terminate();
-        await store.set(key, chunks[0]);
+        await store.set(key, chunks.slice(0, 1));
         return await never();
       }
       chunks.push(chunk);
       ctrl.enqueue(chunk);
     },
-    flush: async () => await store.set(key, chunks[0]),
+    flush: async () => await store.set(key, chunks),
   });
 }
 

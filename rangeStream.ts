@@ -1,23 +1,5 @@
 import { sflow } from "./sflow";
 
-/** @deprecated use rangeStream or rangeFlow*/
-export function ranges(
-  minInclusive: number,
-  maxExclusive: number
-): ReadableStream<number>;
-export function ranges(maxExclusive: number): ReadableStream<number>;
-export function ranges(...args: number[]) {
-  const [min, max]: [number, number] =
-    args[1] != null ? [args[0], args[1]] : [0, args[0]];
-  let i = min;
-  return new ReadableStream({
-    pull: (ctrl) => {
-      ctrl.enqueue(i);
-      if (++i >= max) ctrl.close();
-    },
-  });
-}
-
 export function rangeStream(
   minInclusive: number,
   maxExclusive: number
@@ -27,13 +9,17 @@ export function rangeStream(...args: number[]) {
   const [min, max]: [number, number] =
     args[1] != null ? [args[0], args[1]] : [0, args[0]];
   let i = min;
-  return new ReadableStream({
-    pull: (ctrl) => {
-      ctrl.enqueue(i);
-      if (++i >= max) ctrl.close();
+  return new ReadableStream(
+    {
+      pull: (ctrl) => {
+        ctrl.enqueue(i);
+        if (++i >= max) ctrl.close();
+      },
     },
-  });
+    { highWaterMark: 0 } //lazy
+  );
 }
+
 export function rangeFlow(
   minInclusive: number,
   maxExclusive: number

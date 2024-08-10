@@ -28,7 +28,7 @@ export { pageFlow } from "./pageFlow";
 export { pageStream } from "./pageStream";
 export { peeks } from "./peeks";
 export { pMaps } from "./pMaps";
-export { rangeFlow, ranges, rangeStream } from "./rangeStream";
+export { rangeFlow, rangeStream } from "./rangeStream";
 export { reduces } from "./reduces";
 export { sflow as sf, sflow as sflow, sflow as snoflow } from "./sflow";
 export type { sflowType } from "./sflow";
