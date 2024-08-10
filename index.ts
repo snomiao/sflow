@@ -5,7 +5,7 @@ export { default as TextEncoderStream } from "polyfill-text-encoder-stream";
 export { cacheLists, cacheSkips, cacheTails } from "./caches";
 export { chunkBys } from "./chunkBys";
 export { chunkIfs } from "./chunkIfs";
-export { chunkIntervals as intervals } from "./chunkIntervals";
+export { chunkIntervals, chunkIntervals as intervals } from "./chunkIntervals";
 export { chunks as buffers, chunks } from "./chunks";
 export { concats, concatStream } from "./concats";
 export { confluences } from "./confluences";
