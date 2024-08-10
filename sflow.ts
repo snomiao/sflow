@@ -7,6 +7,7 @@ import { chunkBys } from "./chunkBys";
 import { chunkIfs } from "./chunkIfs";
 import { chunkIntervals } from "./chunkIntervals";
 import { chunks } from "./chunks";
+import { concats } from "./concats";
 import { confluences } from "./confluences";
 import { convolves } from "./convolves";
 import { debounces } from "./debounces";
@@ -110,6 +111,8 @@ interface BaseFlow<T> {
   join(stream?: ReadableStream<T>): sflow<T>;
   merge(fn: (s: WritableStream<T>) => void | any): sflow<T>;
   merge(stream?: ReadableStream<T>): sflow<T>;
+  concat(fn: (s: WritableStream<T>) => void | any): sflow<T>;
+  concat(stream?: ReadableStream<T>): sflow<T>;
   limit(...args: Parameters<typeof limits<T>>): sflow<T>;
   head(...args: Parameters<typeof heads<T>>): sflow<T>;
   map<R>(...args: Parameters<typeof maps<T, R>>): sflow<R>;
@@ -409,6 +412,7 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       ...args: Parameters<typeof replaceAlls> // @ts-expect-error string only
     ) => sflow(r.pipeThrough(replaceAlls(...args))),
     merge: (...args: FlowSource<T>[]) => sflow(r.pipeThrough(merges(...args))),
+    concat: (...args: FlowSource<T>[]) => sflow(r.pipeThrough(concats(...args))),
     confluence: (
       ...args: Parameters<typeof confluences> // @ts-expect-error streams only
     ) => sflow(r.pipeThrough(confluences(...args))),

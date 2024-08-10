@@ -5,7 +5,7 @@ import type { SourcesType } from "./SourcesType";
 import { streamAsyncIterator } from "./streamAsyncIterator";
 /**
  * return a transform stream that merges streams from sources
- * don't get confused with mergeStream
+ * don't get confused with mergeStreamw
  * merges     : returns a TransformStream, which also merges upstream
  * mergeStream: returns a ReadableStream, which doesnt have upstream
  */
