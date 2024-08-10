@@ -1,4 +1,4 @@
-import { sf } from "./dist";
+import { sf } from "./";
 import { repeats } from "./repeats";
 
 it("works", async () => {
