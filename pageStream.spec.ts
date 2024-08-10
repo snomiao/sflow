@@ -10,13 +10,10 @@ it("works with number", async () => {
       pageStream(0, (page: number) => {
         expectTypeOf(page).toBeNumber();
         const data = [1, 2, 3, 4, 5][page];
-        return {
-          data,
-          next: (!!data && page + 1) || null,
-        };
+        if (!data) return {};
+        return { data, next: page + 1 };
       })
     )
-      .map((e) => e)
       .toArray()
   ).toEqual([1, 2, 3, 4, 5]);
 });

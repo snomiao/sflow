@@ -18,7 +18,7 @@ export function pageStream<Data, Cursor>(
         const val = ret instanceof Promise ? await ret : ret;
 
         const { data, next } = val;
-        if (data != null) ctrl.enqueue(data);
+        if (data !== undefined) ctrl.enqueue(data);
         if (null == next) return ctrl.close();
         query = next;
       },

@@ -1,4 +1,5 @@
 import type { AnyFunction } from "ts-essentials";
+import { sf } from ".";
 import { flats } from "./flats";
 import { sflow } from "./sflow";
 
@@ -16,6 +17,15 @@ it("works", async () => {
   );
 
   expect(await sflow(rs).flat().log().toArray()).toEqual([0, 1, 1, 2]);
+});
+
+it("works with []", async () => {
+  await sf([[1, 2], [3, 4], [], [5, 6]])
+    .filter((e) => e.length)
+    .flat()
+    .log()
+    .toArray()
+    .then((a) => expect(a).toEqual([1, 2, 3, 4, 5, 6]));
 });
 
 const lazyStream = (fn: AnyFunction, i = 0) =>
