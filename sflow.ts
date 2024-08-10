@@ -159,6 +159,11 @@ interface BaseFlow<T> {
   preventClose: () => sflow<T>;
   preventCancel: () => sflow<T>;
 
+  // transform
+  onStart: (start: TransformerStartCallback<T>) => sflow<T>;
+  onTransform: <R>(transform: TransformerTransformCallback<T, R>) => sflow<R>;
+  onFlush: (flush: TransformerFlushCallback<T>) => sflow<T>;
+
   // to promises
 
   done: () => Promise<void>;
@@ -412,7 +417,8 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       ...args: Parameters<typeof replaceAlls> // @ts-expect-error string only
     ) => sflow(r.pipeThrough(replaceAlls(...args))),
     merge: (...args: FlowSource<T>[]) => sflow(r.pipeThrough(merges(...args))),
-    concat: (...args: FlowSource<T>[]) => sflow(r.pipeThrough(concats(...args))),
+    concat: (...args: FlowSource<T>[]) =>
+      sflow(r.pipeThrough(concats(...args))),
     confluence: (
       ...args: Parameters<typeof confluences> // @ts-expect-error streams only
     ) => sflow(r.pipeThrough(confluences(...args))),
@@ -480,9 +486,13 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     /** prevent downstream cancel, ignore downstream errors */
     preventCancel: () =>
       sflow(r.pipeThrough(throughs(), { preventCancel: true })),
-    
-    // onFlush: (flush: (ctrl: Controller)=>...)=>
-    //     sflow(r).by(new TransformStream({flush})),
+
+    onStart: (start: TransformerStartCallback<T>) =>
+      sflow(r).by(new TransformStream({ start })),
+    onTransform: <R>(transform: TransformerTransformCallback<T, R>) =>
+      sflow(r).by(new TransformStream({ transform })),
+    onFlush: (flush: TransformerFlushCallback<T>) =>
+      sflow(r).by(new TransformStream({ flush })),
 
     // to promises
     done: () => r.pipeTo(nils<T>()),
