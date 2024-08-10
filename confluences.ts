@@ -1,5 +1,12 @@
+import DIE from "phpdie";
+
 /** Confluence of multiple flow sources by breadth first */
-export const confluences = <T>(): TransformStream<ReadableStream<T>, T> => {
+export const confluences = <T>({
+  order = "breadth",
+}: {
+  order?: "breadth" | "deepth" | "faster";
+} = {}): TransformStream<ReadableStream<T>, T> => {
+  if (order !== "breadth") DIE("not implemented");
   const { writable, readable: sources } = new TransformStream<
     ReadableStream<T>,
     ReadableStream<T>

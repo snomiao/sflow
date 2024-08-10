@@ -1,13 +1,15 @@
-/** like buffer, but collect item[] in interval (ms) */
-export function chunkIntervals<T>(interval?: number) {
+/**
+ * Collect items into lists, but collect item[] in interval (ms)
+ * Note: will emit all 
+ */
+export function chunkIntervals<T>(interval: number =0) {
   let chunks: T[] = [];
   let id: null | ReturnType<typeof setInterval> = null;
   return new TransformStream<T, T[]>({
     start: (ctrl) => {
-      if (interval) id = setInterval(() => ctrl.enqueue(chunks), interval);
+      id = setInterval(() => ctrl.enqueue(chunks), interval);
     },
     transform: async (chunk, ctrl) => {
-      if (!interval) ctrl.enqueue([chunk]);
       chunks.push(chunk);
     },
     flush: async (ctrl) => {

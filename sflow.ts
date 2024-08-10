@@ -157,12 +157,15 @@ interface BaseFlow<T> {
   preventCancel: () => sflow<T>;
 
   // to promises
-  done: (pipeTo?: WritableStream<T>) => Promise<void>;
+
+  done: () => Promise<void>;
   end: (pipeTo?: WritableStream<T>) => Promise<void>;
+  run: () => Promise<void>;
+  /** alias of pipeTo */
+  to: (pipeTo?: WritableStream<T>) => Promise<void>;
+  toArray: () => Promise<T[]>;
   toEnd: () => Promise<void>;
   toNil: () => Promise<void>;
-  toArray: () => Promise<T[]>;
-
   /** Count stream items, and drop items */
   toCount: () => Promise<number>;
 
@@ -473,6 +476,9 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     /** prevent downstream cancel, ignore downstream errors */
     preventCancel: () =>
       sflow(r.pipeThrough(throughs(), { preventCancel: true })),
+    
+    // onFlush: (flush: (ctrl: Controller)=>...)=>
+    //     sflow(r).by(new TransformStream({flush})),
 
     // to promises
     done: () => r.pipeTo(nils<T>()),
@@ -600,7 +606,6 @@ export function _byLazy<T, R>(
           })();
         },
         pull: async (ctrl) => {
-          // console.log("pulling");
           const { done, value } = await reader.read();
           if (done) return tw.close();
           await tw.write(value);
