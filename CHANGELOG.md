@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.7](https://github.com/snomiao/sflow/compare/v1.16.6...v1.16.7) (2024-08-10)
+
+
+### Bug Fixes
+
+* **main:** add concats ([8adc4cb](https://github.com/snomiao/sflow/commit/8adc4cb218edfa63fd871b8b309f6aa99566d31c))
+* **main:** ignore dist ([c0b2e7c](https://github.com/snomiao/sflow/commit/c0b2e7c7c8632f51dc85a3055211f776ccf7ac7b))
+* **main:** lazy merge ([7f461c2](https://github.com/snomiao/sflow/commit/7f461c2ad4351180d176068200b9fe72636e8200))
+* **main:** optimize error msg ([a9702e1](https://github.com/snomiao/sflow/commit/a9702e1dbb57be32b4419d9d25d3e24a878ce342))
+* **main:** repeats and pipeto ([5179ba3](https://github.com/snomiao/sflow/commit/5179ba3561e89b085e97157561a02b232e04e344))
+
 ### [1.16.6](https://github.com/snomiao/sflow/compare/v1.16.5...v1.16.6) (2024-08-09)
 
 ### [1.16.5](https://github.com/snomiao/sflow/compare/v1.16.4...v1.16.5) (2024-08-09)
