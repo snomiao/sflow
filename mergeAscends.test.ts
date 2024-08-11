@@ -1,5 +1,5 @@
 import { range } from "rambda";
-import { forEachs, mergeAscends, mergeDescends, sflow } from "./";
+import { forEachs, mergeAscends, mergeDescends, sf, sflow } from "./index";
 
 it("merge asc", async () => {
   const req1 = sflow([0, 1, 2]);
@@ -13,6 +13,39 @@ it("merge asc", async () => {
       .toArray()
   ).toEqual(ret);
 });
+
+it("drains correctly for different length flow", async () => {
+  const s = [0, 1, 2].map(() => jest.fn());
+  const f = [0, 1, 2].map(() => jest.fn());
+  const end = jest.fn();
+  const c = mergeAscends(
+    (x) => x,
+    [
+      sf([1]).onStart(s[0]).onFlush(f[0]),
+      sf([4, 5]).onStart(s[0]).onFlush(f[1]),
+      sf([7, 8, 9]).onStart(s[0]).onFlush(f[2]),
+    ]
+  ).onFlush(end);
+
+  const r = c.getReader();
+  
+  expect(f[0]).not.toHaveBeenCalled();
+  expect(f[1]).not.toHaveBeenCalled();
+  expect((await r.read()).value).toBe(1); // pulled from [0|1|2] got [1,4,7]  emit 1, f0 drain
+  expect((await r.read()).value).toBe(4); // pulled from [0| | ] got [_,4,7]  emit 4,
+  expect(f[0]).toHaveBeenCalled();
+  expect(f[1]).toHaveBeenCalled();
+  expect((await r.read()).value).toBe(5); // pulled from [ |1| ] got [_,5,7]  emit 5
+  expect(f[2]).not.toHaveBeenCalled();
+  expect((await r.read()).value).toBe(7); // pulled from [ | |2] got [_,_,7]  emit 7
+  expect(f[2]).toHaveBeenCalled();
+  expect((await r.read()).value).toBe(8); // pulled from [ | |2] got [_,_,8]  emit 8
+  expect((await r.read()).value).toBe(9); // pulled from [ | |2] got [_,_,9]  emit 9
+  expect(end).not.toHaveBeenCalled();
+  expect((await r.read()).value).toBe(undefined); // pulled from [ | |2] got [_,_,_]  drain
+  expect(end).toHaveBeenCalled();
+});
+
 it.skip("merge asc lazy", async () => {
   const fn1 = jest.fn();
   const req1 = sflow([0, 1, 2]).byLazy(forEachs(fn1));

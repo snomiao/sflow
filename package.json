@@ -40,7 +40,7 @@
   ],
   "scripts": {
     "dev": "bunx --bun tsc -w --noEmit --declaration false --emitDeclarationOnly false",
-    "build": "bun build:esm && bun build:umd",
+    "build": "rm -rf dist && bun build:tsc && bun build:esm && bun build:umd",
     "build:esm": "bun build index.ts fromNodeStream.ts --outdir=dist",
     "build:umd": "bunx rollup dist/index.js --file=dist/index.umd.js --format=umd --name sflow",
     "build:tsc": "tsc -d --emitDeclarationOnly true --noEmit false",

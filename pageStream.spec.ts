@@ -2,7 +2,7 @@ import { expectTypeOf } from "expect-type";
 import Keyv from "keyv";
 import { KeyvCachedWith } from "keyv-cached-with";
 import DIE from "phpdie";
-import sflow, { nil, pageFlow, pageStream } from "./";
+import sflow, { nil, pageFlow, pageStream } from "./index";
 
 it("works with number", async () => {
   expect(

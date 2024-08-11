@@ -1,4 +1,5 @@
 import DIE from "phpdie";
+import type { Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Split } from "ts-toolbelt/out/String/Split";
 import type { Awaitable } from "./Awaitable";
@@ -24,6 +25,7 @@ import { logs } from "./logs";
 import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
 import { merges, mergeStream } from "./merges";
+import { mergeStreamsByAscend } from "./mergeStreamsBy";
 import { nils } from "./nils";
 import { peeks } from "./peeks";
 import { asyncMaps, pMaps } from "./pMaps";
@@ -224,7 +226,13 @@ type DictionaryFlow<T> = T extends Record<string, any>
 
 type StreamsFlow<T> = T extends ReadableStream<infer T>
   ? {
+    // merge multiupstreams
       confluence(...args: Parameters<typeof confluences<T>>): sflow<T>;
+      confluenceByConcat(): sflow<T>;
+      confluenceByParallel(): sflow<T>;
+      confluenceByAscend(ordFn: (x: T) => Ord): sflow<T>;
+      confluenceByDescend(ordFn: (x: T) => Ord): sflow<T>;
+      // concat()
     }
   : {};
 
@@ -416,12 +424,34 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     replaceAll: (
       ...args: Parameters<typeof replaceAlls> // @ts-expect-error string only
     ) => sflow(r.pipeThrough(replaceAlls(...args))),
+    // stream merging
     merge: (...args: FlowSource<T>[]) => sflow(r.pipeThrough(merges(...args))),
-    concat: (...args: FlowSource<T>[]) =>
-      sflow(r.pipeThrough(concats(...args))),
+
+    concat: (srcs: FlowSource<FlowSource<T>>) =>
+      sflow(r.pipeThrough(concats(srcs))),
+
     confluence: (
       ...args: Parameters<typeof confluences> // @ts-expect-error streams only
     ) => sflow(r.pipeThrough(confluences(...args))),
+    confluenceByConcat: () =>
+      sflow(r)
+        .by((srcs) => concatStream(srcs))
+        .confluence(),
+    confluenceByParallel: () =>
+      sflow(r)
+        .by((srcs) => lazyMergeStream(srcs))
+        .confluence(),
+    confluenceByAscend: (ordFn: (x: T) => Ord) =>
+      sflow(r)
+        .chunk()
+        .map((srcs) => mergeStreamsByAscend(ordFn, srcs))
+        .confluence(),
+    confluenceByDescend: (ordFn: (x: T) => Ord) =>
+      sflow(r)
+        .chunk()
+        .map((srcs) => mergeStreamsByDescend(ordFn, srcs))
+        .confluence(),
+
     limit: (...args: Parameters<typeof limits>) =>
       sflow(r).byLazy(limits(...args)),
     head: (...args: Parameters<typeof heads>) =>

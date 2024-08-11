@@ -40,6 +40,33 @@ it("works for different length flow", async () => {
       .toArray()
   ).toEqual([1, 4, 7, 5, 8, 9]);
 });
+it("drains correctly for different length flow", async () => {
+  const f = [0, 1, 2, -1].map(() => jest.fn());
+  const c = sf([
+    sf([1]).onFlush(f[0]),
+    sf([4, 5]).onFlush(f[1]),
+    sf([7, 8, 9]).onFlush(f[2]),
+  ])
+    .confluence()
+    .onFlush(f[3]);
+  const r = c.getReader();
+
+  await r.read(); // pulled from [0|1|2] got [1,4,7]  emit 1
+  expect(f[0]).not.toHaveBeenCalled();
+  await r.read(); // pulled from [0| | ] got [_,4,7]  emit 4
+  expect(f[0]).toHaveBeenCalled();
+  await r.read(); // pulled from [ |1| ] got [_,5,7]  emit 5
+  await r.read(); // pulled from [ | |2] got [_,_,7]  emit 7
+  expect(f[1]).not.toHaveBeenCalled();
+  await r.read(); // pulled from [ | |2] got [_,_,8]  emit 8
+  expect(f[1]).toHaveBeenCalled();
+  await r.read(); // pulled from [ | |2] got [_,_,9]  emit 9
+  expect(f[2]).not.toHaveBeenCalled();
+  expect(f[3]).not.toHaveBeenCalled();
+  await r.read(); // pulled from [ | |2] got [_,_,_]  drain
+  expect(f[2]).toHaveBeenCalled();
+  expect(f[3]).toHaveBeenCalled();
+});
 it("lazy read", async () => {
   const fn1 = jest.fn();
   const fn2 = jest.fn();

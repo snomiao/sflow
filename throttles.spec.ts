@@ -1,5 +1,5 @@
 import { sleep } from "bun";
-import { sflow } from "./";
+import { sflow } from "./index";
 
 describe.skip('throttles', () => {
   // todo: check this issue

@@ -26,6 +26,7 @@ type CacheOptions =
  *
  * Only emit unmet contents
  *
+ * Once flow done, cache content, and skip cached content next time
  */
 export function cacheSkips<T>(
   store: {

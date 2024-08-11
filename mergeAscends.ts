@@ -1,5 +1,6 @@
 import DIE from "phpdie";
 import { sortBy, type Ord } from "rambda";
+import { toStream } from "./froms";
 import { sflow, type FlowSource } from "./index";
 interface MergeBy {
   <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): sflow<T>;
@@ -17,6 +18,7 @@ interface MergeBy {
  * @param ordFn a function to get the order of input
  * @param srcs a list of input stream
  * @returns a new stream that merge all input stream by ascend order
+ * @deprecated use {@link mergeStreamsByAscend}
  */
 export const mergeAscends: MergeBy = <T>(
   ordFn: (input: T) => Ord,
@@ -107,13 +109,14 @@ curr: ${JSON.stringify(minValue)}
  * @param ordFn a function to get the order of input
  * @param srcs a list of input stream
  * @returns a new stream that merge all input stream by ascend order
+ * @deprecated use {@link mergeStreamsByAscend}
  */
 export const mergeDescends: MergeBy = <T>(
   ordFn: (input: T) => Ord,
   _srcs?: FlowSource<FlowSource<T>>
 ) => {
   if (!_srcs) return ((srcs: any) => mergeDescends(ordFn, srcs)) as any;
-  return sflow(
+  return toStream(
     new ReadableStream<T>(
       {
         pull: async (ctrl) => {
@@ -126,7 +129,7 @@ export const mergeDescends: MergeBy = <T>(
           let lastMaxValue: T | undefined = undefined;
           await Promise.all(
             srcs.map(async (src, i) => {
-              for await (const value of sflow(src)) {
+              for await (const value of toStream(src)) {
                 while (slots[i] !== undefined) {
                   if (shiftMaxValueIfFull()) continue;
                   pendingSlotRemoval[i] = Promise.withResolvers<void>();

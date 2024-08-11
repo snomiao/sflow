@@ -23,6 +23,7 @@ export { mapAddFields } from "./mapAddFields";
 export { maps } from "./maps";
 export { mergeAscends, mergeDescends } from "./mergeAscends";
 export { merges as joins, merges, mergeStream } from "./merges";
+export { mergeStreamsBy, mergeStreamsByAscend, mergeStreamsByAscend } from "./mergeStreamsBy";
 export { nil, nils } from "./nils";
 export { pageFlow } from "./pageFlow";
 export { pageStream } from "./pageStream";
@@ -48,4 +49,3 @@ export type { Unwinded } from "./Unwinded";
 export { unwinds } from "./unwinds";
 export { andIgnoreError };
 export default sflow;
-
