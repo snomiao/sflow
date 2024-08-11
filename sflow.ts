@@ -2,13 +2,15 @@ import DIE from "phpdie";
 import type { Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Split } from "ts-toolbelt/out/String/Split";
+import { sf } from ".";
+import { asyncMaps } from "./asyncMaps";
 import type { Awaitable } from "./Awaitable";
 import { cacheLists, cacheSkips, cacheTails } from "./caches";
 import { chunkBys } from "./chunkBys";
 import { chunkIfs } from "./chunkIfs";
 import { chunkIntervals } from "./chunkIntervals";
 import { chunks } from "./chunks";
-import { concats } from "./concats";
+import { concats, concatStream } from "./concats";
 import { confluences } from "./confluences";
 import { convolves } from "./convolves";
 import { debounces } from "./debounces";
@@ -25,10 +27,10 @@ import { logs } from "./logs";
 import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
 import { merges, mergeStream } from "./merges";
-import { mergeStreamsByAscend } from "./mergeStreamsBy";
+import { mergeStreamsByAscend, mergeStreamsByDescend } from "./mergeStreamsBy";
 import { nils } from "./nils";
 import { peeks } from "./peeks";
-import { asyncMaps, pMaps } from "./pMaps";
+import { pMaps } from "./pMaps";
 import { reduceEmits } from "./reduceEmits";
 import { reduces } from "./reduces";
 import { riffles } from "./riffles";
@@ -227,7 +229,9 @@ type DictionaryFlow<T> = T extends Record<string, any>
 type StreamsFlow<T> = T extends ReadableStream<infer R>
   ? {
     // merge multiupstreams
+    /** @deprecated use confluencesByBreth */
     confluence(...args: Parameters<typeof confluences<R>>): sflow<R>;
+    confluenceByZip(): sflow<R>;
     confluenceByConcat(): sflow<R>;
     confluenceByParallel(): sflow<R>;
     confluenceByAscend(ordFn: (x: R) => Ord): sflow<R>;
@@ -434,28 +438,32 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     confluence: (
       ...args: Parameters<typeof confluences> // @ts-ignore streams only
     ) => sflow(r.pipeThrough(confluences(...args))),
+
+    confluenceByZip: () => sflow(r)
+      // @ts-ignore upstream accepts streams only
+      .by(confluences()),
     confluenceByConcat: () =>
       sflow(r)
-        // @ts-ignore streams only
-        .by((srcs) => concatStream(srcs))
-        // @ts-ignore streams only
-        .confluence(),
+        // @ts-ignore upstream accepts streams only
+        .by((srcs) => concatStream(srcs)),
     confluenceByParallel: () =>
       sflow(r)
-        // @ts-ignore streams only
-        .by((srcs) => lazyMergeStream(srcs))
-        // @ts-ignore streams only
-        .confluence(),
+        // @ts-ignore upstream accepts streams only
+        .by((srcs: ReadableStream<FlowSource<T>>) => 
+          sf(srcs).toArray().then((srcs: FlowSource<T>[]) => sf(...srcs) ))
+        // @ts-ignore upstream accepts streams only
+        .confluence()
+        ,
     confluenceByAscend: (ordFn: (x: T) => Ord) =>
       sflow(r)
         .chunk()
-        // @ts-ignore streams only
+        // @ts-ignore upstream accepts streams only
         .map((srcs) => mergeStreamsByAscend(ordFn, srcs))
         .confluence(),
     confluenceByDescend: (ordFn: (x: T) => Ord) =>
       sflow(r)
         .chunk()
-        // @ts-ignore streams only
+        // @ts-ignore upstream accepts streams only
         .map((srcs) => mergeStreamsByDescend(ordFn, srcs))
         .confluence(),
 
