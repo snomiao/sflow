@@ -75,7 +75,7 @@ export function mergeStreamsByAscend<T>(
         new Error(
           "MergeStreamError: one of sources is not ordered by ascending",
           {
-            cause: { prev: lastEmit.value, curr: peak },
+            cause: { prevOrd: ordFn(lastEmit.value), currOrd: ordFn(peak), prev: lastEmit.value, curr: peak },
           }
         )
       );
@@ -119,7 +119,7 @@ export function mergeStreamsByDescend<T>(
       DIE(
         new Error(
           "MergeStreamError: one of sources is not ordered by descending",
-          { cause: { prev: lastEmit.value, curr: peak } }
+          { cause: { prevOrd: ordFn(lastEmit.value), currOrd: ordFn(peak), prev: lastEmit.value, curr: peak } }
         )
       );
     lastEmit = { value: peak };
