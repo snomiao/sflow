@@ -46,18 +46,18 @@ export function mergeStreamsBy<T>(
 
 export function mergeStreamsByAscend<T>(
   ordFn: OrdFn<T>,
-  srcs: FlowSource<T>[]
+  sources: FlowSource<T>[]
 ): sflow<T>;
 export function mergeStreamsByAscend<T>(ordFn: OrdFn<T>): {
-  (srcs: FlowSource<T>[]): sflow<T>;
+  (sources: FlowSource<T>[]): sflow<T>;
 };
 export function mergeStreamsByAscend<T>(
   ordFn: OrdFn<T>,
   sources?: FlowSource<T>[]
 ) {
   if (!sources)
-    return ((srcs: FlowSource<T>[]) =>
-      mergeStreamsByAscend(ordFn, srcs)) as any;
+    return ((sources: FlowSource<T>[]) =>
+      mergeStreamsByAscend(ordFn, sources)) as any;
   let lastEmit: { value: T } | null = null;
   return mergeStreamsBy<T>(async (slots, ctrl) => {
     const cands = slots.filter((e) => e?.done === false).map((e) => e!.value!);
