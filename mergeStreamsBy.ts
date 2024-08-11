@@ -70,7 +70,8 @@ export function mergeStreamsByAscend<T>(
       (e) => e?.done === false && e?.value === peak
     );
     // check order correct
-    if (lastEmit && lastEmit.value !== sortBy(ordFn, [lastEmit.value, peak])[0])
+    if (lastEmit && lastEmit.value !== sortBy(ordFn, [lastEmit.value, peak])[0] &&
+      ordFn(lastEmit.value) !== ordFn(peak))
       DIE(
         new Error(
           "MergeStreamError: one of sources is not ordered by ascending",
@@ -114,7 +115,8 @@ export function mergeStreamsByDescend<T>(
     // check order correct
     if (
       lastEmit &&
-      lastEmit.value !== sortBy(ordFn, [lastEmit.value, peak]).toReversed()[0]
+      lastEmit.value !== sortBy(ordFn, [lastEmit.value, peak]).toReversed()[0] &&
+      ordFn(lastEmit.value) !== ordFn(peak)
     )
       DIE(
         new Error(
