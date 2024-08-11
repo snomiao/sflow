@@ -1,6 +1,6 @@
 import type { Awaitable } from "./Awaitable";
 
- type asyncMapOptions = {
+type asyncMapOptions = {
   concurrency?: number;
 };
 
@@ -8,12 +8,12 @@ import type { Awaitable } from "./Awaitable";
 export const pMaps: {
   <T, R>(
     fn: (x: T, i: number) => Awaitable<R>,
-    options?: asyncMapOptions
+    options?: asyncMapOptions,
   ): TransformStream<T, R>;
   // <T, R>(fn: (x: T, i: number) => Awaitable<R>): TransformStream<T, R>;
 } = <T, R>(
   fn: (x: T, i: number) => Awaitable<R>,
-  options: asyncMapOptions = {}
+  options: asyncMapOptions = {},
 ) => {
   let i = 0;
   let promises: Awaitable<R>[] = [];
@@ -28,4 +28,3 @@ export const pMaps: {
     },
   });
 };
-

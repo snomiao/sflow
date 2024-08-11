@@ -13,8 +13,9 @@ await sflow(fromReadable(process.stdin))
   // interrupt on ctrl+c
   .by(
     new TransformStream({
-      transform: (e, c) => (e === CtrlC ? c.error('Interrupted by Ctrl+C') : c.enqueue(e)),
-    })
+      transform: (e, c) =>
+        e === CtrlC ? c.error("Interrupted by Ctrl+C") : c.enqueue(e),
+    }),
   )
   .log((char) => JSON.stringify({ char }))
   .lines()

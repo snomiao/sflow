@@ -3,7 +3,7 @@ import type { Awaitable } from "./Awaitable";
 /** chunk items if condition is true */
 export function chunkIfs<T>(
   predicate: (x: T, i: number, chunks: T[]) => Awaitable<boolean>,
-  { inclusive = false } = {}
+  { inclusive = false } = {},
 ): TransformStream<T, T[]> {
   let chunks: T[] = [];
   let i = 0;

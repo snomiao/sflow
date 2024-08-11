@@ -2,7 +2,7 @@ import { sflow } from "./sflow";
 
 export function rangeStream(
   minInclusive: number,
-  maxExclusive: number
+  maxExclusive: number,
 ): ReadableStream<number>;
 export function rangeStream(maxExclusive: number): ReadableStream<number>;
 export function rangeStream(...args: number[]) {
@@ -16,13 +16,13 @@ export function rangeStream(...args: number[]) {
         if (++i >= max) ctrl.close();
       },
     },
-    { highWaterMark: 0 } //lazy
+    { highWaterMark: 0 }, //lazy
   );
 }
 
 export function rangeFlow(
   minInclusive: number,
-  maxExclusive: number
+  maxExclusive: number,
 ): sflow<number>;
 export function rangeFlow(maxExclusive: number): sflow<number>;
 export function rangeFlow(...args: number[]) {

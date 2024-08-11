@@ -1,11 +1,10 @@
 import type { FlowSource } from "./FlowSource";
 import { toStream } from "./froms";
-import { maps } from './maps';
-import { nils } from './nils';
+import { maps } from "./maps";
+import { nils } from "./nils";
 
-type SourcesType<SRCS extends FlowSource<FlowSource<any>>> = SRCS extends FlowSource<FlowSource<
-  infer T
->> ? T : never;
+type SourcesType<SRCS extends FlowSource<FlowSource<any>>> =
+  SRCS extends FlowSource<FlowSource<infer T>> ? T : never;
 
 /**
  * return a transform stream that concats streams from sources
@@ -30,7 +29,9 @@ export const concats: {
  * concatStream: returns a ReadableStream, which doesnt have upstream
  * concats     : returns a TransformStream, which also concats upstream
  */
-export const concatStream = <T>(srcs?: FlowSource<FlowSource<T>>): ReadableStream<T> => {
+export const concatStream = <T>(
+  srcs?: FlowSource<FlowSource<T>>,
+): ReadableStream<T> => {
   if (!srcs) return new ReadableStream<T>({ start: (c) => c.close() });
   const t = new TransformStream<T, T>();
   const w = t.writable.getWriter();
@@ -44,10 +45,10 @@ export const concatStream = <T>(srcs?: FlowSource<FlowSource<T>>): ReadableStrea
           if (done) break;
           await w.write(value);
         }
-      })
+      }),
     )
     .pipeTo(nils())
     .then(() => w.close())
-    .catch((reason) => w.abort(reason))
+    .catch((reason) => w.abort(reason));
   return t.readable;
 };

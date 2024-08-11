@@ -7,7 +7,7 @@ export function lazyMergeStream(...streams: ReadableStream[]) {
   const reads = streams.map(() => null as null | Promise<never | undefined>);
   const dones: (() => void)[] = [];
   const allDone = Promise.all(
-    streams.map(() => new Promise<void>((resolve) => void dones.push(resolve)))
+    streams.map(() => new Promise<void>((resolve) => void dones.push(resolve))),
   );
   return new ReadableStream(
     {
@@ -24,10 +24,10 @@ export function lazyMergeStream(...streams: ReadableStream[]) {
                 }
                 ctrl.enqueue(value);
                 reads[i] = null;
-              }))
-          )
+              })),
+          ),
         ),
     },
-    { highWaterMark: 0 }
+    { highWaterMark: 0 },
   );
 }

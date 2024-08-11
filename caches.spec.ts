@@ -18,7 +18,7 @@ it("caches stream", async () => {
     await heavyFlow()
       .by(forEachs(fn1))
       .byLazy(cacheLists(store, "heavy-step"))
-      .toArray()
+      .toArray(),
   ).toEqual([1, 2, 3, 4]);
   expect(fn1).toHaveBeenCalledTimes(4);
   expect(await store.get("heavy-step")).toEqual([1, 2, 3, 4]);
@@ -28,7 +28,7 @@ it("caches stream", async () => {
     await heavyFlow()
       .by(forEachs(fn2))
       .byLazy(cacheLists(store, "heavy-step"))
-      .toArray()
+      .toArray(),
   ).toEqual([1, 2, 3, 4]);
   expect(fn2).toHaveBeenCalledTimes(1);
   await sleep(100);
@@ -64,7 +64,7 @@ it("caches stream tail", async () => {
     .byLazy(cacheTails(store, "page"))
     .toArray();
   expect(await store.get("page")).toEqual([5, 4, 3, 2, 1]);
-  await sleep(100)
+  await sleep(100);
   expect(fn3).toHaveBeenCalledTimes(2 + 1);
 
   // 3th time, page content is not changed
@@ -74,7 +74,7 @@ it("caches stream tail", async () => {
     .forEach(fn1)
     .byLazy(cacheTails(store, "page"))
     .toArray();
-  await sleep(100)
+  await sleep(100);
   expect(fn1).toHaveBeenCalledTimes(1);
   expect(await store.get("page")).toEqual([5, 4, 3, 2, 1]);
 });

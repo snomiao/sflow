@@ -2,7 +2,7 @@ import DIE from "phpdie";
 
 export function flats<T>() {
   const emptyError = new Error(
-    "Flatten for empty array [] in stream is not supported yet, To fix this error, you can add a .filter(array=>array.length) stage before flat"
+    "Flatten for empty array [] in stream is not supported yet, To fix this error, you can add a .filter(array=>array.length) stage before flat",
   );
 
   return new TransformStream<T[], T>({

@@ -15,6 +15,6 @@ export function limits<T>(n: number, { terminate = true } = {}) {
       flush: () => {},
     },
     { highWaterMark: 1 },
-    { highWaterMark: 0 }
+    { highWaterMark: 0 },
   );
 }

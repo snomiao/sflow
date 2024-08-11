@@ -28,9 +28,9 @@ export const merges: {
  */
 export const mergeStream: {
   // <T>(...streams: FlowSource<T>[]): ReadableStream<T>;
-  <T, SRCS extends FlowSource<T>[]>(...streams: SRCS): ReadableStream<
-    SourcesType<SRCS>
-  >;
+  <T, SRCS extends FlowSource<T>[]>(
+    ...streams: SRCS
+  ): ReadableStream<SourcesType<SRCS>>;
 } = (...srcs: FlowSource<any>[]): ReadableStream<any> => {
   if (!srcs.length) return new ReadableStream({ start: (c) => c.close() });
   // no nesscerry to merge
@@ -45,7 +45,7 @@ export const mergeStream: {
         [Symbol.asyncIterator]: streamAsyncIterator,
       }))
         await w.write(chunk);
-    })
+    }),
   )
     .then(async () => w.close())
     .catch((error) => {

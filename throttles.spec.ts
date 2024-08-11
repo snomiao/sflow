@@ -1,7 +1,7 @@
 import { sleep } from "bun";
 import { sflow } from "./index";
 
-describe.skip('throttles', () => {
+describe.skip("throttles", () => {
   // todo: check this issue
   // - [Implement `test.concurrent` · Issue #5585 · oven-sh/bun]( https://github.com/oven-sh/bun/issues/5585 )
   it("works with drop", async () => {
@@ -11,7 +11,7 @@ describe.skip('throttles', () => {
       await sflow([1, 2, 3, 4])
         .forEach(() => sleep(50))
         .throttle(80, { drop: true, keepLast: false })
-        .toArray()
+        .toArray(),
     ).toEqual([1, 3]);
   });
   it("works with drop keep last", async () => {
@@ -32,7 +32,7 @@ describe.skip('throttles', () => {
       await sflow([1, 2, 3, 4])
         .forEach(() => sleep(50))
         .throttle(80)
-        .toArray()
+        .toArray(),
     ).toEqual([1, 2, 3, 4]);
   });
   it("works correct interval", async () => {
@@ -67,7 +67,7 @@ describe.skip('throttles', () => {
         .forEach(() => sleep(100))
         .forEach(() => sleep(100))
         .log()
-        .toArray()
+        .toArray(),
     ).toEqual([1, 2, 3, 4]);
   });
 
@@ -100,4 +100,4 @@ describe.skip('throttles', () => {
       })
       .done();
   });
-})
+});

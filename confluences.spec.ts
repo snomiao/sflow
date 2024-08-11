@@ -9,35 +9,35 @@ it("As stream kernel", async () => {
     await sf([flow1, flow2])
       .through((e) => e.pipeThrough(confluences()))
       .peek((e) => expect(typeof e === "number").toBeTruthy())
-      .toArray()
+      .toArray(),
   ).toEqual([1, 4, 2, 5, 3, 6]);
 });
 it("As pipeline kernel", async () => {
   expect(
     await sf([sf([1, 2, 3]), sf([4, 5, 6])])
       .through(confluences())
-      .toArray()
+      .toArray(),
   ).toEqual([1, 4, 2, 5, 3, 6]);
 });
 it("As pipeline", async () => {
   expect(
     await sf([sf([1, 2, 3]), sf([4, 5, 6])])
       .confluence()
-      .toArray()
+      .toArray(),
   ).toEqual([1, 4, 2, 5, 3, 6]);
 });
 it("breadth first search", async () => {
   expect(
     await sf([sf([1, 2, 3]), sf([4, 5, 6]), sf([7, 8, 9])])
       .confluence()
-      .toArray()
+      .toArray(),
   ).toEqual([1, 4, 7, 2, 5, 8, 3, 6, 9]);
 });
 it("works for different length flow", async () => {
   expect(
     await sf([sf([1]), sf([4, 5]), sf([7, 8, 9])])
       .confluence()
-      .toArray()
+      .toArray(),
   ).toEqual([1, 4, 7, 5, 8, 9]);
 });
 it("drains correctly for different length flow", async () => {

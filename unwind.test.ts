@@ -4,7 +4,7 @@ it("works", async () => {
     await sflow([{ a: 1, b: [1, 2, 3], c: [1, 2, 3] }])
       .unwind("b")
       .map((e) => e)
-      .toArray()
+      .toArray(),
   ).toEqual([
     { a: 1, b: 1, c: [1, 2, 3] },
     { a: 1, b: 2, c: [1, 2, 3] },

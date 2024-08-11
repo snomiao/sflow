@@ -12,7 +12,7 @@ it("eager", () => {
         ctrl.enqueue(3);
         ctrl.close();
       },
-    })
+    }),
   ).pipeTo(new WritableStream({ write: (c) => console.log(c) }));
 });
 
@@ -24,7 +24,7 @@ it.skip("passive", () => {
         console.log("pulling", i);
         ctrl.enqueue(i++);
       },
-    })
+    }),
   ).pipeTo(
     new WritableStream(
       {
@@ -36,7 +36,7 @@ it.skip("passive", () => {
           console.log(c);
         },
       },
-      { highWaterMark: 2 }
-    )
+      { highWaterMark: 2 },
+    ),
   );
 });

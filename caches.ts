@@ -34,11 +34,11 @@ export function cacheSkips<T>(
     get: (key: string) => Awaitable<T[] | undefined>;
     set: (key: string, chunks: T[]) => Awaitable<any>;
   },
-  _options?: CacheOptions
+  _options?: CacheOptions,
 ) {
   // parse options
   const { key = new Error().stack ?? DIE("missing cache key") } =
-    typeof _options === "string" ? { key: _options } : _options ?? {};
+    typeof _options === "string" ? { key: _options } : (_options ?? {});
 
   const chunks: T[] = [];
   const tailChunks: T[] = [];
@@ -77,13 +77,13 @@ export function cacheTails<T>(
     get: (key: string) => Awaitable<T[] | undefined>;
     set: (key: string, chunks: T[]) => Awaitable<any>;
   },
-  _options?: CacheOptions
+  _options?: CacheOptions,
 ) {
   // parse options
   const {
     key = new Error().stack ?? DIE("missing cache key"),
     emitCached = true,
-  } = typeof _options === "string" ? { key: _options } : _options ?? {};
+  } = typeof _options === "string" ? { key: _options } : (_options ?? {});
 
   const chunks: T[] = [];
   const tailChunks: T[] = [];
@@ -126,13 +126,13 @@ export function cacheLists<T>(
     get: (key: string) => Awaitable<T[] | undefined>;
     set: (key: string, chunks: T[]) => Awaitable<any>;
   },
-  _options?: CacheOptions
+  _options?: CacheOptions,
 ) {
   // parse options
   const {
     key = new Error().stack ?? DIE("missing cache key"),
     emitCached = true,
-  } = typeof _options === "string" ? { key: _options } : _options ?? {};
+  } = typeof _options === "string" ? { key: _options } : (_options ?? {});
   const chunks: T[] = [];
   const cacheHitPromise = store.has?.(key) || store.get(key);
   return new TransformStream({

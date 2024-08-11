@@ -2,7 +2,7 @@ import type { Awaitable } from "./Awaitable";
 export const reduceEmits: {
   <T, S, R>(
     fn: (state: S, x: T, i: number) => Awaitable<{ next: S; emit: R }>,
-    state: S
+    state: S,
   ): TransformStream<T, R>;
 } = (fn, _state) => {
   let i = 0;

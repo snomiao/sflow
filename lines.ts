@@ -17,10 +17,10 @@ export const lines: {
     r
       .pipeThrough(flatMaps((s: string) => s.split(/(?<=\n)/g)))
       .pipeThrough(
-        chunkIfs((ch: string) => ch.indexOf("\n") === -1, { inclusive: true })
+        chunkIfs((ch: string) => ch.indexOf("\n") === -1, { inclusive: true }),
       )
       .pipeThrough(
-        maps((chunks) => chunks.join("").replace(/(\r?\n?)$/, CRLFMap[EOL]))
-      )
+        maps((chunks) => chunks.join("").replace(/(\r?\n?)$/, CRLFMap[EOL])),
+      ),
   );
 };

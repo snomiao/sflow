@@ -7,7 +7,7 @@ export const confluences = <T>({
 }: {
   order?: "breadth" | "deepth" | "faster";
 } = {}): TransformStream<ReadableStream<T>, T> => {
-  const baseError = new Error()
+  const baseError = new Error();
   if (order !== "breadth") DIE("not implemented");
   const { writable, readable: sources } = new TransformStream<
     ReadableStream<T>,

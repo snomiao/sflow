@@ -6,7 +6,7 @@ describe("reduces function", () => {
     const initialState = 0;
     const transformStream = reduces(
       (state, x: number) => state + x,
-      initialState
+      initialState,
     );
     const writer = transformStream.writable.getWriter();
     const reader = transformStream.readable.getReader();
@@ -28,7 +28,7 @@ describe("reduces function", () => {
 
   it("accumulates state without initial state", async () => {
     const transformStream = reduces(
-      (state: number = 0, x: number) => state + x
+      (state: number = 0, x: number) => state + x,
     );
     const writer = transformStream.writable.getWriter();
     const reader = transformStream.readable.getReader();
@@ -68,7 +68,7 @@ describe("reduces function", () => {
 
     expect(results).toEqual(["a", "ab", "abc"]);
   });
-  
+
   it("accumulates state asynchronously", async () => {
     const initialState = 1;
     const transformStream = reduces(async (state, x) => {
@@ -96,14 +96,14 @@ describe("reduces function", () => {
     expect(
       await sflow([1, 2, 3, 4])
         .reduce((a, b) => a + b, 0)
-        .toLast()
+        .toLast(),
     ).toBe(1 + 2 + 3 + 4);
   });
   it("works with pipeline without initialState", async () => {
     expect(
       await sflow([1, 2, 3, 4])
         .reduce((a = 0, b) => a + b)
-        .toLast()
+        .toLast(),
     ).toBe(1 + 2 + 3 + 4);
   });
 });

@@ -12,9 +12,8 @@ it("works with number", async () => {
         const data = [1, 2, 3, 4, 5][page];
         if (!data) return {};
         return { data, next: page + 1 };
-      })
-    )
-      .toArray()
+      }),
+    ).toArray(),
   ).toEqual([1, 2, 3, 4, 5]);
 });
 
@@ -29,12 +28,12 @@ it("works with cache with wrapper", async () => {
           // expectTypeOf(page).toBeNumber(); // fail
           return { data, next: (!!data && page + 1) || null };
         }, page);
-      })
+      }),
     )
       .map((e) => e)
       .filter()
       .map((e) => e)
-      .toArray()
+      .toArray(),
   ).toEqual([1, 2, 3, 4]);
 });
 it("works with cache without wrapper", async () => {
@@ -47,13 +46,13 @@ it("works with cache without wrapper", async () => {
           const data = [1, 2, 3, 4][page] as number | undefined;
           // expectTypeOf(page).toBeNumber(); // fail
           return { data, next: (!!data && page + 1) || null };
-        })
-      )
+        }),
+      ),
     )
       .map((e) => e)
       .filter()
       .map((e) => e)
-      .toArray()
+      .toArray(),
   ).toEqual([1, 2, 3, 4]);
 });
 
@@ -67,7 +66,7 @@ it("works with cacheTails", async () => {
     })
       .filter()
       .cacheTail(store, "page")
-      .toArray()
+      .toArray(),
   ).toEqual([5, 4, 3, 2, 1]);
 
   // emit only page head, but got full cached content
@@ -78,7 +77,7 @@ it("works with cacheTails", async () => {
     })
       .filter()
       .cacheTail(store, "page")
-      .toArray()
+      .toArray(),
   ).toEqual([6, 5, 4, 3, 2, 1]);
 });
 
@@ -92,7 +91,7 @@ it("works with cacheTails, but not emit cached items", async () => {
     })
       .filter()
       .cacheTail(store, { key: "page", emitCached: false })
-      .toArray()
+      .toArray(),
   ).toEqual([5, 4, 3, 2, 1]);
 
   // emit only page head, but got full cached content
@@ -103,7 +102,7 @@ it("works with cacheTails, but not emit cached items", async () => {
     })
       .filter()
       .cacheTail(store, { key: "page", emitCached: false })
-      .toArray()
+      .toArray(),
   ).toEqual([6]);
 });
 
@@ -123,10 +122,10 @@ it("works with signal polling", async () => {
         const data = await fetcher().catch(nil);
         if ("END" === data) return { data: null };
         return { data, next: page };
-      })
+      }),
     )
       .filter()
       .map((e) => e)
-      .toArray()
+      .toArray(),
   ).toEqual(["signal0", "signal1", "signal2"]);
 });

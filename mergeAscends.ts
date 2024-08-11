@@ -22,7 +22,7 @@ interface MergeBy {
  */
 export const mergeAscends: MergeBy = <T>(
   ordFn: (input: T) => Ord,
-  _srcs?: FlowSource<FlowSource<T>>
+  _srcs?: FlowSource<FlowSource<T>>,
 ) => {
   if (!_srcs) return ((srcs: any) => mergeAscends(ordFn, srcs)) as any;
   return sflow(
@@ -32,7 +32,7 @@ export const mergeAscends: MergeBy = <T>(
           const srcs = await sflow(_srcs).toArray();
           const slots = srcs.map(() => undefined as { value: T } | undefined);
           const pendingSlotRemoval = srcs.map(
-            () => undefined as PromiseWithResolvers<void> | undefined
+            () => undefined as PromiseWithResolvers<void> | undefined,
           );
           const drains = srcs.map(() => false);
           let lastMinValue: T | undefined = undefined;
@@ -61,7 +61,7 @@ export const mergeAscends: MergeBy = <T>(
 
               function shiftMinValueIfFull() {
                 const isFull = slots.every(
-                  (slot, i) => slot !== undefined || drains[i]
+                  (slot, i) => slot !== undefined || drains[i],
                 );
                 if (!isFull) return false;
                 const fullSlots = slots
@@ -91,12 +91,12 @@ curr: ${JSON.stringify(minValue)}
                 pendingSlotRemoval[minIndex] = undefined;
                 return true;
               }
-            })
+            }),
           );
         },
       },
-      { highWaterMark: 0 }
-    )
+      { highWaterMark: 0 },
+    ),
   );
 };
 
@@ -113,7 +113,7 @@ curr: ${JSON.stringify(minValue)}
  */
 export const mergeDescends: MergeBy = <T>(
   ordFn: (input: T) => Ord,
-  _srcs?: FlowSource<FlowSource<T>>
+  _srcs?: FlowSource<FlowSource<T>>,
 ) => {
   if (!_srcs) return ((srcs: any) => mergeDescends(ordFn, srcs)) as any;
   return toStream(
@@ -123,7 +123,7 @@ export const mergeDescends: MergeBy = <T>(
           const srcs = await sflow(_srcs).toArray();
           const slots = srcs.map(() => undefined as { value: T } | undefined);
           const pendingSlotRemoval = srcs.map(
-            () => undefined as PromiseWithResolvers<void> | undefined
+            () => undefined as PromiseWithResolvers<void> | undefined,
           );
           const drains = srcs.map(() => false);
           let lastMaxValue: T | undefined = undefined;
@@ -152,7 +152,7 @@ export const mergeDescends: MergeBy = <T>(
 
               function shiftMaxValueIfFull() {
                 const isFull = slots.every(
-                  (slot, i) => slot !== undefined || drains[i]
+                  (slot, i) => slot !== undefined || drains[i],
                 );
                 if (!isFull) return false;
                 const fullSlots = slots
@@ -182,11 +182,11 @@ curr: ${JSON.stringify(maxValue)}
                 pendingSlotRemoval[maxIndex] = undefined;
                 return true;
               }
-            })
+            }),
           );
         },
       },
-      { highWaterMark: 0 }
-    )
+      { highWaterMark: 0 },
+    ),
   );
 };

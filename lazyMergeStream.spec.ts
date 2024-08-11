@@ -55,7 +55,7 @@ test("Pull occurs lazily with highWaterMark: 0", async () => {
         }
       },
     },
-    { highWaterMark: 0 }
+    { highWaterMark: 0 },
   );
 
   let stream2PullCount = 0;
@@ -70,7 +70,7 @@ test("Pull occurs lazily with highWaterMark: 0", async () => {
         }
       },
     },
-    { highWaterMark: 0 }
+    { highWaterMark: 0 },
   );
 
   const mergedStream = lazyMergeStream(stream1, stream2);

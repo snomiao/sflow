@@ -1,7 +1,7 @@
 import { Readable, Writable } from "node:stream";
 
 export function fromReadable<T extends string | Uint8Array>(
-  i: Readable | NodeJS.ReadableStream
+  i: Readable | NodeJS.ReadableStream,
 ): ReadableStream<T> {
   return new ReadableStream({
     start: (c) => {
@@ -11,7 +11,7 @@ export function fromReadable<T extends string | Uint8Array>(
     },
     cancel: (reason) => (
       (i as Partial<Readable> & Partial<NodeJS.ReadableStream>).destroy?.(
-        reason
+        reason,
       ),
       undefined
     ),
@@ -19,13 +19,13 @@ export function fromReadable<T extends string | Uint8Array>(
 }
 
 export function fromWritable<T extends string | Uint8Array>(
-  i: Writable | NodeJS.WritableStream
+  i: Writable | NodeJS.WritableStream,
 ): WritableStream<T> {
   return new WritableStream({
     start: (c) => (i.on("error", (err) => c.error(err)), undefined),
     abort: (reason) => (
       (i as Partial<Writable> & Partial<NodeJS.WritableStream>).destroy?.(
-        reason
+        reason,
       ),
       undefined
     ),

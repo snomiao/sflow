@@ -9,7 +9,7 @@ export function repeats<T>(n = Infinity): TransformStream<T, T> {
   const t = new TransformStream(
     undefined,
     { highWaterMark: 1 },
-    { highWaterMark: 0 }
+    { highWaterMark: 0 },
   );
   const rd = t.readable.getReader();
   return {
@@ -33,7 +33,7 @@ export function repeats<T>(n = Infinity): TransformStream<T, T> {
           return;
         },
       },
-      { highWaterMark: 0 }
+      { highWaterMark: 0 },
     ),
   };
 }

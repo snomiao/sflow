@@ -13,7 +13,7 @@ it("works", async () => {
         ++i < 2 || ctrl.close();
       },
     },
-    { highWaterMark: 0 }
+    { highWaterMark: 0 },
   );
   expect(await sflow(rs).flat().log().toArray()).toEqual([0, 1, 1, 2]);
 });

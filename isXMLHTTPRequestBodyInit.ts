@@ -1,4 +1,5 @@
-export const isXMLHTTPRequestBodyInit = (v: any): v is XMLHttpRequestBodyInit => v instanceof Blob ||
+export const isXMLHTTPRequestBodyInit = (v: any): v is XMLHttpRequestBodyInit =>
+  v instanceof Blob ||
   v instanceof ArrayBuffer ||
   v instanceof FormData ||
   v instanceof URLSearchParams ||

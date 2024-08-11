@@ -4,7 +4,7 @@ import { nils } from "./nils";
 import { pMaps } from "./pMaps";
 
 export const distributeBys = <T>(
-  groupFn: (x: T) => Awaitable<Ord>
+  groupFn: (x: T) => Awaitable<Ord>,
 ): TransformStream<T, ReadableStream<T>> => {
   const streams = new Map<
     Ord,
@@ -31,7 +31,7 @@ export const distributeBys = <T>(
           })();
         const t = streams.get(ord)!;
         await t.writer.write(chunk);
-      })
+      }),
     )
     .pipeTo(nils())
     .finally(() => {

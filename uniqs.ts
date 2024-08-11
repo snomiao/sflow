@@ -11,14 +11,14 @@ export const uniqs = <T>(): TransformStream<T, T> => {
         if (set.has(x)) return false;
         set.add(x);
         return true;
-      })
-    )
+      }),
+    ),
   );
 };
 
 /** uniq by a new Map(), Note: use === to compare keys */
 export const uniqBys = <T, K>(
-  keyFn: (x: T) => Awaitable<K>
+  keyFn: (x: T) => Awaitable<K>,
 ): TransformStream<T, T> => {
   const set = new Set<K>();
   return throughs((s) =>
@@ -28,7 +28,7 @@ export const uniqBys = <T, K>(
         if (set.has(key)) return false;
         set.add(key);
         return true;
-      })
-    )
+      }),
+    ),
   );
 };

@@ -15,6 +15,6 @@ export function logs<T>(mapFn: MapFnIndexed<T> = (s, i) => s) {
       const ret = mapFn(e, i);
       const val = ret instanceof Promise ? await ret : ret;
       console.log(typeof val === "string" ? val.replace(/\n$/, "") : val);
-    })
+    }),
   );
 }

@@ -30,12 +30,12 @@ it("works", async () => {
             t += dt = e.t - t; // calculate dt
             return (e.x = x += dt * (e.v = v += dt * +e.a)); // calculate motion
           };
-        })()
+        })(),
       )
       // .log((e) => e)
       .through(tsvFormats("t\tx\tv\ta\tremark")) //
       .log((e) => e.trim())
-      .text()
+      .text(),
   ).toMatchSnapshot();
 });
 

@@ -10,7 +10,7 @@ it("merge asc", async () => {
   expect(
     await sflow(mergeAscends((x) => x, [req1, req2, req3]))
       // .peek(console.log)
-      .toArray()
+      .toArray(),
   ).toEqual(ret);
 });
 
@@ -24,11 +24,11 @@ it("drains correctly for different length flow", async () => {
       sf([1]).onStart(s[0]).onFlush(f[0]),
       sf([4, 5]).onStart(s[0]).onFlush(f[1]),
       sf([7, 8, 9]).onStart(s[0]).onFlush(f[2]),
-    ]
+    ],
   ).onFlush(end);
 
   const r = c.getReader();
-  
+
   expect(f[0]).not.toHaveBeenCalled();
   expect(f[1]).not.toHaveBeenCalled();
   expect((await r.read()).value).toBe(1); // pulled from [0|1|2] got [1,4,7]  emit 1, f0 drain
@@ -86,7 +86,7 @@ it("curried", async () => {
   expect(
     await sflow([req1, req2, req3])
       .through(mergeAscends((x: number) => x)) // merge all flows into one by ascend order
-      .toArray()
+      .toArray(),
   ).toEqual(ret);
 });
 
@@ -99,7 +99,7 @@ it("merge desc by invert use of asc", async () => {
   expect(
     await sflow(mergeAscends((x) => -x, [req1, req2, req3]))
       // .peek(console.log)
-      .toArray()
+      .toArray(),
   ).toEqual(ret);
 });
 it("merge desc by desc export", async () => {
@@ -111,7 +111,7 @@ it("merge desc by desc export", async () => {
   expect(
     await sflow(mergeDescends((x) => x, [req1, req2, req3]))
       // .peek(console.log)
-      .toArray()
+      .toArray(),
   ).toEqual(ret);
 });
 
@@ -126,7 +126,7 @@ it("merge a super long asc", async () => {
   expect(
     await sflow(mergeAscends((x) => x, [req1, req2, req3]))
       // .peek(console.log)
-      .toArray()
+      .toArray(),
   ).toEqual(ret); // cost about 60ms in my machine
 });
 
@@ -136,7 +136,7 @@ it("not throws asc", async () => {
   expect(
     await sflow(mergeAscends((x) => x, [req1, req2]))
       // .peek(console.log)
-      .toArray()
+      .toArray(),
   ).toEqual([0, 1, 2, 3, 4, 5]);
 });
 
@@ -146,6 +146,6 @@ it("throws not asc", async () => {
   expect(() =>
     sflow(mergeAscends((x) => x, [req1, req2]))
       // .peek(console.log)
-      .toArray()
+      .toArray(),
   ).toThrow(/ascending/);
 });

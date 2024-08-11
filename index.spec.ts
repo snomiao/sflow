@@ -13,7 +13,7 @@ it("string stream", async () => {
   expect(
     await sflow(["asdf"])
       .map((e) => e.replace("asdf", "zxcv"))
-      .toOne()
+      .toOne(),
   ).toEqual("zxcv");
 });
 
@@ -44,6 +44,6 @@ it("works", async () => {
       .log() // prints 6, 8
       .reduce((a, b) => a + b, 0)
       .log() // prints 6, 14
-      .toArray()
+      .toArray(),
   ).toEqual([6, 14]);
 });

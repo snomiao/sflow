@@ -8,11 +8,13 @@ it("handles cache hit error", async () => {
       write: (chunk, ctrl) => {
         console.log("write chunk: ", chunk);
         ctrl.error(
-          new CacheHitError("Cache hit when stream write", { cause: { chunk } })
+          new CacheHitError("Cache hit when stream write", {
+            cause: { chunk },
+          }),
         );
       },
     },
-    { highWaterMark: 1 }
+    { highWaterMark: 1 },
   );
   const w = ws.getWriter();
   expect(await w.write("asdf")).toBe(undefined);
@@ -33,7 +35,7 @@ it("handles cache hit error when stream start", async () => {
         console.log("write chunk: ", chunk);
       },
     },
-    { highWaterMark: 1 }
+    { highWaterMark: 1 },
   );
   const w = ws.getWriter();
   expect(await w.write("zxcv").catch(CacheHitError.nil)).toBe(null);
@@ -53,7 +55,7 @@ it("handles cache hit error with start pipeTo", async () => {
         ++i < 10 || ctrl.close();
       },
     },
-    { highWaterMark: 0 }
+    { highWaterMark: 0 },
   );
   const ws = new WritableStream(
     {
@@ -62,7 +64,7 @@ it("handles cache hit error with start pipeTo", async () => {
         ctrl.error(new CacheHitError("Cache hit when stream start"));
       },
     },
-    { highWaterMark: 0 } // WARN: not writable...
+    { highWaterMark: 0 }, // WARN: not writable...
   );
   await rs.pipeTo(ws).catch(CacheHitError.nil);
   console.log("done");
@@ -92,7 +94,7 @@ it("handles cache hit error with pipeTo", async () => {
         console.log("write chunk: ", chunk);
       },
     },
-    { highWaterMark: 1 }
+    { highWaterMark: 1 },
   );
   await rs.pipeTo(ws).catch(CacheHitError.nil);
 

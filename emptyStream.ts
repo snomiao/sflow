@@ -1,1 +1,2 @@
-export const emptyStream = () => new ReadableStream({ start: (c) => c.close() });
+export const emptyStream = () =>
+  new ReadableStream({ start: (c) => c.close() });

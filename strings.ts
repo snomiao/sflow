@@ -29,7 +29,7 @@ export const replaces: {
     searchValue: {
       [Symbol.replace](string: string, replaceValue: string): string;
     },
-    replaceValue: string
+    replaceValue: string,
   ): TransformStream<string, string>;
   /**
    * Replaces text in a string, using an object that supports replacement within a string.
@@ -38,7 +38,7 @@ export const replaces: {
    */
   (
     searchValue: string | RegExp,
-    replacer: (substring: string, ...args: any[]) => Promise<string> | string
+    replacer: (substring: string, ...args: any[]) => Promise<string> | string,
   ): TransformStream<string, string>;
 } = (searchValue, replacement) => {
   return maps((s) =>
@@ -47,9 +47,9 @@ export const replaces: {
           searchValue as {
             [Symbol.replace](string: string, replaceValue: string): string;
           },
-          replacement
+          replacement,
         )
-      : replaceAsync(s, searchValue as string | RegExp, replacement)
+      : replaceAsync(s, searchValue as string | RegExp, replacement),
   );
 };
 export const replaceAlls: {
@@ -58,10 +58,10 @@ export const replaceAlls: {
    * @param searchValue A string to search for.
    * @param replaceValue A string containing the text to replace for every successful match of searchValue in this string.
    */
-  (searchValue: string | RegExp, replaceValue: string): TransformStream<
-    string,
-    string
-  >;
+  (
+    searchValue: string | RegExp,
+    replaceValue: string,
+  ): TransformStream<string, string>;
   /**
    * Replace all instances of a substring in a string, using a regular expression or search string.
    * @param searchValue A string to search for.
@@ -69,13 +69,12 @@ export const replaceAlls: {
    */
   (
     searchValue: string | RegExp,
-    replacer: (substring: string, ...args: any[]) => Promise<string> | string
+    replacer: (substring: string, ...args: any[]) => Promise<string> | string,
   ): TransformStream<string, string>;
 } = (searchValue, replacement) => {
   return maps((s) =>
     typeof replacement === "string"
       ? s.replaceAll(searchValue, replacement)
-      : replaceAsync(s, searchValue, replacement)
+      : replaceAsync(s, searchValue, replacement),
   );
 };
- 

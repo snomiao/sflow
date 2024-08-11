@@ -1,7 +1,7 @@
 import { wseMerge } from "./wse";
 
 export const wseMerges: (
-  concurrent?: number
+  concurrent?: number,
 ) => <T>(
-  src: ReadableStream<ReadableStream<T> | Promise<T>>
+  src: ReadableStream<ReadableStream<T> | Promise<T>>,
 ) => ReadableStream<T> = wseMerge as any;

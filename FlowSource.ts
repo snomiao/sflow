@@ -16,9 +16,9 @@ export type FlowSource<T> =
   | (() => Iterable<T>)
   | (() => AsyncIterable<T>)
   | ReadableLike<T>
-  | ReadableStream<T>
-  // | ((w: WritableStream<T>) => void)
-  // | sflow<T>;
+  | ReadableStream<T>;
+// | ((w: WritableStream<T>) => void)
+// | sflow<T>;
 // | (T extends Uint8Array ? XMLHttpRequestBodyInit : never);
 // export interface FlowSource<T> extends Promise<T>
 //   , Iterable<T>

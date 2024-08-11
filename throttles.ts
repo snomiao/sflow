@@ -19,7 +19,7 @@ type ThrottleOption = {
  */
 export function throttles<T>(
   interval: number,
-  { drop = false, keepLast = true }: ThrottleOption = {}
+  { drop = false, keepLast = true }: ThrottleOption = {},
 ) {
   let timerId: number | null | Timer = null;
   let cdPromise = Promise.withResolvers();
