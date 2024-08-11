@@ -20,12 +20,12 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./index.ts",
-      "types": "./index.ts"
-    },
-    "./js": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./ts": {
+      "import": "./index.ts",
+      "types": "./index.ts"
     },
     "./fromNodeStream": {
       "import": "./dist/fromNodeStream.js",
