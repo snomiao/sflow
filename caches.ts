@@ -5,20 +5,22 @@ import { never } from "./never";
 type CacheOptions =
   | string
   | {
-      /**
-       * Key could step name,
-       * or defaults to `new Error().stack` if you r lazy enough
-       */
-      key?: string;
-      /**
-       * @deprecated use cacheSkips
-       * true: emit cached content (default)
-       * false: just bypass, only emit contents not in cache
-       */
-      emitCached?: boolean;
-      // /** ttl in ms */
-      // ttl?:number
-    };
+    /**
+     * Key could step name,
+     * or defaults to `new Error().stack` if you r lazy enough
+    */
+    key?: string;
+    /**
+     * @deprecated use cacheSkips
+     * true: emit cached content (default)
+     * false: just bypass, only emit contents not in cache
+     */
+    emitCached?: boolean;
+    // /** ttl in ms */
+    // ttl?:number
+  };
+
+const jsonEquals = (a: any, b: any) => new Set([a, b].map(e => JSON.stringify(e))).size === 1
 
 /**
  * Assume Stream content is ordered plain json object, (class is not supported)
@@ -27,7 +29,7 @@ type CacheOptions =
  * Only emit unmet contents
  *
  * Once flow done, cache content, and skip cached content next time
- */
+*/
 export function cacheSkips<T>(
   store: {
     has?: (key: string) => Awaitable<boolean>;
@@ -39,18 +41,16 @@ export function cacheSkips<T>(
   // parse options
   const { key = new Error().stack ?? DIE("missing cache key") } =
     typeof _options === "string" ? { key: _options } : (_options ?? {});
-
   const chunks: T[] = [];
   const tailChunks: T[] = [];
   const cachePromise = store.get(key);
   return new TransformStream({
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
-      if (cache && equals(chunk, cache)) {
+      if (cache && jsonEquals(chunk, cache)) {
         // append cache into chunks, and will store on flush
         tailChunks.push(...cache);
         ctrl.terminate();
-        await store.set(key, chunks.slice(0, 1));
         return await never();
       }
       chunks.push(chunk);
