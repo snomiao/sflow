@@ -47,7 +47,7 @@ export function cacheSkips<T>(
   return new TransformStream({
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
-      if (cache && jsonEquals(chunk, cache)) {
+      if (cache && jsonEquals(chunk, cache[0])) {
         // append cache into chunks, and will store on flush
         tailChunks.push(...cache);
         ctrl.terminate();
