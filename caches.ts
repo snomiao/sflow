@@ -136,6 +136,7 @@ export function cacheLists<T>(
   } = typeof _options === "string" ? { key: _options } : _options ?? {};
   const chunks: T[] = [];
   const cacheHitPromise = store.has?.(key) || store.get(key);
+  let hitflag = false
   return new TransformStream({
     start: async (ctrl) => {
       // check
@@ -145,11 +146,12 @@ export function cacheLists<T>(
       if (!cached) return;
       // emit cache, return never to disable pulling upstream
       if (emitCached) cached.map((c) => ctrl.enqueue(c));
-      ctrl.terminate();
-      return never();
+      // ctrl.terminate();
+      // return never();
+      hitflag = true
     },
     transform: async (chunk, ctrl) => {
-      if (await cacheHitPromise) {
+      if (await cacheHitPromise || hitflag) {
         ctrl.terminate();
         return never();
       }
