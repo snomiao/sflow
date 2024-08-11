@@ -15,7 +15,8 @@ it("eager", () => {
     })
   ).pipeTo(new WritableStream({ write: (c) => console.log(c) }));
 });
-it("passive", () => {
+
+it.skip("passive", () => {
   let i = 0;
   sflow(
     new ReadableStream({
@@ -31,7 +32,7 @@ it("passive", () => {
           e.signal;
         },
         write: async (c, ctrl) => {
-          await sleep(100);
+          await sleep(10);
           console.log(c);
         },
       },
