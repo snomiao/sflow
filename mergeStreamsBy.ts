@@ -28,6 +28,7 @@ export function mergeStreamsBy<T>(
   const streams = sources.map((s) => toStream(s));
   const readers = streams.map((stream) => stream.getReader());
   let slots = streams.map(() => null) as Slots<T>;
+  // const BaseError = Object.assign(new Error(), { fn: (fn) => (fn) })
   return new ReadableStream({
     pull: async (ctrl) => {
       // ensure fill all slots
@@ -124,7 +125,7 @@ export function mergeStreamsByDescend<T>(
     if (
       lastEmit &&
       lastEmit.value !==
-        sortBy(ordFn, [lastEmit.value, peak]).toReversed()[0] &&
+      sortBy(ordFn, [lastEmit.value, peak]).toReversed()[0] &&
       ordFn(lastEmit.value) !== ordFn(peak)
     )
       DIE(
