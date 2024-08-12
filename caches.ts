@@ -45,7 +45,6 @@ export function cacheSkips<T>(
          * or defaults to `new Error().stack` if you r lazy enough
          */
         key?: string;
-        
       }
 ) {
   // parse options
@@ -57,7 +56,7 @@ export function cacheSkips<T>(
   return new TransformStream({
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
-      if (cache && jsonEquals(chunk, cache)) {
+      if (cache && jsonEquals(chunk, cache[0])) {
         // append cache into chunks, and will store on flush
         tailChunks.push(...cache);
         ctrl.terminate();
@@ -66,7 +65,7 @@ export function cacheSkips<T>(
       chunks.push(chunk);
       ctrl.enqueue(chunk);
     },
-    flush: async () => await store.set(key, chunks),
+    flush: async () => await store.set(key, chunks.slice(0, 1)),
   });
 }
 
@@ -145,6 +144,7 @@ export function cacheLists<T>(
   } = typeof _options === "string" ? { key: _options } : _options ?? {};
   const chunks: T[] = [];
   const cacheHitPromise = store.has?.(key) || store.get(key);
+  let hitflag = false;
   return new TransformStream({
     start: async (ctrl) => {
       // check
@@ -154,11 +154,12 @@ export function cacheLists<T>(
       if (!cached) return;
       // emit cache, return never to disable pulling upstream
       if (emitCached) cached.map((c) => ctrl.enqueue(c));
-      ctrl.terminate();
-      return never();
+      // ctrl.terminate();
+      // return never();
+      hitflag = true;
     },
     transform: async (chunk, ctrl) => {
-      if (await cacheHitPromise) {
+      if ((await cacheHitPromise) || hitflag) {
         ctrl.terminate();
         return never();
       }
