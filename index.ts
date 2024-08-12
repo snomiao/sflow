@@ -7,6 +7,7 @@ export { chunkBys } from "./chunkBys";
 export { chunkIfs } from "./chunkIfs";
 export { chunkIntervals, chunkIntervals as intervals } from "./chunkIntervals";
 export { chunks as buffers, chunks } from "./chunks";
+export { chunkTransforms } from "./chunkTransforms";
 export { concats, concatStream } from "./concats";
 export { confluences } from "./confluences";
 export { debounces } from "./debounces";
@@ -26,7 +27,7 @@ export { merges as joins, merges, mergeStream } from "./merges";
 export {
   mergeStreamsBy,
   mergeStreamsByAscend,
-  mergeStreamsByDescend,
+  mergeStreamsByDescend
 } from "./mergeStreamsBy";
 export { nil, nils } from "./nils";
 export { pageFlow } from "./pageFlow";

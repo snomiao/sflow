@@ -10,6 +10,7 @@ import { chunkBys } from "./chunkBys";
 import { chunkIfs } from "./chunkIfs";
 import { chunkIntervals } from "./chunkIntervals";
 import { chunks } from "./chunks";
+import type { ChunkTransformer } from "./chunkTransforms";
 import { concats, concatStream } from "./concats";
 import { confluences } from "./confluences";
 import { convolves } from "./convolves";
@@ -76,6 +77,11 @@ interface BaseFlow<T> {
   chunkBy(...args: Parameters<typeof chunkBys<T>>): sflow<T[]>;
   /** @see {@link chunkIfs} */
   chunkIf(...args: Parameters<typeof chunkIfs<T>>): sflow<T[]>;
+  chunkTransforms<T>(options: {
+    start?: ChunkTransformer<T>;
+    transform?: ChunkTransformer<T>;
+    flush?: ChunkTransformer<T>;
+  }): sflow<T>
 
   /** @see convolves */
   convolve(...args: Parameters<typeof convolves<T>>): sflow<T[]>;

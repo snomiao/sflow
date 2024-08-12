@@ -2,7 +2,6 @@ import type { Ord } from "rambda";
 import type { Awaitable } from "./Awaitable";
 
 /** chunk items by compareFn, group items with same Ord */
-
 export function chunkBys<T>(compareFn: (x: T) => Awaitable<Ord>) {
   let chunks: T[] = [];
   let lastOrder: Ord;
