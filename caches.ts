@@ -45,27 +45,33 @@ export function cacheSkips<T>(
          * or defaults to `new Error().stack` if you r lazy enough
          */
         key?: string;
+        /** defaults to 1 */
+        windowSize?: number;
       }
 ) {
   // parse options
-  const { key = new Error().stack ?? DIE("missing cache key") } =
-    typeof _options === "string" ? { key: _options } : _options ?? {};
+  const {
+    key = new Error().stack ?? DIE("missing cache key"),
+    windowSize = 1,
+  } = typeof _options === "string" ? { key: _options } : _options ?? {};
   const chunks: T[] = [];
-  const tailChunks: T[] = [];
   const cachePromise = store.get(key);
   return new TransformStream({
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
-      if (cache && jsonEquals(chunk, cache[0])) {
-        // append cache into chunks, and will store on flush
-        tailChunks.push(...cache);
+      if (cache?.length) {
+        await store.set(
+          key,
+          chunks.concat(...cache).slice(0, windowSize)
+        );
         ctrl.terminate();
         return await never();
       }
       chunks.push(chunk);
       ctrl.enqueue(chunk);
     },
-    flush: async () => await store.set(key, chunks.slice(0, 1)),
+    flush: async () =>
+      await store.set(key, chunks.slice(0, windowSize)),
   });
 }
 
