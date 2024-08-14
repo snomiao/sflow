@@ -97,34 +97,31 @@ export function cacheTails<T>(
   // parse options
   const {
     key = new Error().stack ?? DIE("missing cache key"),
-    emitCached = true,
   } = typeof _options === "string" ? { key: _options } : _options ?? {};
-
   const chunks: T[] = [];
-  const tailChunks: T[] = [];
-  // const cacheHitPromise = (store.has?.(key) || store.get(key))
-  // get
   const cachePromise = store.get(key);
-  return new TransformStream({
-    transform: async (chunk, ctrl) => {
+  const t = new TransformStream()
+  const w = t.writable.getWriter()
+  const writable = new WritableStream({
+    write: async (chunk, ctrl) => {
       const cache = await cachePromise;
       if (cache && equals(chunk, cache[0])) {
-        // append cache into chunks, and will store on flush
-        tailChunks.push(...cache);
+        // emit whole cache as tail into downstream
+        for await (const item of cache) await w.write(item)
+        await w.close()
 
-        // emit whole cache as head
-        if (emitCached) cache.map((c) => ctrl.enqueue(c));
+        // save cache
+        await store.set(key, [...chunks, ...cache]);
 
-        ctrl.terminate();
-        await store.set(key, [...chunks, ...tailChunks]);
+        // cancel upstream if need...
+        // await t.readable.cancel(new Error('Cached'))
         return await never();
       }
-
       chunks.push(chunk);
-      ctrl.enqueue(chunk);
-    },
-    flush: async () => await store.set(key, [...chunks, ...tailChunks]),
-  });
+      await w.write(chunk)
+    }
+  })
+  return { writable, readable: t.readable }
 }
 
 /**
