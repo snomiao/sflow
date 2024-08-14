@@ -60,18 +60,14 @@ export function cacheSkips<T>(
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
       if (cache?.length) {
-        await store.set(
-          key,
-          chunks.concat(...cache).slice(0, windowSize)
-        );
+        await store.set(key, chunks.concat(...cache).slice(0, windowSize));
         ctrl.terminate();
         return await never();
       }
       chunks.push(chunk);
       ctrl.enqueue(chunk);
     },
-    flush: async () =>
-      await store.set(key, chunks.slice(0, windowSize)),
+    flush: async () => await store.set(key, chunks.slice(0, windowSize)),
   });
 }
 
@@ -95,33 +91,40 @@ export function cacheTails<T>(
   _options?: CacheOptions
 ) {
   // parse options
-  const {
-    key = new Error().stack ?? DIE("missing cache key"),
-  } = typeof _options === "string" ? { key: _options } : _options ?? {};
+  const { key = new Error().stack ?? DIE("missing cache key") } =
+    typeof _options === "string" ? { key: _options } : _options ?? {};
   const chunks: T[] = [];
-  const cachePromise = store.get(key);
-  const t = new TransformStream()
-  const w = t.writable.getWriter()
+  const cachePromise = Promise.withResolvers<T[]>();
+  const t = new TransformStream();
+  const w = t.writable.getWriter();
   const writable = new WritableStream({
+    start: async () => cachePromise.resolve(await store.get(key)),
     write: async (chunk, ctrl) => {
-      const cache = await cachePromise;
+      const cache = await cachePromise.promise;
       if (cache && equals(chunk, cache[0])) {
-        // emit whole cache as tail into downstream
-        for await (const item of cache) await w.write(item)
-        await w.close()
-
+        console.log("asdf");
         // save cache
         await store.set(key, [...chunks, ...cache]);
+        // emit whole cache as tail into downstream
+        for await (const item of cache) await w.write(item);
+        await w.close();
 
-        // cancel upstream if need...
         // await t.readable.cancel(new Error('Cached'))
+        // cancel upstream if need...
+        ctrl.error(new Error("cached"));
+        // return;
         return await never();
       }
       chunks.push(chunk);
-      await w.write(chunk)
-    }
-  })
-  return { writable, readable: t.readable }
+      await w.write(chunk);
+    },
+    close: async () => {
+      await store.set(key, [...chunks]);
+      await w.close();
+    },
+    abort: () => w.abort(),
+  });
+  return { writable, readable: t.readable };
 }
 
 /**

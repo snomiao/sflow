@@ -1,8 +1,10 @@
-import { TextDecoderStream } from "./index";
+import { createReadStream } from "fs";
+import { fromReadable } from "./index";
 import { sflow } from "./sflow";
-it("works", async () => {
-  await sflow(Bun.file("./README.md").stream())
-    .through(new TextDecoderStream())
+it("froms", async () => {
+  console.log('froms')
+  await sflow(fromReadable(createReadStream("./README.md")))
+    .map((buffer) => buffer.toString())
     .lines()
     .riffle(">")
     .toLog();
