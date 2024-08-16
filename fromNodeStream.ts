@@ -1,7 +1,40 @@
 import { Readable, Writable } from "node:stream";
+import DIE from "phpdie";
+import { sf } from ".";
+
+
+/** Make TransformStream from stdio*/
+export function fromStdio(
+  /** a process, which has stdin, stdout, stderr */
+  p: {
+    stdin?: Writable | null;
+    stdout?: Readable | null;
+    stderr?: Readable | null;
+  },
+  {
+    stderr = process.stderr,
+  }: {
+    // input stderr will pipe to this stream, defaults to process.stderr if undefined
+    stderr?: Writable | "mergeIntoStdout";
+  } = {}
+): TransformStream<string | Uint8Array, string | Uint8Array> {
+  if (p.stderr instanceof Readable && stderr instanceof Writable)
+    fromReadable(p.stderr).pipeTo(fromWritable(stderr), {
+      preventClose: true,
+    });
+  return {
+    writable: fromWritable(p.stdin || DIE("Missing stdin")),
+    readable: sf(
+      fromReadable(p.stdout || DIE("Missing stdout")),
+      ...(stderr === "mergeIntoStdout"
+        ? [fromReadable(p.stderr || DIE("Missing stderr"))]
+        : [])
+    ),
+  };
+}
 
 export function fromReadable<T extends string | Uint8Array>(
-  i: Readable | NodeJS.ReadableStream,
+  i: Readable | NodeJS.ReadableStream
 ): ReadableStream<T> {
   return new ReadableStream({
     start: (c) => {
@@ -11,7 +44,7 @@ export function fromReadable<T extends string | Uint8Array>(
     },
     cancel: (reason) => (
       (i as Partial<Readable> & Partial<NodeJS.ReadableStream>).destroy?.(
-        reason,
+        reason
       ),
       undefined
     ),
@@ -19,13 +52,13 @@ export function fromReadable<T extends string | Uint8Array>(
 }
 
 export function fromWritable<T extends string | Uint8Array>(
-  i: Writable | NodeJS.WritableStream,
+  i: Writable | NodeJS.WritableStream
 ): WritableStream<T> {
   return new WritableStream({
     start: (c) => (i.on("error", (err) => c.error(err)), undefined),
     abort: (reason) => (
       (i as Partial<Writable> & Partial<NodeJS.WritableStream>).destroy?.(
-        reason,
+        reason
       ),
       undefined
     ),

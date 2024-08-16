@@ -17,7 +17,7 @@ export { flatMaps } from "./flatMaps";
 export { flats } from "./flats";
 export type { FlowSource } from "./FlowSource";
 export { forEachs } from "./forEachs";
-export { fromReadable, fromWritable } from "./fromNodeStream";
+export { fromReadable, fromStdio, fromWritable } from "./fromNodeStream";
 export { lines } from "./lines";
 export { logs } from "./logs";
 export { mapAddFields } from "./mapAddFields";
