@@ -198,6 +198,13 @@ interface BaseFlow<T> {
    * return undefined if no item returned
    * return the item
    */
+  toExactlyOne: (options?: { required?: boolean }) => Promise<T | undefined>;
+  /** Get one item from stream
+   * throws if more than 1 item is emitted
+   * return undefined if no item returned
+   * return the item
+   * @deprecated use toExactlyOne
+   */
   toOne: (options?: { required?: boolean }) => Promise<T | undefined>;
   /** Get one item from stream
    * throws if more than 1 item is emitted
@@ -582,6 +589,11 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     //     .toLast()) ?? 0, // TODO: optimize memory usage
     toFirst: () => wseToPromise(sflow(r).limit(1, { terminate: true })),
     toLast: () => wseToPromise(sflow(r).tail(1)),
+    toExactlyOne: async () => {
+      const a = await wseToArray(r);
+      if (a.length > 1) DIE(`Expect only 1 Item, but got ${a.length}`);
+      return a[0];
+    },
     toOne: async () => {
       const a = await wseToArray(r);
       if (a.length > 1) DIE(`Expect only 1 Item, but got ${a.length}`);
