@@ -27,7 +27,7 @@ import { lines } from "./lines";
 import { logs } from "./logs";
 import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
-import { merges, mergeStream } from "./merges";
+import { merges } from "./merges";
 import { mergeStreamsByAscend, mergeStreamsByDescend } from "./mergeStreamsBy";
 import { nils } from "./nils";
 import { peeks } from "./peeks";
@@ -372,7 +372,7 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
   const r: ReadableStream<T> =
     srcs.length === 1
       ? (toStream(srcs[0]) as ReadableStream<T>)
-      : (mergeStream(...srcs) as ReadableStream<T>);
+      : (concatStream(...srcs) as ReadableStream<T>);
   // @ts-ignore todo
   return Object.assign(r, {
     _type: null as T,
