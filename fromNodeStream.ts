@@ -1,5 +1,5 @@
-import { Readable, Writable } from "node:stream";
 import DIE from "phpdie";
+import { Readable, Writable } from "stream";
 import { sf } from ".";
 
 

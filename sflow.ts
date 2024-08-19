@@ -5,7 +5,9 @@ import type { Split } from "ts-toolbelt/out/String/Split";
 import { sf } from ".";
 import { asyncMaps } from "./asyncMaps";
 import type { Awaitable } from "./Awaitable";
-import { cacheLists, cacheSkips, cacheTails } from "./caches";
+import { cacheLists } from "./cacheLists";
+import { cacheSkips } from "./cacheSkips";
+import { cacheTails } from "./cacheTails";
 import { chunkBys } from "./chunkBys";
 import { chunkIfs } from "./chunkIfs";
 import { chunkIntervals } from "./chunkIntervals";
@@ -28,6 +30,7 @@ import { logs } from "./logs";
 import { mapAddFields } from "./mapAddFields";
 import { maps } from "./maps";
 import { merges } from "./merges";
+import { mergeStream } from "./mergeStream";
 import { mergeStreamsByAscend, mergeStreamsByDescend } from "./mergeStreamsBy";
 import { nils } from "./nils";
 import { peeks } from "./peeks";
@@ -462,7 +465,7 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
         .by((srcs: ReadableStream<FlowSource<T>>) =>
           sf(srcs)
             .toArray()
-            .then((srcs: FlowSource<T>[]) => sf(...srcs)),
+            .then((srcs: FlowSource<T>[]) => mergeStream(...srcs)),
         )
         // @ts-ignore upstream accepts streams only
         .confluence(),

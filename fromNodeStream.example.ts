@@ -1,5 +1,5 @@
-import { fromWritable } from "./fromNodeStream";
-import sflow, { fromReadable } from "./index";
+import { fromReadable, fromWritable } from "./fromNodeStream";
+import { sflow } from "./sflow";
 
 process.stdin.setRawMode(true);
 
@@ -15,7 +15,7 @@ await sflow(fromReadable(process.stdin))
     new TransformStream({
       transform: (e, c) =>
         e === CtrlC ? c.error("Interrupted by Ctrl+C") : c.enqueue(e),
-    }),
+    })
   )
   .log((char) => JSON.stringify({ char }))
   .lines()

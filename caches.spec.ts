@@ -1,6 +1,7 @@
 import { sleep } from "bun";
 import Keyv from "keyv";
-import { cacheLists, cacheTails } from "./caches";
+import { cacheLists } from "./cacheLists";
+import { cacheTails } from "./cacheTails";
 import { forEachs, sf } from "./index";
 
 it("caches stream", async () => {

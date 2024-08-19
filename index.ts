@@ -2,7 +2,9 @@ import { andIgnoreError } from "./andIgnoreError";
 import { sflow } from "./sflow";
 export { default as TextDecoderStream } from "polyfill-text-decoder-stream";
 export { default as TextEncoderStream } from "polyfill-text-encoder-stream";
-export { cacheLists, cacheSkips, cacheTails } from "./caches";
+export { cacheLists } from "./cacheLists";
+export { cacheSkips } from "./cacheSkips";
+export { cacheTails } from "./cacheTails";
 export { chunkBys } from "./chunkBys";
 export { chunkIfs } from "./chunkIfs";
 export { chunkIntervals, chunkIntervals as intervals } from "./chunkIntervals";
@@ -17,13 +19,14 @@ export { flatMaps } from "./flatMaps";
 export { flats } from "./flats";
 export type { FlowSource } from "./FlowSource";
 export { forEachs } from "./forEachs";
-export { fromReadable, fromStdio, fromWritable } from "./fromNodeStream";
+// export { fromReadable, fromStdio, fromWritable } from "./fromNodeStream";
 export { lines } from "./lines";
 export { logs } from "./logs";
 export { mapAddFields } from "./mapAddFields";
 export { maps } from "./maps";
 export { mergeAscends, mergeDescends } from "./mergeAscends";
-export { merges as joins, merges, mergeStream } from "./merges";
+export { merges as joins, merges } from "./merges";
+export { mergeStream } from "./mergeStream";
 export {
   mergeStreamsBy,
   mergeStreamsByAscend,
