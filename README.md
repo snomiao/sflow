@@ -16,7 +16,9 @@ sflow is a powerful and highly-extensible library designed for processing and ma
 
 - **TypeScript support**: Fully typed for a richer developer experience and better code quality.
 
-## Installation
+## Get Started
+
+### Installation
 
 Install sflow using npm or yarn:
 
@@ -28,7 +30,7 @@ npm install snoflow
 yarn add snoflow
 ```
 
-## Basic Usage
+### Basic Usage
 
 Here's a basic example of how to use sflow to process a stream:
 
@@ -148,6 +150,8 @@ Contributions to sflow are always welcome! If you have any ideas, suggestions, o
 ## References
 
 - [Infinite Streams with Elixir](https://gist.github.com/mgwidmann/5e0cb590f12e2ca239564d07d7c2a572)
+- [web-streams-extensions - npm]( https://www.npmjs.com/package/web-streams-extensions )
+- [$unwind (aggregation) - MongoDB Manual v7.0]( https://www.mongodb.com/docs/manual/reference/operator/aggregation/unwind/ )
 
 ## License
 
