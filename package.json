@@ -51,34 +51,44 @@
     "vitest": "bunx vitest --globals"
   },
   "dependencies": {
-    "ts-essentials": "^10.0.1",
-    "web-streams-extensions": "^0.12.0",
-    "polyfill-text-decoder-stream": "^0.0.9",
-    "polyfill-text-encoder-stream": "^0.0.8",
     "@types/d3": "^7.4.3",
     "bson": "^6.8.0",
     "d3": "^7.9.0",
     "phpdie": "^1.2.12",
+    "polyfill-text-decoder-stream": "^0.0.9",
+    "polyfill-text-encoder-stream": "^0.0.8",
+    "rambda": "^9.2.1",
     "string-replace-async": "^3.0.2",
+    "ts-essentials": "^10.0.1",
     "ts-pattern": "^5.2.0",
     "ts-toolbelt": "^9.6.0",
     "unwind-array": "^1.1.4",
-    "rambda": "^9.2.1"
+    "web-streams-extensions": "^0.12.0"
   },
   "devDependencies": {
-    "expect-type": "^0.19.0",
+    "@types/bun": "^1.1.6",
     "@types/jest": "^29.5.12",
-    "proxy-deep": "^4.0.1",
-    "keyv": "^4.5.4",
-    "@types/bun": "latest",
-    "typescript": "^5.5.4",
-    "keyv-cached-with": "^0.0.17",
     "@types/node": "^20.14.14",
-    "peek-log": "^0.0.11"
+    "expect-type": "^0.19.0",
+    "keyv": "^4.5.4",
+    "keyv-cached-with": "^0.0.17",
+    "peek-log": "^0.0.11",
+    "proxy-deep": "^4.0.1",
+    "typescript": "^5.0.0"
   },
   "peerDependencies": {
-    "react-hook-form": "^7.52.2",
     "rambda": "^9.2.1",
+    "react-hook-form": "^7.52.2",
     "typescript": "^5.0.0"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "homepage": "https://github.com/snomiao/sflow#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snomiao/sflow"
+  },
+  "bugs": {
+    "url": "https://github.com/snomiao/sflow/issues"
   }
 }
