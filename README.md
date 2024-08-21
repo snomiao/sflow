@@ -2,6 +2,8 @@
 
 sflow is a powerful and highly-extensible library designed for processing and manipulating streams of data effortlessly. Inspired by the functional programming paradigm, it provides a rich set of utilities for transforming streams, including chunking, filtering, mapping, reducing, among many others. It's a perfect companion for those who work extensively with streams and want to make their data processing pipelines more efficient and concise.
 
+ONLINE DEMO avaliable here! - [sflow online Examples and Use Cases]( https://sflow-examples.vercel.app/ )
+
 ## Features
 
 - **Chunking and buffering**: Easily divide your stream into chunks based on different criteria such as count, intervals, custom conditions, etc.
@@ -20,14 +22,14 @@ sflow is a powerful and highly-extensible library designed for processing and ma
 
 ### Installation
 
-Install sflow using npm or yarn:
+Install sflow using npm or bun:
 
 ```sh
-npm install snoflow
+npm install sflow
 
-# or if you are using yarn
+# or if you are using bun
 
-yarn add snoflow
+bun add sflow
 ```
 
 ### Basic Usage
@@ -40,17 +42,17 @@ import { sflow } from "sflow";
 async function run() {
   let result = await sflow([1, 2, 3, 4])
     .map((n) => n * 2)
-    .log() // prints 2, 4, 6, 8
+    .log() // this stage prints 2, 4, 6, 8
     .filter((n) => n > 4)
-    .log() // prints 6, 8
-    .reduce((a, b) => a + b, 0) // first emit 0+6, second emit 0+6+8
-    .log() // prints 6, 14
+    .log() // this stage prints 6, 8
+    .reduce((a, b) => a + b, 0) // first emit 0+6=6, second emit 0+6+8=14
+    .log() // this stage prints 6, 14
     .toArray();
 
   console.log(result); // Outputs: [6, 14]
 }
 
-run();
+await run();
 ```
 
 ## API Overview
@@ -146,6 +148,13 @@ const typedFlow = sflow([{ a: 1, b: [1, 2, 3] }])
 ## Contributing
 
 Contributions to sflow are always welcome! If you have any ideas, suggestions, or bug reports, feel free to open an issue on GitHub or submit a pull request.
+
+Try to create your first PR start from here! https://github.dev/snomiao/sflow
+
+2. Join sflow Community by Post Comments here:
+
+- [Welcome to sflow Discussions! · snomiao/sflow · Discussion #2]( https://github.com/snomiao/sflow/discussions/2 )
+
 
 ## References
 
