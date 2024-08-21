@@ -1,10 +1,12 @@
 import { sf } from ".";
 import { sfTemplate } from "./sfTemplate";
+
 it("works", async () => {
   expect(await sfTemplate`hello ${sf("asdf")} zxcv`.text()).toBe(
     "hello asdf zxcv"
   );
 });
+
 it("multi", async () => {
   expect(
     await sfTemplate`hello ${sf("asdf")} ${sf("asdf")} ${sf(
@@ -12,6 +14,7 @@ it("multi", async () => {
     )} zxcv`.text()
   ).toBe("hello asdf asdf asdf zxcv");
 });
+
 it("nest", async () => {
   expect(
     await sfTemplate`hello ${await sfTemplate`nested ${sf("stream1")} ${sf(
