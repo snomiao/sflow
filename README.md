@@ -15,6 +15,8 @@ sflow is a powerful and highly-extensible library designed for processing and ma
 
 - **TypeScript support**: Fully typed for a richer developer experience and better code quality.
 
+And ONLINE DEMO avaliable here! - [sflow online Examples and Use Cases]( https://sflow-examples.vercel.app/ )
+
 ## Installation
 
 Install sflow using npm or yarn:
@@ -143,6 +145,13 @@ const typedFlow = sflow([{ a: 1, b: [1, 2, 3] }])
 ## Contributing
 
 Contributions to sflow are always welcome! If you have any ideas, suggestions, or bug reports, feel free to open an issue on GitHub or submit a pull request.
+
+Try to create your first PR start from here! https://github.dev/snomiao/sflow
+
+2. Join sflow Community by Post Comments here:
+
+- [Welcome to sflow Discussions! · snomiao/sflow · Discussion #2]( https://github.com/snomiao/sflow/discussions/2 )
+
 
 ## References
 
