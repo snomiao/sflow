@@ -1,4 +1,4 @@
-import { sf } from "./dist";
+import { sf } from ".";
 import { sfTemplate } from "./sfTemplate";
 it("works", async () => {
   expect(await sfTemplate`hello ${sf("asdf")} zxcv`.text()).toBe(
