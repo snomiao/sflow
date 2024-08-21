@@ -21,14 +21,14 @@ ONLINE DEMO avaliable here! - [sflow online Examples and Use Cases]( https://sfl
 
 ## Installation
 
-Install sflow using npm or yarn:
+Install sflow using npm or bun:
 
 ```sh
-npm install snoflow
+npm install sflow
 
-# or if you are using yarn
+# or if you are using bun
 
-yarn add snoflow
+bun add sflow
 ```
 
 ## Basic Usage
