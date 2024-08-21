@@ -5,6 +5,7 @@ sflow is a powerful and highly-extensible library designed for processing and ma
 ## Features
 
 - **Chunking and buffering**: Easily divide your stream into chunks based on different criteria such as count, intervals, custom conditions, etc.
+
 - **Transformations**: Map, filter, reduce, and various other transformations to process your stream data.
 
 - **Stream utilities**: Merge, throttle, debounce, and more utilities for advanced stream controls.

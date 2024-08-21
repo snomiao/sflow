@@ -19,6 +19,7 @@ export { flatMaps } from "./flatMaps";
 export { flats } from "./flats";
 export type { FlowSource } from "./FlowSource";
 export { forEachs } from "./forEachs";
+export { sfT, sfTemplate } from "./sft";
 // export { fromReadable, fromStdio, fromWritable } from "./fromNodeStream";
 export { bys } from "./bys";
 export { lines } from "./lines";

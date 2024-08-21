@@ -57,7 +57,7 @@ export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
   state: S,
   x: T,
-  i: number,
+  i: number
 ) => Awaitable<{ next: S; emit: R }>;
 interface BaseFlow<T> {
   _type: T;
@@ -84,7 +84,7 @@ interface BaseFlow<T> {
     start?: ChunkTransformer<T>;
     transform?: ChunkTransformer<T>;
     flush?: ChunkTransformer<T>;
-  }): sflow<T>
+  }): sflow<T>;
 
   /** @see convolves */
   convolve(...args: Parameters<typeof convolves<T>>): sflow<T[]>;
@@ -138,19 +138,19 @@ interface BaseFlow<T> {
     fn: (x: T, i: number) => Awaitable<R>,
     options?: {
       concurrency?: number;
-    },
+    }
   ): sflow<R>;
   asyncMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
   asyncMap<R>(
     fn: (x: T, i: number) => Awaitable<R>,
     options?: {
       concurrency?: number;
-    },
+    }
   ): sflow<R>;
   reduce(fn: (state: T | undefined, x: T, i: number) => Awaitable<T>): sflow<T>; // fn must fisrt
   reduce(fn: Reducer<T, T>, initialState: T): sflow<T>;
   reduce<S>(
-    fn: (state: S | undefined, x: T, i: number) => Awaitable<S>,
+    fn: (state: S | undefined, x: T, i: number) => Awaitable<S>
   ): sflow<S>; // fn must fisrt
   reduce<S>(fn: Reducer<S, T>, initialState: S): sflow<S>;
   reduceEmit(fn: EmitReducer<T, T, T>): sflow<T>;
@@ -220,44 +220,41 @@ interface BaseFlow<T> {
   toLog(...args: Parameters<typeof logs<T>>): Promise<void>;
 }
 
-type ArrayFlow<T> =
-  T extends ReadonlyArray<any>
-    ? {
-        // inverse of chunk
-        flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
-      }
-    : {};
+type ArrayFlow<T> = T extends ReadonlyArray<any>
+  ? {
+      // inverse of chunk
+      flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
+    }
+  : {};
 
-type DictionaryFlow<T> =
-  T extends Record<string, any>
-    ? {
-        unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
-          key: K,
-        ): sflow<Unwinded<T, K>>;
-        mapAddField: <K extends string, R>(
-          ...args: Parameters<typeof mapAddFields<K, T, R>>
-        ) => sflow<
-          Omit<T, K> & {
-            [key in K]: R;
-          }
-        >;
-      }
-    : {};
+type DictionaryFlow<T> = T extends Record<string, any>
+  ? {
+      unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
+        key: K
+      ): sflow<Unwinded<T, K>>;
+      mapAddField: <K extends string, R>(
+        ...args: Parameters<typeof mapAddFields<K, T, R>>
+      ) => sflow<
+        Omit<T, K> & {
+          [key in K]: R;
+        }
+      >;
+    }
+  : {};
 
-type StreamsFlow<T> =
-  T extends ReadableStream<infer R>
-    ? {
-        // merge multiupstreams
-        /** @deprecated use confluencesByBreth */
-        confluence(...args: Parameters<typeof confluences<R>>): sflow<R>;
-        confluenceByZip(): sflow<R>;
-        confluenceByConcat(): sflow<R>;
-        confluenceByParallel(): sflow<R>;
-        confluenceByAscend(ordFn: (x: R) => Ord): sflow<R>;
-        confluenceByDescend(ordFn: (x: R) => Ord): sflow<R>;
-        // concat()
-      }
-    : {};
+type StreamsFlow<T> = T extends ReadableStream<infer R>
+  ? {
+      // merge multiupstreams
+      /** @deprecated use confluencesByBreth */
+      confluence(...args: Parameters<typeof confluences<R>>): sflow<R>;
+      confluenceByZip(): sflow<R>;
+      confluenceByConcat(): sflow<R>;
+      confluenceByParallel(): sflow<R>;
+      confluenceByAscend(ordFn: (x: R) => Ord): sflow<R>;
+      confluenceByDescend(ordFn: (x: R) => Ord): sflow<R>;
+      // concat()
+    }
+  : {};
 
 type TextFlow<T> = T extends string
   ? {
@@ -300,33 +297,32 @@ type TextFlow<T> = T extends string
     }
   : {};
 
-type XsvEncodeFlow<T> =
-  T extends Record<string, any>
-    ? {
-        csvFormat: (
-          ...args: Parameters<typeof csvFormats>
-        ) => sflow<
-          ReturnType<typeof csvFormats> extends TransformStream<any, infer R>
-            ? R
-            : never
-        >;
-        tsvFormat: (
-          ...args: Parameters<typeof tsvFormats>
-        ) => sflow<
-          ReturnType<typeof tsvFormats> extends TransformStream<any, infer R>
-            ? R
-            : never
-        >;
-      }
-    : {};
+type XsvEncodeFlow<T> = T extends Record<string, any>
+  ? {
+      csvFormat: (
+        ...args: Parameters<typeof csvFormats>
+      ) => sflow<
+        ReturnType<typeof csvFormats> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+      tsvFormat: (
+        ...args: Parameters<typeof tsvFormats>
+      ) => sflow<
+        ReturnType<typeof tsvFormats> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+    }
+  : {};
 type XsvDecodeFlow<T> = T extends string
   ? {
       csvParse<S extends string>(
-        header: S,
+        header: S
       ): sflow<Record<Split<S, ",">[number], any>>;
       csvParse<S extends string[]>(header: S): sflow<Record<S[number], any>>;
       tsvParse<S extends string>(
-        header: S,
+        header: S
       ): sflow<Record<Split<S, ",">[number], any>>;
       tsvParse<S extends string[]>(header: S): sflow<Record<S[number], any>>;
     }
@@ -358,8 +354,9 @@ type ToResponse<T> =
 // replace
 // join
 //
-export type sflowType<T extends sflow<any>> =
-  T extends sflow<infer R> ? R : never;
+export type sflowType<T extends sflow<any>> = T extends sflow<infer R>
+  ? R
+  : never;
 export type sflow<T> = ReadableStream<T> &
   AsyncIterableIterator<T> &
   BaseFlow<T> &
@@ -472,7 +469,7 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
         .by((srcs: ReadableStream<FlowSource<T>>) =>
           sf(srcs)
             .toArray()
-            .then((srcs: FlowSource<T>[]) => mergeStream(...srcs)),
+            .then((srcs: FlowSource<T>[]) => mergeStream(...srcs))
         )
         // @ts-ignore upstream accepts streams only
         .confluence(),
@@ -674,7 +671,7 @@ export const _throughs: {
 
 export function _byLazy<T, R>(
   r: ReadableStream<T>,
-  t: TransformStream<T, R>,
+  t: TransformStream<T, R>
 ): sflow<R> {
   const reader = r.getReader();
   const tw = t.writable.getWriter();
@@ -701,7 +698,9 @@ export function _byLazy<T, R>(
           tr.cancel(r);
         },
       },
-      { highWaterMark: 0 },
-    ),
+      { highWaterMark: 0 }
+    )
   );
 }
+
+export { sf };
