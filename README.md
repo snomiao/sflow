@@ -2,6 +2,8 @@
 
 sflow is a powerful and highly-extensible library designed for processing and manipulating streams of data effortlessly. Inspired by the functional programming paradigm, it provides a rich set of utilities for transforming streams, including chunking, filtering, mapping, reducing, among many others. It's a perfect companion for those who work extensively with streams and want to make their data processing pipelines more efficient and concise.
 
+ONLINE DEMO avaliable here! - [sflow online Examples and Use Cases]( https://sflow-examples.vercel.app/ )
+
 ## Features
 
 - **Chunking and buffering**: Easily divide your stream into chunks based on different criteria such as count, intervals, custom conditions, etc.
@@ -15,7 +17,6 @@ sflow is a powerful and highly-extensible library designed for processing and ma
 
 - **TypeScript support**: Fully typed for a richer developer experience and better code quality.
 
-And ONLINE DEMO avaliable here! - [sflow online Examples and Use Cases]( https://sflow-examples.vercel.app/ )
 
 ## Installation
 
@@ -39,17 +40,17 @@ import { sflow } from "sflow";
 async function run() {
   let result = await sflow([1, 2, 3, 4])
     .map((n) => n * 2)
-    .log() // prints 2, 4, 6, 8
+    .log() // this stage prints 2, 4, 6, 8
     .filter((n) => n > 4)
-    .log() // prints 6, 8
-    .reduce((a, b) => a + b, 0) // first emit 0+6, second emit 0+6+8
-    .log() // prints 6, 14
+    .log() // this stage prints 6, 8
+    .reduce((a, b) => a + b, 0) // first emit 0+6=6, second emit 0+6+8=14
+    .log() // this stage prints 6, 14
     .toArray();
 
   console.log(result); // Outputs: [6, 14]
 }
 
-run();
+await run();
 ```
 
 ## API Overview
