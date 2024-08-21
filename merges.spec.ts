@@ -1,6 +1,6 @@
 import { sleep } from "bun";
 import sflow from "./index";
-import { mergeStream } from "./merges";
+import { mergeStream } from "./mergeStream";
 
 it("merge different type", async () => {
   expect(

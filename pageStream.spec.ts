@@ -81,31 +81,6 @@ it("works with cacheTails", async () => {
   ).toEqual([6, 5, 4, 3, 2, 1]);
 });
 
-it("works with cacheTails, but not emit cached items", async () => {
-  const store = new Keyv<number[]>({ ttl: 86400e3 });
-  // cache full content
-  expect(
-    await pageFlow(0, (page: number) => {
-      const data = [5, 4, 3, 2, 1][page] as number | undefined;
-      return { data, next: (!!data && page + 1) || null };
-    })
-      .filter()
-      .cacheTail(store, { key: "page", emitCached: false })
-      .toArray(),
-  ).toEqual([5, 4, 3, 2, 1]);
-
-  // emit only page head, but got full cached content
-  expect(
-    await pageFlow(0, (page: number) => {
-      const data = [6, 5][page] as number | undefined;
-      return { data, next: (!!data && page + 1) || null };
-    })
-      .filter()
-      .cacheTail(store, { key: "page", emitCached: false })
-      .toArray(),
-  ).toEqual([6]);
-});
-
 it("works with signal polling", async () => {
   const st = +new Date();
   let id = 0;

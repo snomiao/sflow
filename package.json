@@ -1,6 +1,6 @@
 {
   "name": "sflow",
-  "version": "1.16.17",
+  "version": "1.16.20",
   "description": "sflow is a powerful and highly-extensible library designed for processing and manipulating streams of data effortlessly. Inspired by the functional programming paradigm, it provides a rich set of utilities for transforming streams, including chunking, filtering, mapping, reducing, among many others. It's a perfect companion for those who work extensively with streams and want to make their data processing pipelines more efficient and concise.",
   "keywords": [
     "browser",
@@ -40,39 +40,41 @@
   ],
   "scripts": {
     "dev": "bunx --bun tsc -w --noEmit --declaration false --emitDeclarationOnly false",
-    "build": "rm -rf dist && bun build:tsc && bun build:esm && bun build:umd",
-    "build:esm": "bun build index.ts fromNodeStream.ts --outdir=dist",
+    "build": "rm -rf dist && bun build:tsc && bun build:esm && bun build:node && bun build:umd",
+    "build:node": "bun build fromNodeStream.ts --target=node --outdir=dist",
+    "build:esm": "bun build index.ts --outdir=dist",
     "build:umd": "bunx rollup dist/index.js --file=dist/index.umd.js --format=umd --name sflow",
     "build:tsc": "tsc -d --emitDeclarationOnly true --noEmit false",
     "prerelease": "bun run build && bun run test",
     "release": "bunx standard-version && git push --follow-tags && npm publish",
-    "test": "bun test"
+    "test": "bun test",
+    "vitest": "bunx vitest --globals"
   },
   "dependencies": {
     "ts-essentials": "^10.0.1",
-    "web-streams-extensions": "^0.12.0"
-  },
-  "devDependencies": {
+    "web-streams-extensions": "^0.12.0",
+    "polyfill-text-decoder-stream": "^0.0.9",
+    "polyfill-text-encoder-stream": "^0.0.8",
     "@types/d3": "^7.4.3",
     "bson": "^6.8.0",
     "d3": "^7.9.0",
-    "expect-type": "^0.19.0",
     "phpdie": "^1.2.12",
-    "polyfill-text-decoder-stream": "^0.0.9",
-    "polyfill-text-encoder-stream": "^0.0.8",
-    "proxy-deep": "^4.0.1",
     "string-replace-async": "^3.0.2",
     "ts-pattern": "^5.2.0",
     "ts-toolbelt": "^9.6.0",
     "unwind-array": "^1.1.4",
-    "@types/bun": "latest",
+    "rambda": "^9.2.1"
+  },
+  "devDependencies": {
+    "expect-type": "^0.19.0",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.14.14",
+    "proxy-deep": "^4.0.1",
     "keyv": "^4.5.4",
+    "@types/bun": "latest",
+    "typescript": "^5.5.4",
     "keyv-cached-with": "^0.0.17",
-    "peek-log": "^0.0.11",
-    "rambda": "^9.2.1",
-    "typescript": "^5.5.4"
+    "@types/node": "^20.14.14",
+    "peek-log": "^0.0.11"
   },
   "peerDependencies": {
     "react-hook-form": "^7.52.2",

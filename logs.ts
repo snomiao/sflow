@@ -1,6 +1,6 @@
 import type { Awaitable } from "./Awaitable";
+import { bys } from "./bys";
 import { peeks } from "./peeks";
-import { bys } from "./throughs";
 
 type MapFnIndexed<T> = (x: T, i?: number) => Awaitable<any>;
 // type MapFnUnary<T> = (x: T) => Awaitable<any>;

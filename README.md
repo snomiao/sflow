@@ -1,4 +1,4 @@
-# sflow 🚀
+# sflow - Stream Flow 🚀
 
 sflow is a powerful and highly-extensible library designed for processing and manipulating streams of data effortlessly. Inspired by the functional programming paradigm, it provides a rich set of utilities for transforming streams, including chunking, filtering, mapping, reducing, among many others. It's a perfect companion for those who work extensively with streams and want to make their data processing pipelines more efficient and concise.
 
@@ -7,6 +7,7 @@ ONLINE DEMO avaliable here! - [sflow online Examples and Use Cases]( https://sfl
 ## Features
 
 - **Chunking and buffering**: Easily divide your stream into chunks based on different criteria such as count, intervals, custom conditions, etc.
+
 - **Transformations**: Map, filter, reduce, and various other transformations to process your stream data.
 
 - **Stream utilities**: Merge, throttle, debounce, and more utilities for advanced stream controls.

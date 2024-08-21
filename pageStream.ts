@@ -7,22 +7,23 @@ export type PageFetcher<Data, Cursor> = (cursor: Cursor) => Awaitable<{
   next?: Cursor | null;
 }>;
 export function pageStream<Data, Cursor>(
-  initialQuery: Cursor,
-  fetcher: PageFetcher<Data, Cursor>,
+  initialQuery: Awaitable<Cursor>,
+  fetcher: PageFetcher<Data, Cursor>
 ): ReadableStream<Data> {
-  let query: Cursor = initialQuery;
+  let query: { value: Cursor } | null = null;
   return new ReadableStream(
     {
       pull: async (ctrl) => {
-        const ret = fetcher(query);
+        if (query === null) query = { value: await initialQuery };
+        const ret = fetcher(query.value);
         const val = ret instanceof Promise ? await ret : ret;
 
         const { data, next } = val;
         if (data !== undefined) ctrl.enqueue(data);
         if (null == next) return ctrl.close();
-        query = next;
+        query.value = next;
       },
     },
-    { highWaterMark: 0 }, // lazy page
+    { highWaterMark: 0 } // lazy page
   );
 }
