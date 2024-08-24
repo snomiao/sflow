@@ -161,6 +161,7 @@ Try to create your first PR start from here! https://github.dev/snomiao/sflow
 - [Infinite Streams with Elixir](https://gist.github.com/mgwidmann/5e0cb590f12e2ca239564d07d7c2a572)
 - [web-streams-extensions - npm]( https://www.npmjs.com/package/web-streams-extensions )
 - [$unwind (aggregation) - MongoDB Manual v7.0]( https://www.mongodb.com/docs/manual/reference/operator/aggregation/unwind/ )
+- [Introducing sflow: A New Era of Web Stream Processing for TypeScript/JavaScript Developers! : r/javascript]( https://www.reddit.com/r/javascript/comments/1exv4we/introducing_sflow_a_new_era_of_web_stream/ )
 
 ## License
 
