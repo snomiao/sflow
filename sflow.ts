@@ -35,6 +35,7 @@ import { mergeStreamsByAscend, mergeStreamsByDescend } from "./mergeStreamsBy";
 import { nils } from "./nils";
 import { peeks } from "./peeks";
 import { pMaps } from "./pMaps";
+import { portals } from "./portals";
 import { reduceEmits } from "./reduceEmits";
 import { reduces } from "./reduces";
 import { riffles } from "./riffles";
@@ -390,6 +391,8 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     //   DIE(new Error("WIP, merge into this stream"));
     //   return new WritableStream();
     // },
+    portal: (...args: Parameters<typeof portals>) =>
+      sflow(r.pipeThrough(portals(...args))),
     through: (...args: Parameters<typeof _throughs>) =>
       sflow(r.pipeThrough(_throughs(...args))),
     by: (...args: Parameters<typeof _throughs>) =>
