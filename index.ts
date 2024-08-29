@@ -1,4 +1,3 @@
-import { map } from "rambda";
 import { andIgnoreError } from "./andIgnoreError";
 import { sflow } from "./sflow";
 export { default as TextDecoderStream } from "polyfill-text-decoder-stream";
@@ -61,4 +60,3 @@ export type { Unwinded } from "./Unwinded";
 export { unwinds } from "./unwinds";
 export { andIgnoreError };
 export default sflow;
-

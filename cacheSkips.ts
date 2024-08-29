@@ -1,4 +1,5 @@
 import DIE from "phpdie";
+import { equals } from "rambda";
 import type { Awaitable } from "./Awaitable";
 import { never } from "./never";
 
@@ -38,7 +39,7 @@ export function cacheSkips<T>(
   return new TransformStream({
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
-      if (cache?.length && cache[0] === chunk) {
+      if (cache?.length && equals(cache[0], chunk)) {
         await store.set(key, chunks.concat(...cache).slice(0, windowSize));
         ctrl.terminate();
         return await never();

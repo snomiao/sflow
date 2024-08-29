@@ -90,6 +90,12 @@ interface BaseFlow<T> {
   /** @see convolves */
   convolve(...args: Parameters<typeof convolves<T>>): sflow<T[]>;
 
+  /** act as pipeThrough<T,T> */
+  portal: {
+    (): sflow<T>;
+    (stream: TransformStream<T, T>): sflow<T>;
+    (fn: (s: sflow<T>) => FlowSource<T>): sflow<T>; // fn must fisrt
+  };
   /** act as pipeThrough, alias of by */
   through: {
     (): sflow<T>;
