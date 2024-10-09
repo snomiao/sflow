@@ -2,8 +2,7 @@ import DIE from "phpdie";
 import { Readable, Writable } from "stream";
 import { sf } from ".";
 
-
-/** Make TransformStream from stdio 
+/** Make TransformStream from stdio
  *  @deprecated import {fromStdio} from 'from-node-stream'
  */
 export function fromStdio(
@@ -35,7 +34,7 @@ export function fromStdio(
   };
 }
 
-/** 
+/**
  *  @deprecated import from 'from-node-stream'
  */
 export function fromReadable<T extends string | Uint8Array>(
@@ -56,7 +55,7 @@ export function fromReadable<T extends string | Uint8Array>(
   });
 }
 
-/** 
+/**
  *  @deprecated import from 'from-node-stream'
  */
 export function fromWritable<T extends string | Uint8Array>(
