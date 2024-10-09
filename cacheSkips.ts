@@ -1,5 +1,4 @@
 import DIE from "phpdie";
-import { equals } from "rambda";
 import type { Awaitable } from "./Awaitable";
 import { never } from "./never";
 
@@ -25,7 +24,7 @@ export function cacheSkips<T>(
          * or defaults to `new Error().stack` if you r lazy enough
          */
         key?: string;
-        /** defaults to 1 */
+        /** defaults to 1, incase first n header may modify by others you could set it as 2 */
         windowSize?: number;
       }
 ) {
@@ -39,14 +38,23 @@ export function cacheSkips<T>(
   return new TransformStream({
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
-      if (cache?.length && equals(cache[0], chunk)) {
-        await store.set(key, chunks.concat(...cache).slice(0, windowSize));
+      const chunkJSON = JSON.stringify(chunk);
+      const cachedIndex = cache?.findIndex(
+        (item) => JSON.stringify(item) === chunkJSON
+      );
+      if (cache && cachedIndex && cachedIndex !== -1) {
+        await store.set(
+          key,
+          [...chunks, ...cache.slice(cachedIndex)].slice(0, windowSize)
+        );
         ctrl.terminate();
         return await never();
       }
       chunks.push(chunk);
       ctrl.enqueue(chunk);
     },
-    flush: async () => await store.set(key, chunks.slice(0, windowSize)),
+    flush: async () => {
+      await store.set(key, chunks.slice(0, windowSize));
+    },
   });
 }

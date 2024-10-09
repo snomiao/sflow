@@ -42,7 +42,6 @@ export function cacheTails<T>(
     write: async (chunk, ctrl) => {
       const cache = await cachePromise.promise;
       if (cache && equals(chunk, cache[0])) {
-        console.log("asdf");
         // save cache
         await store.set(key, [...chunks, ...cache]);
         // emit whole cache as tail into downstream
