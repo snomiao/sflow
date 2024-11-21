@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.25](https://github.com/snomiao/sflow/compare/v1.16.24...v1.16.25) (2024-11-21)
+
+
+### Bug Fixes
+
+* **main:** inf404 ([f33d3fb](https://github.com/snomiao/sflow/commit/f33d3fb9a3cc20b673a2ced33d5c6d36cda2cfee))
+
 ### [1.16.24](https://github.com/snomiao/sflow/compare/v1.16.23...v1.16.24) (2024-11-21)
 
 
