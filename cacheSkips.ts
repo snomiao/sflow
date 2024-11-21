@@ -38,14 +38,15 @@ export function cacheSkips<T>(
   return new TransformStream({
     transform: async (chunk, ctrl) => {
       const cache = await cachePromise;
-      const chunkJSON = JSON.stringify(chunk);
-      const cachedIndex = cache?.findIndex(
-        (item) => JSON.stringify(item) === chunkJSON
-      );
-      if (cache && cachedIndex && cachedIndex !== -1) {
+      const chunked = JSON.stringify(chunk);
+      const inf404 = (idx?: number | null) =>
+        idx == null || idx < 0 ? Infinity : idx;
+      const hitCache = (item: T): boolean => JSON.stringify(item) === chunked;
+      const cachedContents = cache?.slice(inf404(cache.findIndex(hitCache)));
+      if (cachedContents?.length) {
         await store.set(
           key,
-          [...chunks, ...cache.slice(cachedIndex)].slice(0, windowSize)
+          [...chunks, ...cachedContents].slice(0, windowSize)
         );
         ctrl.terminate();
         return await never();
