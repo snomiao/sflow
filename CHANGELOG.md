@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.24](https://github.com/snomiao/sflow/compare/v1.16.23...v1.16.24) (2024-11-21)
+
+
+### Bug Fixes
+
+* **froms:** handle undefined ([7af9f7a](https://github.com/snomiao/sflow/commit/7af9f7a6e6302386b49b356a643c96c97d620462))
+* **main:** deprecated fromNodeStream ([61a92ab](https://github.com/snomiao/sflow/commit/61a92abedbfbe5750d815b94148f2a94a7fa6400))
+* **main:** deprecated fromNodeStream ([9b27058](https://github.com/snomiao/sflow/commit/9b270588e49210b6f84a77e85392544435c96275))
+
 ### [1.16.20](https://github.com/snomiao/sflow/compare/v1.16.19...v1.16.20) (2024-08-21)
 
 ### [1.16.19](https://github.com/snomiao/sflow/compare/v1.16.18...v1.16.19) (2024-08-19)
