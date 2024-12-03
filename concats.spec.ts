@@ -128,4 +128,33 @@ describe("concats", () => {
 
     expect(result).toEqual([1, 2, 3, 4, 5]);
   });
+
+  it("should output the first stream before second stream starts", async () => {
+    const promise = Promise.withResolvers();
+    const source1 = createStream([1, 2, 3]);
+    const source2 = sf([4, 5]).forEach(async () => await promise.promise);
+
+    const readable = concatStream([source1, source2]);
+    const reader = readable.getReader();
+    const result: number[] = [];
+    const readOne = async () => {
+      const { value, done } = await reader.read();
+      if (done) return;
+      result.push(value);
+      return value;
+    };
+    await readOne();
+    expect(result).toEqual([1]);
+    await readOne();
+    expect(result).toEqual([1, 2]);
+    await readOne();
+    expect(result).toEqual([1, 2, 3]);
+
+    promise.resolve();
+    
+    await readOne();
+    expect(result).toEqual([1, 2, 3, 4]);
+    await readOne();
+    expect(result).toEqual([1, 2, 3, 4, 5]);
+  });
 });
