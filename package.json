@@ -1,6 +1,6 @@
 {
   "name": "sflow",
-  "version": "1.17.0",
+  "version": "1.17.1",
   "description": "sflow is a powerful and highly-extensible library designed for processing and manipulating streams of data effortlessly. Inspired by the functional programming paradigm, it provides a rich set of utilities for transforming streams, including chunking, filtering, mapping, reducing, among many others. It's a perfect companion for those who work extensively with streams and want to make their data processing pipelines more efficient and concise.",
   "keywords": [
     "browser",
@@ -59,7 +59,7 @@
     "bson": "^6.8.0",
     "d3": "^7.9.0",
     "phpdie": "^1.2.12",
-    "polywfill-text-decoder-stream": "^0.0.9",
+    "polyfill-text-decoder-stream": "^0.0.9",
     "polyfill-text-encoder-stream": "^0.0.8",
     "rambda": "^9.2.1",
     "string-replace-async": "^3.0.2",
