@@ -168,8 +168,14 @@ interface BaseFlow<T> {
   tail: (...args: Parameters<typeof tails<T>>) => sflow<T>;
   uniq: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
   uniqBy: <K>(...args: Parameters<typeof uniqBys<T, K>>) => sflow<T>;
+  /** @deprecated use fork */
   tees(fn: (s: sflow<T>) => void | any): sflow<T>; // fn must fisrt
-  tees(stream?: WritableStream<T>): sflow<T>;
+  /** @deprecated use fork */
+  tees(stream: WritableStream<T>): sflow<T>;
+  /**
+   * fork
+   */
+  fork(): sflow<T>;
   throttle: (...args: Parameters<typeof throttles<T>>) => sflow<T>;
 
   // prevents
@@ -383,7 +389,7 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
   ...srcs: SRCS
 ): sflow<SourcesType<SRCS>> => {
   type T = SourcesType<SRCS>;
-  const r: ReadableStream<T> =
+  let r: ReadableStream<T> =
     srcs.length === 1
       ? (toStream(srcs[0]) as ReadableStream<T>)
       : (concatStream(srcs) as ReadableStream<T>);
@@ -532,6 +538,11 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r.pipeThrough(tails(...args))),
     tees: (...args: Parameters<typeof _tees>) =>
       sflow(r.pipeThrough(_tees(...args))),
+    fork: () => {
+      let b;
+      [r, b] = r.tee();
+      return sflow(b);
+    },
     throttle: (...args: Parameters<typeof throttles>) =>
       sflow(r.pipeThrough(throttles(...args))),
 
