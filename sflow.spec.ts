@@ -8,18 +8,19 @@ import { svector } from "./svector";
 //   );
 // });
 
-it("tees", async () => {
-  let flow1 = sflow([1, 2, 3]);
-  const flow2 = flow1.tees((x) => (flow1 = x));
-  expect(flow1.locked).toEqual(false);
-  const flow3 = flow1.tees((b) => (flow1 = b));
-  expect(flow1.locked).toEqual(false);
-  const flow4 = flow1.tees();
-  expect(flow1.locked).toEqual(true);
-  expect(await flow2.toArray()).toEqual([1, 2, 3]);
-  expect(await flow3.toArray()).toEqual([1, 2, 3]);
-  expect(await flow4.toArray()).toEqual([1, 2, 3]);
-});
+// tees is deprecated
+// it("tees", async () => {
+//   let flow1 = sflow([1, 2, 3]);
+//   const flow2 = flow1.tees((x) => (flow1 = x));
+//   expect(flow1.locked).toEqual(false);
+//   const flow3 = flow1.tees((b) => (flow1 = b));
+//   expect(flow1.locked).toEqual(false);
+//   const flow4 = flow1.tees();
+//   expect(flow1.locked).toEqual(true);
+//   expect(await flow2.toArray()).toEqual([1, 2, 3]);
+//   expect(await flow3.toArray()).toEqual([1, 2, 3]);
+//   expect(await flow4.toArray()).toEqual([1, 2, 3]);
+// });
 
 it("counts", async () => {
   expect(await sflow([] as string[]).toCount()).toBe(0);
