@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.17.0](https://github.com/snomiao/sflow/compare/v1.16.25...v1.17.0) (2024-12-09)
+
+
+### Features
+
+* **fork:** done ([f2bf6f1](https://github.com/snomiao/sflow/commit/f2bf6f1d7b11880e845d3d6d18341697d323a26a))
+
+
+### Bug Fixes
+
+* **main:** add froms test ([68d2420](https://github.com/snomiao/sflow/commit/68d2420eddc68e81a516b0b4f892a580b8c055b1))
+* **main:** add test for concats ([b69d4c8](https://github.com/snomiao/sflow/commit/b69d4c8df03a53cbd98c7b2e75235c216fe43541))
+* **main:** basedon ([766e0cc](https://github.com/snomiao/sflow/commit/766e0cc64352a2365990c1f300007c7e197a3cbf))
+* **main:** remove depreacted test ([47c71ee](https://github.com/snomiao/sflow/commit/47c71ee12aa8ff1e36b7c6958d7336c5f31566d1))
+
 ### [1.16.25](https://github.com/snomiao/sflow/compare/v1.16.24...v1.16.25) (2024-11-21)
 
 
