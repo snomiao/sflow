@@ -8,7 +8,9 @@ import { never } from "./never";
  *
  * Only emit unmet contents
  *
- * Once flow done, cache content, and skip cached content next time
+ * Once flow done, cache latest contents in windowSize, and skip from cached content next time
+ * 
+ * 
  */
 export function cacheSkips<T>(
   store: {
