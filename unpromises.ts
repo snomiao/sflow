@@ -1,6 +1,6 @@
 /** unwrap promises of readable stream */
 export function unpromises<T>(
-  promise: Promise<ReadableStream<T>>,
+  promise: Promise<ReadableStream<T>>
 ): ReadableStream<T> {
   const tr = new TransformStream<T, T>();
   (async function () {
@@ -12,4 +12,11 @@ export function unpromises<T>(
     });
   });
   return tr.readable;
+}
+
+/** unwrap promises of readable stream */
+export function unpromisesFn<Args extends any[], T>(
+  fn: (...args: Args) => Promise<ReadableStream<T>>
+): (...args: Args) => ReadableStream<T> {
+  return (...args: Args) => unpromises(fn(...args));
 }
