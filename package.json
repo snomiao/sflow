@@ -24,22 +24,22 @@
       "types": "./dist/index.d.ts"
     },
     "./ts": {
-      "import": "./index.ts",
-      "types": "./index.ts"
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
     },
     "./fromNodeStream": {
       "import": "./dist/fromNodeStream.js",
       "types": "./dist/fromNodeStream.d.ts"
     },
     "./fromNodeStream/ts": {
-      "import": "./fromNodeStream.ts",
-      "types": "./fromNodeStream.ts"
+      "import": "./src/fromNodeStream.ts",
+      "types": "./src/fromNodeStream.ts"
     }
   },
   "module": "index.ts",
   "types": "./dist/index.d.ts",
   "files": [
-    "*.ts",
+    "./src/*.ts",
     "dist"
   ],
   "scripts": {
@@ -52,7 +52,8 @@
     "prerelease": "bun run build && bun run test",
     "release": "bunx standard-version && git push --follow-tags && npm publish",
     "test": "bun test",
-    "vitest": "bunx vitest --globals"
+    "vitest": "bunx vitest --globals",
+    "prepare": "husky"
   },
   "dependencies": {
     "@types/d3": "^7.4.3",
@@ -74,6 +75,7 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.14",
     "expect-type": "^0.19.0",
+    "husky": "^9.1.7",
     "keyv": "^4.5.4",
     "keyv-cached-with": "^0.0.17",
     "peek-log": "^0.0.11",
