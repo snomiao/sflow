@@ -48,7 +48,7 @@
     "build:node": "bun build src/fromNodeStream.ts --target=node --outdir=dist",
     "build:esm": "bun build src/index.ts --outdir=dist",
     "build:umd": "bunx rollup dist/index.js --file=dist/index.umd.js --format=umd --name sflow",
-    "build:tsc": "tsc -d --emitDeclarationOnly true --noEmit false",
+    "build:tsc": "tsc",
     "prerelease": "bun run build && bun run test",
     "release": "bunx standard-version && git push --follow-tags && npm publish",
     "test": "bun test",

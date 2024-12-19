@@ -16,10 +16,11 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "noEmit": false,
     "emitDeclarationOnly": true,
     "declaration": true,
-    "rootDir": "src",
+    "downlevelIteration": true,
+    "noEmit": false,
+    "rootDir": "./src",
     "outDir": "dist",
     // Best practices
     "strict": true,
@@ -30,6 +31,13 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
-    "incremental": true
+    // "incremental": true
   },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+  ]
 }
