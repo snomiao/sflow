@@ -1,0 +1,21 @@
+on:
+  push:
+jobs:
+  semantic-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+        #[semantic-release]: node version >=20.8.1 is required. Found v18.20.5.
+      - uses: oven-sh/setup-bun@v2
+      - run: bun i
+      - run: bun run test
+      - run: bun run build
+      - run: npx semantic-release
+        env:
+          # reminder to setup read/write permission for this token
+          # here: REPO_URL/settings/actions
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
