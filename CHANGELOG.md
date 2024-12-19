@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.18.1](https://github.com/snomiao/sflow/compare/v1.18.0...v1.18.1) (2024-12-19)
+
+
+### Bug Fixes
+
+* **main:** type declare ([2bbd978](https://github.com/snomiao/sflow/commit/2bbd9783ee0ea12c3edc6dede00a95ec5d9e7932))
+
 ## [1.18.0](https://github.com/snomiao/sflow/compare/v1.17.1...v1.18.0) (2024-12-19)
 
 
