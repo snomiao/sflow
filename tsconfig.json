@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
     // Enable latest features
-    "lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable",
+      "DOM.AsyncIterable"
+    ],
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
@@ -14,6 +19,7 @@
     "noEmit": false,
     "emitDeclarationOnly": true,
     "declaration": true,
+    "rootDir": "src",
     "outDir": "dist",
     // Best practices
     "strict": true,
@@ -26,6 +32,4 @@
     "noPropertyAccessFromIndexSignature": false,
     "incremental": true
   },
-  "include": ["./*.ts"],
-  "exclude": ["./**/node_modules", "./**/dist", "dist"]
 }
