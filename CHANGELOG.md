@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.18.0](https://github.com/snomiao/sflow/compare/v1.17.1...v1.18.0) (2024-12-19)
+
+
+### Features
+
+* **unpromisesFn:** init ([c6b72e0](https://github.com/snomiao/sflow/commit/c6b72e0b70773337ae75e436360e106aa79c75a0))
+
+
+### Bug Fixes
+
+* **main:** upgrade polyfill ([9863678](https://github.com/snomiao/sflow/commit/9863678af5907e7cd2e7387c35c89af64848fbdb))
+
 ### [1.17.1](https://github.com/snomiao/sflow/compare/v1.17.0...v1.17.1) (2024-12-09)
 
 ## [1.17.0](https://github.com/snomiao/sflow/compare/v1.16.25...v1.17.0) (2024-12-09)
