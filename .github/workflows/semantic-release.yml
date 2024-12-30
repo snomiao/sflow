@@ -15,6 +15,12 @@ jobs:
       - run: bun i
       - run: bun run test
       - run: bun run build
+      - name: Prettify code
+        uses: creyD/prettier_action@v4.3
+        with:
+          # This part is also where you can pass other options, for example:
+          prettier_options: --write **/*.{js,md}
+          only_changed: True
       - run: npx semantic-release
         env:
           # reminder to setup read/write permission for this token
