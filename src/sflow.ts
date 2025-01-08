@@ -702,7 +702,7 @@ export function _byLazy<T, R>(
       {
         start: async (ctrl) => {
           (async function () {
-            while (true) {
+             while (true) {
               const { done, value } = await tr.read();
               if (done) return ctrl.close();
               ctrl.enqueue(value);
