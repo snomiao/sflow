@@ -54,6 +54,7 @@ import type { Unwinded } from "./Unwinded";
 import { unwinds } from "./unwinds";
 import { wseToArray, wseToPromise } from "./wse";
 import { csvFormats, csvParses, tsvFormats, tsvParses } from "./xsvStreams";
+
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
   state: S,
