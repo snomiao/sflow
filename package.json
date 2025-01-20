@@ -20,16 +20,16 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/esm/index.js",
+      "types": "./dist/esm/index.d.ts"
     },
     "./ts": {
       "import": "./src/index.ts",
       "types": "./src/index.ts"
     },
     "./fromNodeStream": {
-      "import": "./dist/fromNodeStream.js",
-      "types": "./dist/fromNodeStream.d.ts"
+      "import": "./dist/esm/fromNodeStream.js",
+      "types": "./dist/esm/fromNodeStream.d.ts"
     },
     "./fromNodeStream/ts": {
       "import": "./src/fromNodeStream.ts",
@@ -45,9 +45,9 @@
   "scripts": {
     "dev": "bunx --bun tsc -w --noEmit --declaration false --emitDeclarationOnly false",
     "build": "rm -rf dist && bun build:tsc && bun build:esm && bun build:node && bun build:umd",
-    "build:node": "bun build src/fromNodeStream.ts --target=node --outdir=dist",
-    "build:esm": "bun build src/index.ts --outdir=dist",
-    "build:umd": "bunx rollup dist/index.js --file=dist/index.umd.js --format=umd --name sflow",
+    "build:node": "bun build src/fromNodeStream.ts --target=node --outdir=dist/esm",
+    "build:esm": "bun build --outdir=dist/esm src/index.ts --packages=external",
+    "build:umd": "bunx rollup dist/esm/index.js --file=dist/index.umd.js --format=umd --name sflow",
     "build:tsc": "tsc",
     "prerelease": "bun run build && bun run test",
     "release": "bunx standard-version && git push --follow-tags && npm publish",
