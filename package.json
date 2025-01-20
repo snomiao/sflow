@@ -68,12 +68,9 @@
     "web-streams-extensions": "^0.12.0"
   },
   "devDependencies": {
-    "@types/d3": "^7.4.3",
     "@types/bun": "^1.1.6",
+    "@types/d3": "^7.4.3",
     "@types/jest": "^29.5.12",
-    "ts-essentials": "^10.0.1",
-    "ts-pattern": "^5.2.0",
-    "ts-toolbelt": "^9.6.0",
     "@types/node": "^20.14.14",
     "expect-type": "^0.19.0",
     "husky": "^9.1.7",
@@ -82,6 +79,9 @@
     "peek-log": "^0.0.11",
     "proxy-deep": "^4.0.1",
     "semantic-release": "^24.2.0",
+    "ts-essentials": "^10.0.1",
+    "ts-pattern": "^5.2.0",
+    "ts-toolbelt": "^9.6.0",
     "typedoc": "^0.27.0",
     "typescript": "^5.0.0"
   },
