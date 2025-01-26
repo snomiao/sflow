@@ -2,7 +2,7 @@ import DIE from "phpdie";
 import type { Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Split } from "ts-toolbelt/out/String/Split";
-import { sf } from ".";
+import sflow, { sf } from ".";
 import { asyncMaps } from "./asyncMaps";
 import type { Awaitable } from "./Awaitable";
 import { cacheLists } from "./cacheLists";
@@ -609,8 +609,8 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     toLast: () => wseToPromise(sflow(r).tail(1)),
     toExactlyOne: async () => {
       const a = await wseToArray(r);
-      if (a.length > 1) DIE(`Expect only 1 Item, but got ${a.length}`);
-      return a[0];
+      a.length !== 1 || DIE(`Expect exactly 1 Item, but got ${a.length}`);
+      return a[0]!;
     },
     toOne: async () => {
       const a = await wseToArray(r);
@@ -702,7 +702,7 @@ export function _byLazy<T, R>(
       {
         start: async (ctrl) => {
           (async function () {
-             while (true) {
+            while (true) {
               const { done, value } = await tr.read();
               if (done) return ctrl.close();
               ctrl.enqueue(value);
