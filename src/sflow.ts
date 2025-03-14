@@ -3,7 +3,7 @@ import PolyfillTextEncoderStream from "polyfill-text-encoder-stream";
 import type { Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Split } from "ts-toolbelt/out/String/Split";
-import sflow, { sf } from ".";
+import { sf } from ".";
 import { asyncMaps } from "./asyncMaps";
 import type { Awaitable } from "./Awaitable";
 import { cacheLists } from "./cacheLists";
