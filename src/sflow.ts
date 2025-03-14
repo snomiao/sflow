@@ -1,4 +1,5 @@
 import DIE from "phpdie";
+import PolyfillTextEncoderStream from "polyfill-text-encoder-stream";
 import type { Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
 import type { Split } from "ts-toolbelt/out/String/Split";
@@ -656,9 +657,21 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     ) => sflow(r.pipeThrough(lines(...args))),
     // as response (only ReadableStream<string | UInt8Array>)
     toResponse: (init?: ResponseInit) => new Response(r, init),
-    text: (init?: ResponseInit) => new Response(r, init).text(),
-    json: (init?: ResponseInit) => new Response(r, init).json(),
-    blob: (init?: ResponseInit) => new Response(r, init).blob(),
+    text: (init?: ResponseInit) =>
+      new Response(
+        (r as ReadableStream<string | Uint8Array>).pipeThrough(
+          new PolyfillTextEncoderStream()
+        ),
+        init
+      ).text(),
+    json: (init?: ResponseInit) =>
+      new Response(
+        (r as ReadableStream<string | Uint8Array>).pipeThrough(
+          new PolyfillTextEncoderStream()
+        ),
+        init
+      ).json(),
+    blob: (init?: ResponseInit) => new Response(sf(r), init).blob(),
     arrayBuffer: (init?: ResponseInit) => new Response(r, init).arrayBuffer(),
     // as iterator
     // [Symbol.asyncDispose]: async () => await r.pipeTo(nils()),
