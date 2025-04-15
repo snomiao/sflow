@@ -5,6 +5,7 @@ export { default as TextEncoderStream } from "polyfill-text-encoder-stream";
 export { cacheLists } from "./cacheLists";
 export { cacheSkips } from "./cacheSkips";
 export { cacheTails } from "./cacheTails";
+export { chunkOverlaps } from "./chunkOverlaps";
 export { chunkBys } from "./chunkBys";
 export { chunkIfs } from "./chunkIfs";
 export { chunkIntervals, chunkIntervals as intervals } from "./chunkIntervals";
@@ -32,7 +33,7 @@ export { mergeStream } from "./mergeStream";
 export {
   mergeStreamsBy,
   mergeStreamsByAscend,
-  mergeStreamsByDescend
+  mergeStreamsByDescend,
 } from "./mergeStreamsBy";
 export { nil, nils } from "./nils";
 export { pageFlow } from "./pageFlow";
