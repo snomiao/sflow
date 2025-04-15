@@ -53,7 +53,7 @@
     "release": "bunx standard-version && git push --follow-tags && npm publish",
     "test": "bun test",
     "vitest": "bunx vitest --globals",
-    "prepare": "husky"
+    "prepare": "bunx husky"
   },
   "dependencies": {
     "d3": "^7.9.0",
