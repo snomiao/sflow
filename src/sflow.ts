@@ -170,10 +170,13 @@ interface BaseFlow<T> {
   tail: (...args: Parameters<typeof tails<T>>) => sflow<T>;
   uniq: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
   uniqBy: <K>(...args: Parameters<typeof uniqBys<T, K>>) => sflow<T>;
-  /** @deprecated use fork */
+  /** @deprecated use fork, forkTo */
   tees(fn: (s: sflow<T>) => void | any): sflow<T>; // fn must fisrt
-  /** @deprecated use fork */
+  /** @deprecated use fork, forkTo */
   tees(stream: WritableStream<T>): sflow<T>;
+
+  forkTo(fn: (s: sflow<T>) => void | any): sflow<T>; // fn must fisrt
+  forkTo(stream: WritableStream<T>): sflow<T>;
   /**
    * fork
    */
@@ -539,6 +542,8 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     tail: (...args: Parameters<typeof tails>) =>
       sflow(r.pipeThrough(tails(...args))),
     tees: (...args: Parameters<typeof _tees>) =>
+      sflow(r.pipeThrough(_tees(...args))),
+    forkTo: (...args: Parameters<typeof _tees>) =>
       sflow(r.pipeThrough(_tees(...args))),
     fork: () => {
       let b;
