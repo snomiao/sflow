@@ -57,6 +57,8 @@
   },
   "dependencies": {
     "d3": "^7.9.0",
+    "@types/d3": "^7.4.3",
+    "ts-essentials": "^10.1.1",
     "from-node-stream": "0.0.4",
     "phpdie": "^1.2.12",
     "polyfill-text-decoder-stream": "^0.0.9",
@@ -65,8 +67,6 @@
     "string-replace-async": "^3.0.2",
     "bson": "^6.8.0",
     "unwind-array": "^1.1.4",
-    "@types/d3": "^7.4.3",
-    "ts-essentials": "^10.1.1",
     "web-streams-extensions": "^0.12.0"
   },
   "devDependencies": {
