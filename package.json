@@ -56,16 +56,16 @@
     "prepare": "bunx husky"
   },
   "dependencies": {
-    "d3": "^7.9.0",
     "@types/d3": "^7.4.3",
-    "ts-essentials": "^10.1.1",
+    "bson": "^6.8.0",
+    "d3": "^7.9.0",
     "from-node-stream": "0.0.4",
     "phpdie": "^1.2.12",
-    "polyfill-text-decoder-stream": "^0.0.9",
+    "polyfill-text-decoder-stream": "0.0.10",
     "polyfill-text-encoder-stream": "^0.0.9",
     "rambda": "^9.2.1",
     "string-replace-async": "^3.0.2",
-    "bson": "^6.8.0",
+    "ts-essentials": "^10.1.1",
     "unwind-array": "^1.1.4",
     "web-streams-extensions": "^0.12.0"
   },
