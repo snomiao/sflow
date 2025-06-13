@@ -1,6 +1,6 @@
 import { expectTypeOf } from "expect-type";
 import { maps } from "./maps";
-import { sflow } from "./";
+import { sflow } from "./sflow";
 
 describe("maps function", () => {
   it("keeps type definitions", async () => {
