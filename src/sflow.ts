@@ -2,6 +2,7 @@ import DIE from "phpdie";
 import PolyfillTextEncoderStream from "polyfill-text-encoder-stream";
 import type { Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
+import type { AsyncOrSync } from "ts-essentials";
 import type { Split } from "ts-toolbelt/out/String/Split";
 import { sf } from ".";
 import { asyncMaps } from "./asyncMaps";
@@ -109,7 +110,7 @@ interface BaseFlow<T> {
   by: {
     (): sflow<T>;
     (stream: TransformStream<T, T>): sflow<T>;
-    <R>(fn: (s: sflow<T>) => FlowSource<R>): sflow<R>; // fn must fisrt
+    <R>(fn: (s: sflow<T>) => AsyncOrSync<FlowSource<R>>): sflow<R>; // fn must fisrt
     <R>(stream: TransformStream<T, R>): sflow<R>;
   };
   /** act as pipeThrough, but lazy, only pull upstream when downstream pull */
@@ -632,30 +633,6 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     /** call console.log on every item */
     toLog: (...args: Parameters<typeof logs<T>>) =>
       sflow(r.pipeThrough(logs(...args))).done(),
-    // toLatest: () => {
-    //   const store = { value: undefined as T, readable: ReadableStream };
-    //   const proxy = new DeepProxy(store, {
-    //     get(target, key, receiver) {
-    //       const val = Reflect.get(target, key, receiver);
-    //       if (typeof val === "object" && val !== null) return this.nest(val);
-    //       return val;
-    //     },
-    //   });
-    //   const initialPromise = Promise.withResolvers();
-
-    //   let initialized = false;
-    //   store.readable = sflow(r).tees((r) =>
-    //     r
-    //       .forEach((e) => {
-    //         store.value = e as T; // update store
-    //         if (initialized) return;
-    //         initialized = true;
-    //         initialPromise.resolve(proxy);
-    //       })
-    //       .done()
-    //   );
-    //   return initialPromise.promise;
-    // },
     // string stream process
     lines: (
       ...args: Parameters<typeof lines> // @ts-expect-error works on string only
