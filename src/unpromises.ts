@@ -1,16 +1,20 @@
+import type { AsyncOrSync } from "ts-essentials";
+
 /** unwrap promises of readable stream */
 export function unpromises<T>(
-  promise: Promise<ReadableStream<T>>
+  promise: AsyncOrSync<ReadableStream<T>>
 ): ReadableStream<T> {
   const tr = new TransformStream<T, T>();
   (async function () {
     const s = await promise;
     await s.pipeTo(tr.writable);
-  })().catch((error) => {
-    tr.readable.cancel(error).catch(() => {
-      throw error;
-    });
-  });
+  })()
+    .catch((error) => {
+      tr.readable.cancel(error).catch(() => {
+        throw error;
+      });
+    })
+    .then();
   return tr.readable;
 }
 
