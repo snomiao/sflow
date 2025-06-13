@@ -1,14 +1,15 @@
-/** pipe upstream through a transform stream */
-export const bys: {
-  <T>(stream?: TransformStream<T, T>): TransformStream<T, T>;
-  <T, R>(stream: TransformStream<T, R>): TransformStream<T, R>;
-  <T, R>(
-    fn: (s: ReadableStream<T>) => ReadableStream<R>
-  ): TransformStream<T, R>;
-} = (arg: any) => {
+import type { AsyncOrSync } from "ts-essentials";
+import { unpromises } from "./unpromises";
+
+export function bys<T>(stream?: TransformStream<T, T>): TransformStream<T, T>;
+export function bys<T, R>(stream: TransformStream<T, R>): TransformStream<T, R>;
+export function bys<T, R>(
+  fn: (s: ReadableStream<T>) => AsyncOrSync<ReadableStream<R>>
+): TransformStream<T, R>;
+export function bys(arg: any) {
   if (!arg) return new TransformStream();
   if (typeof arg !== "function") return bys((s) => s.pipeThrough(arg));
   const fn = arg;
   const { writable, readable } = new TransformStream();
-  return { writable, readable: fn(readable) };
-};
+  return { writable, readable: unpromises(fn(readable)) };
+}
