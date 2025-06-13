@@ -1,5 +1,7 @@
 import type { FlowSource } from "./FlowSource";
-import { sf, sflow } from "./sflow";
+import { sflow } from "./sflow";
+import { sf } from ".";
+
 /** sflow Template */
 export function sfTemplate(
   tsa: TemplateStringsArray,

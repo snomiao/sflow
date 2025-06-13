@@ -4,7 +4,6 @@ import type { Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
 import type { AsyncOrSync } from "ts-essentials";
 import type { Split } from "ts-toolbelt/out/String/Split";
-import { sf } from ".";
 import { asyncMaps } from "./asyncMaps";
 import type { Awaitable } from "./Awaitable";
 import { cacheLists } from "./cacheLists";
@@ -63,12 +62,13 @@ export type EmitReducer<S, T, R> = (
   x: T,
   i: number
 ) => Awaitable<{ next: S; emit: R }>;
-interface BaseFlow<T> {
+
+export interface BaseFlow<T> {
   _type: T;
   readable: ReadableStream<T>;
   writable: WritableStream<T>;
 
-  /** @deprecated use chunk*/
+  /** @deprecated use chunk */
   buffer(...args: Parameters<typeof chunks<T>>): sflow<T[]>;
 
   cacheSkip(...args: Parameters<typeof cacheSkips<T>>): sflow<T>;
@@ -359,20 +359,6 @@ type ToResponse<T> =
       }
     : {};
 
-// maybe:
-// subscribe (forEach+nils)
-// find (filter+limit)
-// distinct=uniq
-//
-
-// todo:
-// catch, retry
-//
-// string stream process
-// match
-// replace
-// join
-//
 export type sflowType<T extends sflow<any>> = T extends sflow<infer R>
   ? R
   : never;
@@ -391,9 +377,9 @@ export type sflow<T> = ReadableStream<T> &
 // <T, SRCS extends FlowSource<T>[]>(...streams: SRCS): ReadableStream<
 // SourcesType<SRCS>
 // >
-export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
+export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
   ...srcs: SRCS
-): sflow<SourcesType<SRCS>> => {
+): sflow<SourcesType<SRCS>> {
   type T = SourcesType<SRCS>;
   let r: ReadableStream<T> =
     srcs.length === 1
@@ -488,7 +474,7 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r)
         // @ts-ignore upstream accepts streams only
         .by((srcs: ReadableStream<FlowSource<T>>) =>
-          sf(srcs)
+          sflow(srcs)
             .toArray()
             .then((srcs: FlowSource<T>[]) => mergeStream(...srcs))
         )
@@ -653,13 +639,14 @@ export const sflow = <T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
         ),
         init
       ).json(),
-    blob: (init?: ResponseInit) => new Response(sf(r), init).blob(),
+    blob: (init?: ResponseInit) => new Response(sflow(r), init).blob(),
     arrayBuffer: (init?: ResponseInit) => new Response(r, init).arrayBuffer(),
     // as iterator
     // [Symbol.asyncDispose]: async () => await r.pipeTo(nils()),
     [Symbol.asyncIterator]: streamAsyncIterator<T>,
   });
-};
+}
+
 export const _tees: {
   <T>(fn: (s: sflow<T>) => void | any): TransformStream<T, T>;
   <T>(stream?: WritableStream<T>): TransformStream<T, T>;
@@ -719,4 +706,3 @@ export function _byLazy<T, R>(
   );
 }
 
-export { sf };
