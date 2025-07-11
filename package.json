@@ -21,37 +21,23 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./ts": {
-      "import": "./src/index.ts",
       "types": "./src/index.ts"
-    },
-    "./fromNodeStream": {
-      "import": "./dist/fromNodeStream.js",
-      "types": "./dist/fromNodeStream.d.ts"
-    },
-    "./fromNodeStream/ts": {
-      "import": "./src/fromNodeStream.ts",
-      "types": "./src/fromNodeStream.ts"
     }
   },
-  "module": "index.ts",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
   "files": [
-    "./src/*.ts",
+    "src/*.ts",
     "dist"
   ],
   "scripts": {
-    "dev": "bunx --bun tsc -w --noEmit --declaration false --emitDeclarationOnly false",
-    "build": "rm -rf dist && bun build:tsc && bun build:esm && bun build:node && bun build:umd",
+    "dev": "bunx --bun tsc -w",
+    "build": "rm -rf dist && bun build:esm && bun build:node && bun build:umd",
     "build:node": "bun build src/fromNodeStream.ts --target=node --outdir=dist",
     "build:esm": "bun build src/index.ts --outdir=dist --packages=external --sourcemap=external",
     "build:umd": "bun build src/index.ts --outfile=dist/index.umd.js && bunx rollup dist/index.umd.js --file=dist/index.umd.js --format=umd --name sflow",
-    "build:tsc": "tsc",
-    "prerelease": "bun run build && bun run test",
-    "release": "bunx standard-version && git push --follow-tags && npm publish",
-    "test": "bun test",
+    "test": "bun test --coverage && tsc",
     "vitest": "bunx vitest --globals",
     "prepare": "bunx husky"
   },
@@ -91,7 +77,6 @@
     "typescript": "^5.0.0"
   },
   "license": "MIT",
-  "main": "index.ts",
   "homepage": "https://github.com/snomiao/sflow#readme",
   "repository": {
     "type": "git",
