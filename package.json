@@ -88,5 +88,6 @@
   },
   "bugs": {
     "url": "https://github.com/snomiao/sflow/issues"
-  }
+  },
+  "sideEffects": false
 }
