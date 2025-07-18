@@ -1,6 +1,6 @@
-import { sleep } from "bun";
 import Keyv from "keyv";
 import { logs, maps, pageFlow } from "./index";
+import { sleep } from "./utils";
 
 it("caches stream", async () => {
   const pageData1 = [

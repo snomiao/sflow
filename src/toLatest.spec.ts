@@ -1,4 +1,4 @@
-// import { sleep } from "bun";
+// import { sleep } from "./utils";
 // import sflow from "./index";
 // it("works number", async () => {
 //   const { value, readable } = await sflow([1, 2, 3])

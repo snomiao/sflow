@@ -1,15 +1,15 @@
-import { sf } from ".";
+import { sflow } from "./sf";
 import { sfTemplate } from "./sfTemplate";
 
 it("works", async () => {
-  expect(await sfTemplate`hello ${sf("asdf")} zxcv`.text()).toBe(
+  expect(await sfTemplate`hello ${sflow("asdf")} zxcv`.text()).toBe(
     "hello asdf zxcv"
   );
 });
 
 it("multi", async () => {
   expect(
-    await sfTemplate`hello ${sf("asdf")} ${sf("asdf")} ${sf(
+    await sfTemplate`hello ${sflow("asdf")} ${sflow("asdf")} ${sflow(
       "asdf"
     )} zxcv`.text()
   ).toBe("hello asdf asdf asdf zxcv");
@@ -17,8 +17,8 @@ it("multi", async () => {
 
 it("nest", async () => {
   expect(
-    await sfTemplate`hello ${await sfTemplate`nested ${sf("stream1")} ${sf(
+    await sfTemplate`hello ${await sfTemplate`nested ${sflow("stream1")} ${sflow(
       "stream2"
-    )} ${sf("stream3")} zxcv`.text()} ${sf("asdf")} end`.text()
+    )} ${sflow("stream3")} zxcv`.text()} ${sflow("asdf")} end`.text()
   ).toBe("hello nested stream1 stream2 stream3 zxcv asdf end");
 });

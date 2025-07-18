@@ -1,12 +1,12 @@
-import { sleep } from "bun";
 import { confluences } from "./confluences";
-import { sf } from "./index";
+import { sflow } from "./sf";
+import { sleep } from "./utils";
 
 it("As stream kernel", async () => {
-  const flow1 = sf([1, 2, 3]);
-  const flow2 = sf([4, 5, 6]);
+  const flow1 = sflow([1, 2, 3]);
+  const flow2 = sflow([4, 5, 6]);
   expect(
-    await sf([flow1, flow2])
+    await sflow([flow1, flow2])
       .through((e) => e.pipeThrough(confluences()))
       .peek((e) => expect(typeof e === "number").toBeTruthy())
       .toArray(),
@@ -14,38 +14,38 @@ it("As stream kernel", async () => {
 });
 it("As pipeline kernel", async () => {
   expect(
-    await sf([sf([1, 2, 3]), sf([4, 5, 6])])
+    await sflow([sflow([1, 2, 3]), sflow([4, 5, 6])])
       .through(confluences())
       .toArray(),
   ).toEqual([1, 4, 2, 5, 3, 6]);
 });
 it("As pipeline", async () => {
   expect(
-    await sf([sf([1, 2, 3]), sf([4, 5, 6])])
+    await sflow([sflow([1, 2, 3]), sflow([4, 5, 6])])
       .confluence()
       .toArray(),
   ).toEqual([1, 4, 2, 5, 3, 6]);
 });
 it("breadth first search", async () => {
   expect(
-    await sf([sf([1, 2, 3]), sf([4, 5, 6]), sf([7, 8, 9])])
+    await sflow([sflow([1, 2, 3]), sflow([4, 5, 6]), sflow([7, 8, 9])])
       .confluence()
       .toArray(),
   ).toEqual([1, 4, 7, 2, 5, 8, 3, 6, 9]);
 });
 it("works for different length flow", async () => {
   expect(
-    await sf([sf([1]), sf([4, 5]), sf([7, 8, 9])])
+    await sflow([sflow([1]), sflow([4, 5]), sflow([7, 8, 9])])
       .confluence()
       .toArray(),
   ).toEqual([1, 4, 7, 5, 8, 9]);
 });
 it("drains correctly for different length flow", async () => {
   const f = [0, 1, 2, -1].map(() => jest.fn());
-  const c = sf([
-    sf([1]).onFlush(f[0]),
-    sf([4, 5]).onFlush(f[1]),
-    sf([7, 8, 9]).onFlush(f[2]),
+  const c = sflow([
+    sflow([1]).onFlush(f[0]),
+    sflow([4, 5]).onFlush(f[1]),
+    sflow([7, 8, 9]).onFlush(f[2]),
   ])
     .confluence()
     .onFlush(f[3]);
@@ -71,10 +71,10 @@ it("lazy read", async () => {
   const fn1 = jest.fn();
   const fn2 = jest.fn();
 
-  const flow = sf([
-    sf([1]).forEach(fn1),
-    sf([4, 5]).forEach(fn2),
-    sf([7, 8, 9]),
+  const flow = sflow([
+    sflow([1]).forEach(fn1),
+    sflow([4, 5]).forEach(fn2),
+    sflow([7, 8, 9]),
   ]);
   await sleep(10);
   expect(fn1).not.toHaveBeenCalled();

@@ -1,12 +1,12 @@
-import { sleep } from "bun";
 import Keyv from "keyv";
 import { cacheLists } from "./cacheLists";
 import { cacheTails } from "./cacheTails";
-import { forEachs, sf } from "./index";
+import sflow, { forEachs } from "./index";
+import { sleep } from "./utils";
 
 it("caches stream", async () => {
   const store = new Keyv<any>({ ttl: 10e3 });
-  const heavyFlow = () => sf([1, 2, 3, 4]);
+  const heavyFlow = () => sflow([1, 2, 3, 4]);
   const fn0 = jest.fn();
   const fn1 = jest.fn();
   const fn2 = jest.fn();
@@ -38,10 +38,10 @@ it("caches stream", async () => {
 
 it("caches stream tail", async () => {
   const store = new Keyv<any>({ ttl: 10e3 });
-  const heavyFlowHead1 = () => sf([3, 2, 1]);
-  const heavyFlowHead2 = () => sf([5, 4, 3, 2, 1]);
-  const heavyFlowHead3 = () => sf([5, 4, 3, 2, 1]);
-  const heavyFlowHead = () => sf([6]);
+  const heavyFlowHead1 = () => sflow([3, 2, 1]);
+  const heavyFlowHead2 = () => sflow([5, 4, 3, 2, 1]);
+  const heavyFlowHead3 = () => sflow([5, 4, 3, 2, 1]);
+  const heavyFlowHead = () => sflow([6]);
   const fn1 = jest.fn();
   const fn2 = jest.fn();
   const fn3 = jest.fn();

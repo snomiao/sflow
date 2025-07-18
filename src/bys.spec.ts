@@ -1,6 +1,6 @@
-import { sleep } from "bun";
 import { bys } from "./bys";
 import { sflow } from "./index";
+import { sleep } from "./utils";
 
 it("should return a transform stream when no argument is provided", async () => {
   const transform = bys();

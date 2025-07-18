@@ -1,5 +1,5 @@
-import { sleep } from "bun";
 import { reduceEmits } from "./reduceEmits";
+import { sleep } from "./utils";
 
 describe("reduceEmits", () => {
   test("should reduce and emit correctly for a simple case", async () => {

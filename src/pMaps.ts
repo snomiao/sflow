@@ -10,7 +10,6 @@ export const pMaps: {
     fn: (x: T, i: number) => Awaitable<R>,
     options?: asyncMapOptions,
   ): TransformStream<T, R>;
-  // <T, R>(fn: (x: T, i: number) => Awaitable<R>): TransformStream<T, R>;
 } = <T, R>(
   fn: (x: T, i: number) => Awaitable<R>,
   options: asyncMapOptions = {},

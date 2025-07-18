@@ -1,36 +1,17 @@
-import DIE from "phpdie";
+import { sf } from ".";
 
+/**
+ * Flattens an array of arrays into a stream of values.
+ * If the input is an empty array, it will throw an error.
+ * To avoid this error, you can add a `.filter(array => array.length)` stage before
+ * 
+ * @returns A TransformStream that flattens an array of arrays into a stream of values.
+ */
 export function flats<T>() {
-  const emptyError = new Error(
-    "Flatten for empty array [] in stream is not supported yet, To fix this error, you can add a .filter(array=>array.length) stage before flat",
-  );
-
-  return new TransformStream<T[], T>({
-    transform: async (a, ctrl) => {
-      a.length || DIE(emptyError);
-      a.map((e) => ctrl.enqueue(e));
-    },
-  });
-  // const t = new TransformStream<T, T>(
-  //   undefined,
-  //   { highWaterMark: 1 },
-  //   { highWaterMark: 0 }
-  // );
-  // const writer = t.writable.getWriter();
-  // const emptyError = new Error(
-  //   "Flatten for empty array [] in stream is not supported yet"
-  // );
-  // const writable = new WritableStream<T[]>(
-  //   {
-  //     write: async (chunks, ctrl) => {
-  //       chunks.length || DIE(emptyError);
-
-  //       for await (const chunk of chunks) await writer.write(chunk);
-  //     },
-  //     close: () => writer.close(),
-  //     abort: (reason) => writer.abort(reason),
-  //   },
-  //   { highWaterMark: 1 }
-  // );
-  // return { writable, readable: t.readable };
+  return sf.composers(sf.filters<T[]>(e => e.length))
+    .by(new TransformStream<T[], T>({
+      transform: async (a, ctrl) => {
+        a.map((e) => ctrl.enqueue(e));
+      },
+    }));
 }

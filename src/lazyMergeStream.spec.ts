@@ -1,7 +1,7 @@
 // To thoroughly test the `lazyMergeStream` function, we need to write comprehensive tests that check for its correct behavior. We need tests that verify the merging functionality, the lazy pulling behavior, and the proper termination and cancellation of the streams. For this, we can use a testing framework like Jest along with some helper functions to create readable streams.
 
-import { sleep } from "bun";
 import { lazyMergeStream } from "./lazyMergeStream";
+import { sleep } from "./utils";
 
 // Here is a detailed `test.ts` that demonstrates how to do this:
 

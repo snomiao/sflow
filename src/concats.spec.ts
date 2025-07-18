@@ -1,5 +1,5 @@
 import { concatStream } from "./concats";
-import { sf } from "./index";
+import { sflow } from "./sf";
 
 describe("concats", () => {
   const createStream = <T>(chunks: T[]): ReadableStream<T> => {
@@ -34,9 +34,9 @@ describe("concats", () => {
 
   it("should concatenate multiple streams in correctly order", async () => {
     const f = jest.fn();
-    const source1 = sf([1, 2, 3]).forEach((e) => f(e));
-    const source2 = sf([4, 5]).forEach((e) => f(e));
-    const source3 = sf([6, 7, 8, 9]).forEach((e) => f(e));
+    const source1 = sflow([1, 2, 3]).forEach((e) => f(e));
+    const source2 = sflow([4, 5]).forEach((e) => f(e));
+    const source3 = sflow([6, 7, 8, 9]).forEach((e) => f(e));
 
     const readable = concatStream([source1, source2, source3]);
     const reader = readable.getReader();
@@ -132,7 +132,7 @@ describe("concats", () => {
   it("should output the first stream before second stream starts", async () => {
     const promise = Promise.withResolvers();
     const source1 = createStream([1, 2, 3]);
-    const source2 = sf([4, 5]).forEach(async () => await promise.promise);
+    const source2 = sflow([4, 5]).forEach(async () => await promise.promise);
 
     const readable = concatStream([source1, source2]);
     const reader = readable.getReader();

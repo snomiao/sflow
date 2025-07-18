@@ -1,5 +1,5 @@
-import { sleep } from "bun";
 import { sflow } from "./index";
+import { sleep } from "./utils";
 
 /* wip */
 

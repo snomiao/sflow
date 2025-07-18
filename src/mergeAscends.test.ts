@@ -1,5 +1,5 @@
 import { range } from "rambda";
-import { forEachs, mergeAscends, mergeDescends, sf, sflow } from "./index";
+import { forEachs, mergeAscends, mergeDescends, sflow } from "./index";
 
 it("merge asc", async () => {
   const req1 = sflow([0, 1, 2]);
@@ -21,9 +21,9 @@ it("drains correctly for different length flow", async () => {
   const c = mergeAscends(
     (x) => x,
     [
-      sf([1]).onStart(s[0]).onFlush(f[0]),
-      sf([4, 5]).onStart(s[0]).onFlush(f[1]),
-      sf([7, 8, 9]).onStart(s[0]).onFlush(f[2]),
+      sflow([1]).onStart(s[0]).onFlush(f[0]),
+      sflow([4, 5]).onStart(s[0]).onFlush(f[1]),
+      sflow([7, 8, 9]).onStart(s[0]).onFlush(f[2]),
     ],
   ).onFlush(end);
 

@@ -1,6 +1,6 @@
-import { sleep } from "bun";
-import { sf } from ".";
 import { CacheHitError } from "./CacheHitError";
+import { sflow } from "./sflow";
+import { sleep } from "./utils";
 
 it("handles cache hit error", async () => {
   const ws = new WritableStream(
@@ -74,7 +74,7 @@ it("handles cache hit error with write pipeTo", async () => {
     write: (_, ctrl) =>
       ctrl.error(new CacheHitError("Cache hit when stream write")),
   });
-  await sf([1, 2, 3, 4]).pipeTo(ws).catch(CacheHitError.nil);
+  await sflow([1, 2, 3, 4]).pipeTo(ws).catch(CacheHitError.nil);
   console.log("done");
 });
 
