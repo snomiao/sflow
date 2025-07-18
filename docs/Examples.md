@@ -47,7 +47,7 @@ Debounce and throttle a stream of events.
 
 ```typescript
 import { sflow } from "sflow";
-import { sleep } from "bun";
+import { sleep } from "./utils";
 
 async function example3() {
   const result = await sflow([1, 2, 3, 4, 5])
@@ -147,7 +147,7 @@ Use `pMap` for processing stream items concurrently.
 
 ```typescript
 import { sflow } from "sflow";
-import { sleep } from "bun";
+import { sleep } from "./utils";
 
 async function example7() {
   const result = await sflow([1, 2, 3, 4])
@@ -385,7 +385,7 @@ Hold sequential waiting on async operation in stream.
 
 ```typescript
 import { sflow } from "sflow";
-import { sleep } from "bun";
+import { sleep } from "./utils";
 
 async function example16() {
   const data = [1, 2, 3, 4];
@@ -463,7 +463,7 @@ Buffer stream items within a time interval.
 ```typescript
 import { sflow } from "sflow";
 import { chunkIntervals } from "sflow/chunkIntervals";
-import { sleep } from "bun";
+import { sleep } from "./utils";
 
 async function example19() {
   const result = await sflow([1, 2, 3, 4])
