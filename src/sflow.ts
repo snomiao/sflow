@@ -19,6 +19,7 @@ import { confluences } from "./confluences";
 import { convolves } from "./convolves";
 import { debounces } from "./debounces";
 import { filters } from "./filters";
+import { finds } from "./finds";
 import { flatMaps } from "./flatMaps";
 import { flats } from "./flats";
 import type { FlowSource } from "./FlowSource";
@@ -126,6 +127,8 @@ export interface BaseFlow<T> {
   filter(fn: (x: T, i: number) => Awaitable<any>): sflow<T>; // fn must fisrt
   filter(): sflow<NonNullable<T>>;
 
+  find(fn: (x: T, i: number) => Awaitable<any>): sflow<T>; // fn must fisrt
+
   flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): sflow<R>;
 
   /** @deprecated to join another stream, use merge instead  */
@@ -212,6 +215,9 @@ export interface BaseFlow<T> {
   /** Get first item from stream, and terminate stream */
   toFirst: () => Promise<T>;
 
+  /** Get first item from stream that matches predicate, and terminate stream */
+  toFirstMatch: (predicate: (value: T, index: number) => Awaitable<any>) => Promise<T | undefined>;
+
   /** Get one item from stream
    * throws if more than 1 item is emitted
    * return undefined if no item returned
@@ -241,123 +247,123 @@ export interface BaseFlow<T> {
 
 type ArrayFlow<T> = T extends ReadonlyArray<any>
   ? {
-      // inverse of chunk
-      flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
-    }
+    // inverse of chunk
+    flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
+  }
   : {};
 
 type DictionaryFlow<T> = T extends Record<string, any>
   ? {
-      unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
-        key: K
-      ): sflow<Unwinded<T, K>>;
-      mapAddField: <K extends string, R>(
-        ...args: Parameters<typeof mapAddFields<K, T, R>>
-      ) => sflow<
-        Omit<T, K> & {
-          [key in K]: R;
-        }
-      >;
-    }
+    unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
+      key: K
+    ): sflow<Unwinded<T, K>>;
+    mapAddField: <K extends string, R>(
+      ...args: Parameters<typeof mapAddFields<K, T, R>>
+    ) => sflow<
+      Omit<T, K> & {
+        [key in K]: R;
+      }
+    >;
+  }
   : {};
 
 type StreamsFlow<T> = T extends ReadableStream<infer R>
   ? {
-      // merge multiupstreams
-      /** @deprecated use confluencesByBreth */
-      confluence(...args: Parameters<typeof confluences<R>>): sflow<R>;
-      confluenceByZip(): sflow<R>;
-      confluenceByConcat(): sflow<R>;
-      confluenceByParallel(): sflow<R>;
-      confluenceByAscend(ordFn: (x: R) => Ord): sflow<R>;
-      confluenceByDescend(ordFn: (x: R) => Ord): sflow<R>;
-      // concat()
-    }
+    // merge multiupstreams
+    /** @deprecated use confluencesByBreth */
+    confluence(...args: Parameters<typeof confluences<R>>): sflow<R>;
+    confluenceByZip(): sflow<R>;
+    confluenceByConcat(): sflow<R>;
+    confluenceByParallel(): sflow<R>;
+    confluenceByAscend(ordFn: (x: R) => Ord): sflow<R>;
+    confluenceByDescend(ordFn: (x: R) => Ord): sflow<R>;
+    // concat()
+  }
   : {};
 
 type TextFlow<T> = T extends string
   ? {
-      join: (sep: string) => sflow<string>;
-      lines: (
-        ...args: Parameters<typeof lines>
-      ) => sflow<
-        ReturnType<typeof lines> extends TransformStream<any, infer R>
-          ? R
-          : never
-      >;
-      match: (
-        ...args: Parameters<typeof matchs>
-      ) => sflow<
-        ReturnType<typeof matchs> extends TransformStream<any, infer R>
-          ? R
-          : never
-      >;
-      matchAll: (
-        ...args: Parameters<typeof matchAlls>
-      ) => sflow<
-        ReturnType<typeof matchAlls> extends TransformStream<any, infer R>
-          ? R
-          : never
-      >;
-      replace: (
-        ...args: Parameters<typeof replaces>
-      ) => sflow<
-        ReturnType<typeof replaces> extends TransformStream<any, infer R>
-          ? R
-          : never
-      >;
-      replaceAll: (
-        ...args: Parameters<typeof replaceAlls>
-      ) => sflow<
-        ReturnType<typeof replaceAlls> extends TransformStream<any, infer R>
-          ? R
-          : never
-      >;
-    }
+    join: (sep: string) => sflow<string>;
+    lines: (
+      ...args: Parameters<typeof lines>
+    ) => sflow<
+      ReturnType<typeof lines> extends TransformStream<any, infer R>
+      ? R
+      : never
+    >;
+    match: (
+      ...args: Parameters<typeof matchs>
+    ) => sflow<
+      ReturnType<typeof matchs> extends TransformStream<any, infer R>
+      ? R
+      : never
+    >;
+    matchAll: (
+      ...args: Parameters<typeof matchAlls>
+    ) => sflow<
+      ReturnType<typeof matchAlls> extends TransformStream<any, infer R>
+      ? R
+      : never
+    >;
+    replace: (
+      ...args: Parameters<typeof replaces>
+    ) => sflow<
+      ReturnType<typeof replaces> extends TransformStream<any, infer R>
+      ? R
+      : never
+    >;
+    replaceAll: (
+      ...args: Parameters<typeof replaceAlls>
+    ) => sflow<
+      ReturnType<typeof replaceAlls> extends TransformStream<any, infer R>
+      ? R
+      : never
+    >;
+  }
   : {};
 
 type XsvEncodeFlow<T> = T extends Record<string, any>
   ? {
-      csvFormat: (
-        ...args: Parameters<typeof csvFormats>
-      ) => sflow<
-        ReturnType<typeof csvFormats> extends TransformStream<any, infer R>
-          ? R
-          : never
-      >;
-      tsvFormat: (
-        ...args: Parameters<typeof tsvFormats>
-      ) => sflow<
-        ReturnType<typeof tsvFormats> extends TransformStream<any, infer R>
-          ? R
-          : never
-      >;
-    }
+    csvFormat: (
+      ...args: Parameters<typeof csvFormats>
+    ) => sflow<
+      ReturnType<typeof csvFormats> extends TransformStream<any, infer R>
+      ? R
+      : never
+    >;
+    tsvFormat: (
+      ...args: Parameters<typeof tsvFormats>
+    ) => sflow<
+      ReturnType<typeof tsvFormats> extends TransformStream<any, infer R>
+      ? R
+      : never
+    >;
+  }
   : {};
 type XsvDecodeFlow<T> = T extends string
   ? {
-      csvParse<S extends string>(
-        header: S
-      ): sflow<Record<Split<S, ",">[number], any>>;
-      csvParse<S extends string[]>(header: S): sflow<Record<S[number], any>>;
-      tsvParse<S extends string>(
-        header: S
-      ): sflow<Record<Split<S, ",">[number], any>>;
-      tsvParse<S extends string[]>(header: S): sflow<Record<S[number], any>>;
-    }
+    csvParse<S extends string>(
+      header: S
+    ): sflow<Record<Split<S, ",">[number], any>>;
+    csvParse<S extends string[]>(header: S): sflow<Record<S[number], any>>;
+    tsvParse<S extends string>(
+      header: S
+    ): sflow<Record<Split<S, ",">[number], any>>;
+    tsvParse<S extends string[]>(header: S): sflow<Record<S[number], any>>;
+  }
   : {};
 
 type ToResponse<T> =
   // toResponse
   T extends string | Uint8Array
-    ? {
-        toResponse: () => Response;
-        text: () => Promise<string>;
-        json: () => Promise<any>;
-        blob: () => Promise<Blob>;
-        arrayBuffer: () => Promise<ArrayBuffer>;
-      }
-    : {};
+  ? {
+    toResponse: () => Response;
+    text: () => Promise<string>;
+    json: () => Promise<any>;
+    blob: () => Promise<Blob>;
+    arrayBuffer: () => Promise<ArrayBuffer>;
+  }
+  : {};
 
 export type sflowType<T extends sflow<any>> = T extends sflow<infer R>
   ? R
@@ -432,6 +438,8 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r.pipeThrough(debounces(...args))),
     filter: (...args: Parameters<typeof filters>) =>
       sflow(r.pipeThrough(filters(...args))),
+    find: (...args: Parameters<typeof finds>) =>
+      sflow(r.pipeThrough(finds(...args))),
     flatMap: (...args: Parameters<typeof flatMaps>) =>
       sflow(r.pipeThrough(flatMaps(...args))),
     flat: (
@@ -599,6 +607,8 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     //     .map((_, i) => i + 1)
     //     .toLast()) ?? 0, // TODO: optimize memory usage
     toFirst: () => wseToPromise(sflow(r).limit(1, { terminate: true })),
+    toFirstMatch: (predicate: (value: T, index: number) => Awaitable<any>) =>
+      wseToPromise(sflow(r).find(predicate)),
     toLast: () => wseToPromise(sflow(r).tail(1)),
     toExactlyOne: async () => {
       const a = await wseToArray(r);

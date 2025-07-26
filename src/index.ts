@@ -17,6 +17,7 @@ export { confluences } from "./confluences";
 export { debounces } from "./debounces";
 export { distributeBys as distributesBy } from "./distributeBys";
 export { filters } from "./filters";
+export { finds } from "./finds";
 export { flatMaps } from "./flatMaps";
 export { flats } from "./flats";
 export type { FlowSource } from "./FlowSource";
