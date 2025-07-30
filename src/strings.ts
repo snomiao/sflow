@@ -1,5 +1,5 @@
 import replaceAsync from "string-replace-async";
-import { Awaitable } from "./Awaitable";
+import type { Awaitable } from "./Awaitable";
 import { maps } from "./maps";
 
 export const matchs: {

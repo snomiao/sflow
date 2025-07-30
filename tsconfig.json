@@ -4,8 +4,8 @@
     "lib": [
       "ESNext",
       "DOM",
-      "DOM.Iterable",
-      "DOM.AsyncIterable"
+      // "DOM.Iterable",
+      // "DOM.AsyncIterable"
     ],
     "target": "ESNext",
     "module": "ESNext",
@@ -19,6 +19,7 @@
     "downlevelIteration": true,
     "noEmit": true,
     "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     // Best practices
     "strict": true,
     "skipLibCheck": true,

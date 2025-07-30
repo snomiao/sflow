@@ -18,7 +18,7 @@ interface MergeBy {
  * @param ordFn a function to get the order of input
  * @param srcs a list of input stream
  * @returns a new stream that merge all input stream by ascend order
- * @deprecated use {@link mergeStreamsByAscend}
+ * @deprecated use {@link mergeStreamsByAscend}, this will be removed in next major version
  */
 export const mergeAscends: MergeBy = <T>(
   ordFn: (input: T) => Ord,
