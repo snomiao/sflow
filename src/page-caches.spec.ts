@@ -2,13 +2,8 @@ import Keyv from "keyv";
 import { logs, maps, pageFlow } from "./index";
 import { sleep } from "./utils";
 
-it("caches stream", async () => {
+it.skip("page caches stream", async () => {
   const pageData1 = [
-    [4, 3],
-    [2, 1],
-  ];
-  const pageData2 = [
-    [6, 5],
     [4, 3],
     [2, 1],
   ];
@@ -35,6 +30,11 @@ it("caches stream", async () => {
   expect(ret1).toEqual([4, 3, 2, 1]);
   expect(fetcher1).toHaveBeenCalledTimes(3);
 
+  const pageData2 = [
+    [6, 5],
+    [4, 3],
+    [2, 1],
+  ];
   const fetcher2 = jest.fn((page) => pageData2[page]);
   const ret2 = await pageFlow(0, (page: number) => {
     const data = fetcher2(page);

@@ -6,7 +6,7 @@ describe("finds", () => {
     const result = await sflow([1, 2, 3, 4, 5])
       .find((x) => x > 2)
       .toArray();
-    
+
     expect(result).toEqual([3]);
   });
 
@@ -17,7 +17,7 @@ describe("finds", () => {
         return x % 2 === 0;
       })
       .toArray();
-    
+
     expect(result).toEqual([2]);
   });
 
@@ -25,7 +25,7 @@ describe("finds", () => {
     const result = await sflow([1, 3, 5])
       .find((x) => x % 2 === 0)
       .toArray();
-    
+
     expect(result).toEqual([]);
   });
 
@@ -37,7 +37,7 @@ describe("finds", () => {
         return x === 'c';
       })
       .toArray();
-    
+
     expect(result).toEqual(['c']);
     expect(indices).toEqual([0, 1, 2]); // Should stop after finding 'c' at index 2
   });
@@ -46,7 +46,7 @@ describe("finds", () => {
     const result = await sflow(['apple', 'banana', 'cherry', 'date'])
       .find((fruit) => fruit.startsWith('c'))
       .toArray();
-    
+
     expect(result).toEqual(['cherry']);
   });
 
@@ -56,11 +56,11 @@ describe("finds", () => {
       { id: 2, name: 'Bob', age: 25 },
       { id: 3, name: 'Charlie', age: 35 }
     ];
-    
+
     const result = await sflow(users)
       .find((user) => user.age > 30)
       .toArray();
-    
+
     expect(result).toEqual([{ id: 3, name: 'Charlie', age: 35 }]);
   });
 
@@ -73,7 +73,7 @@ describe("finds", () => {
       })
       .find((x) => x === 3)
       .toArray();
-    
+
     expect(result).toEqual([3]);
     expect(processedCount).toBe(3); // Should only process up to the found element
   });
@@ -81,14 +81,14 @@ describe("finds", () => {
   it("toFirstMatch should return first matching item", async () => {
     const result = await sflow([1, 2, 3, 4, 5])
       .toFirstMatch((x) => x > 2);
-    
+
     expect(result).toBe(3);
   });
 
   it("toFirstMatch should return undefined if no match found", async () => {
     const result = await sflow([1, 3, 5])
       .toFirstMatch((x) => x % 2 === 0);
-    
+
     expect(result).toBeUndefined();
   });
 
@@ -98,7 +98,7 @@ describe("finds", () => {
         await new Promise(resolve => setTimeout(resolve, 1));
         return fruit.startsWith('c');
       });
-    
+
     expect(result).toBe('cherry');
   });
 });

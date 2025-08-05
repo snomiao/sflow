@@ -9,7 +9,6 @@ it("Infinity concurrent", async () => {
       runOrder.push(e);
       await sleep(e * 20);
       finishOrder.push(e);
-      console.log(e, i);
       return e;
     })
     .toArray();

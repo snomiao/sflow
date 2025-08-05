@@ -3,6 +3,7 @@ import { forEachs } from "./forEachs";
 import { mergeDescends } from "./mergeAscends";
 import { mergeStreamsByAscend } from "./mergeStreamsBy";
 import { sflow } from "./sflow";
+import { sleep } from "./utils";
 
 it("merge asc", async () => {
   const req1 = sflow([0, 1, 2]);
@@ -18,35 +19,42 @@ it("merge asc", async () => {
   ).toEqual(ret);
 });
 
-it.skip("drains correctly for different length flow", async () => {
+it("drains correctly for different length flow", async () => {
   const s = [0, 1, 2].map(() => jest.fn());
   const f = [0, 1, 2].map(() => jest.fn());
   const end = jest.fn();
-  const c = mergeStreamsByAscend(
+  const c = sflow(mergeStreamsByAscend(
     (x) => x,
     [
       sflow([1]).onStart(s[0]).onFlush(f[0]),
-      sflow([4, 5]).onStart(s[0]).onFlush(f[1]),
-      sflow([7, 8, 9]).onStart(s[0]).onFlush(f[2]),
+      sflow([4, 5]).onStart(s[1]).onFlush(f[1]),
+      sflow([7, 8, 9]).onStart(s[2]).onFlush(f[2]),
     ],
-  ).onFlush(end);
+  )).onFlush(end);
+
+  // all streams started
+  expect(s[0]).toHaveBeenCalled();
+  expect(s[1]).toHaveBeenCalled();
+  expect(s[2]).toHaveBeenCalled();
 
   const r = c.getReader();
 
+  // all streams not flushed
   expect(f[0]).not.toHaveBeenCalled();
   expect(f[1]).not.toHaveBeenCalled();
+  expect(f[2]).not.toHaveBeenCalled();
+
   expect((await r.read()).value).toBe(1); // pulled from [0|1|2] got [1,4,7]  emit 1, f0 drain
   expect((await r.read()).value).toBe(4); // pulled from [0| | ] got [_,4,7]  emit 4,
-  expect(f[0]).toHaveBeenCalled();
-  expect(f[1]).toHaveBeenCalled();
+  expect(f[0]).toHaveBeenCalled(); // stream [1] flushed
   expect((await r.read()).value).toBe(5); // pulled from [ |1| ] got [_,5,7]  emit 5
-  expect(f[2]).not.toHaveBeenCalled();
   expect((await r.read()).value).toBe(7); // pulled from [ | |2] got [_,_,7]  emit 7
-  expect(f[2]).toHaveBeenCalled();
+  expect(f[1]).toHaveBeenCalled(); // stream [4,5] flushed
   expect((await r.read()).value).toBe(8); // pulled from [ | |2] got [_,_,8]  emit 8
   expect((await r.read()).value).toBe(9); // pulled from [ | |2] got [_,_,9]  emit 9
   expect(end).not.toHaveBeenCalled();
-  expect((await r.read()).value).toBe(undefined); // pulled from [ | |2] got [_,_,_]  drain
+  expect((await r.read()).done).toBe(true); // pulled from [ | |2] got [_,_,_]  drain
+  expect(f[2]).toHaveBeenCalled(); // stream [7,8,9] flushed
   expect(end).toHaveBeenCalled();
 });
 
@@ -134,7 +142,7 @@ it("merge a super long asc", async () => {
   ).toEqual(ret); // cost about 60ms in my machine
 });
 
-it("not throws asc", async () => {
+it("works asc", async () => {
   const req1 = sflow([1, 2, 3]);
   const req2 = sflow([0, 4, 5]);
   expect(
@@ -147,9 +155,9 @@ it("not throws asc", async () => {
 it("throws not asc", async () => {
   const req1 = sflow([1, 2, 0]); // not asc
   const req2 = sflow([0, 4, 5]);
-  expect(() =>
+  await expect(
     sflow(mergeStreamsByAscend((x) => x, [req1, req2]))
       // .peek(console.log)
       .toArray(),
-  ).toThrow(/ascending/);
+  ).rejects.toThrow('ascending');
 });

@@ -45,6 +45,12 @@ it("works with [] without filter", async () => {
     .log()
     .toArray()
     .then((a) => expect(a).toEqual([1, 2, 3, 4, 5, 6]));
+
+  await sflow([[1, 2], [3, 4], [], [5, 6]])
+    .flat()
+    .log()
+    .toArray()
+    .then((a) => expect(a).toEqual([1, 2, 3, 4, 5, 6]));
 });
 
 // const lazyStream = (fn: AnyFunction, i = 0) =>

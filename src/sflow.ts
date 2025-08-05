@@ -56,6 +56,7 @@ import type { Unwinded } from "./Unwinded";
 import { unwinds } from "./unwinds";
 import { wseToArray, wseToPromise } from "./wse";
 import { csvFormats, csvParses, tsvFormats, tsvParses } from "./xsvStreams";
+import { toLatests } from "./toLatest";
 
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
@@ -238,7 +239,7 @@ export interface BaseFlow<T> {
    */
   toAtLeastOne: (options?: { required?: boolean }) => Promise<T>;
   /** Returns a promise that always give you latest value of the stream */
-  // toLatest: () => Promise<{ value: T; readable: sflow<T> }>;
+  toLatest: () => ReturnType<typeof toLatests<T>>;
 
   /** Get last item from stream, ignore others */
   toLast: () => Promise<T>;
@@ -444,7 +445,7 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r.pipeThrough(flatMaps(...args))),
     flat: (
       ...args: Parameters<typeof flats> // @ts-expect-error array only
-    ) => sflow(r).byLazy(flats(...args)),
+    ) => sflow(r).by(flats(...args)),
     join: (...args: Parameters<typeof riffles>) =>
       sflow(r.pipeThrough(riffles(...args))),
     match: (
@@ -626,6 +627,7 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       if (a.length < 1) DIE(`Expect at least 1 Item, but got ${a.length}`);
       return a[0];
     },
+    toLatest: () => toLatests<T>(sflow(r)),
     /** call console.log on every item */
     toLog: (...args: Parameters<typeof logs<T>>) =>
       sflow(r.pipeThrough(logs(...args))).done(),
@@ -681,7 +683,11 @@ export const _throughs: {
   const { writable, readable } = new TransformStream();
   return { writable, readable: sflow(fn(sflow(readable))) };
 };
-
+/**
+ * byLazy is a lazy version of by, it only pull upstream when downstream pull.
+ * 
+ * Warning: does not work with empty stream yet.
+ */
 export function _byLazy<T, R>(
   r: ReadableStream<T>,
   t: TransformStream<T, R>

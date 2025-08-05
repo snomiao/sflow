@@ -61,6 +61,7 @@ export function mergeStreamsByAscend<T>(
       mergeStreamsByAscend(ordFn, sources)) as any;
   let lastEmit: { value: T } | null = null;
   return mergeStreamsBy<T>(async (slots, ctrl) => {
+    // 
     const cands = slots.filter((e) => e?.done === false).map((e) => e!.value!);
     if (!cands.length) {
       ctrl.close();
@@ -76,19 +77,17 @@ export function mergeStreamsByAscend<T>(
       lastEmit.value !== sortBy(ordFn, [lastEmit.value, peak])[0] &&
       ordFn(lastEmit.value) !== ordFn(peak)
     )
-      DIE(
-        new Error(
-          "MergeStreamError: one of sources is not ordered by ascending",
-          {
-            cause: {
-              prevOrd: ordFn(lastEmit.value),
-              currOrd: ordFn(peak),
-              prev: lastEmit.value,
-              curr: peak,
-            },
+      throw new Error(
+        "MergeStreamError: one of sources is not ordered by ascending",
+        {
+          cause: {
+            prevOrd: ordFn(lastEmit.value),
+            currOrd: ordFn(peak),
+            prev: lastEmit.value,
+            curr: peak,
           },
-        ),
-      );
+        },
+      )
     lastEmit = { value: peak };
 
     ctrl.enqueue(peak);

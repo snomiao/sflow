@@ -1,48 +1,65 @@
-// import { sleep } from "./utils";
-// import sflow from "./index";
-// it("works number", async () => {
-//   const { value, readable } = await sflow([1, 2, 3])
-//     .forEach(async (e) => {
-//       await sleep(10);
-//     })
-//     .toLatest();
-//   readable.done();
-//   // wait for first emit
+import { sleep } from "./utils";
+import sflow from "./index";
+import { toLatests } from "./toLatest";
 
-//   await sleep(5);
-//   expect(await value).toEqual(1);
-//   // expect(await obj).toEqual(false);
+it("Get the latest value", async () => {
+    const ret = toLatests(sflow([1, 2, 3])
+        .forEach(async (e) => {
+            await sleep(10);
+        }))
 
-//   await sleep(10);
-//   expect(await value).toEqual(2);
-//   // expect(await obj).toEqual(false);
+    // wait for first emit
+    expect(await ret.latest).toEqual(1);
+    await sleep(100)
+    expect(await ret.latest).toEqual(3);
+});
 
-//   await sleep(10);
-//   expect(await value).toEqual(3);
-//   // expect(await obj).toEqual(true);
-// });
+it("works number", async () => {
+    const ret = toLatests(sflow([1, 2, 3])
+        .forEach(async (e) => {
+            await sleep(10);
+        }))
 
-// it("works obj", async () => {
-//   const { value, readable } = await sflow([
-//     { a: 1 },
-//     { a: { b: { c: 2 } } },
-//     { a: 3 },
-//   ])
-//     .forEach(async () => {
-//       await sleep(10);
-//     })
-//     .toLatest();
-//   readable.done();
-//   // wait for first emit
+    // wait for first emit
+    expect(await ret.latest).toEqual(1);
 
-//   await sleep(5);
-//   expect(value).toEqual({ a: 1 });
+    expect(await ret.next).toEqual(2);
+    expect(await ret.latest).toEqual(2);
 
-//   await sleep(10);
-//   // @ts-ignore
-//   expect(value.a.b.c).toEqual(2);
-//   expect(value).toEqual({ a: { b: { c: 2 } } });
+    expect(await ret.next).toEqual(3);
+    expect(await ret.latest).toEqual(3);
 
-//   await sleep(10);
-//   expect(value).toEqual({ a: 3 });
-// });
+    expect(await ret.next).toEqual(undefined);
+
+    expect(await ret.latest).toEqual(3);
+
+    expect(await ret.next).toEqual(undefined);
+});
+
+it("works obj", async () => {
+    const ret = toLatests(sflow([
+        { b: 1 },
+        { a: { b: { c: 2 } } },
+        { c: 3 },
+    ])
+        .forEach(async () => {
+            await sleep(10);
+        }))
+
+    // wait for first emit
+    expect(await ret.latest).toEqual({ b: 1 });
+
+    // @ts-ignore
+    expect(await ret.next).toEqual({ a: { b: { c: 2 } } });
+    expect(await ret.latest).toEqual({ a: { b: { c: 2 } } });
+
+    expect(await ret.next).toEqual({ c: 3 });
+    expect(await ret.latest).toEqual({ c: 3 });
+
+    expect(await ret.next).toEqual(undefined);
+
+    expect(await ret.next).toEqual(undefined);
+
+    expect(await ret.latest).toEqual({ c: 3 });
+});
+

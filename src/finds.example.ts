@@ -34,7 +34,7 @@ async function example4() {
     { id: 2, name: 'Bob', age: 30 },
     { id: 3, name: 'Charlie', age: 35 }
   ];
-  
+
   const result = await sflow(users)
     .find(async user => {
       // Simulate async check (e.g., database lookup)
@@ -52,7 +52,7 @@ async function example5() {
     .find(x => x % 2 === 0)
     .toArray();
   console.log("Result:", result); // []
-  
+
   const resultFirstMatch = await sflow([1, 3, 5, 7])
     .toFirstMatch(x => x % 2 === 0);
   console.log("toFirstMatch result:", resultFirstMatch); // undefined

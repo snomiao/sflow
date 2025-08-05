@@ -33,7 +33,6 @@ it.skip("passive", () => {
         },
         write: async (c, ctrl) => {
           await sleep(10);
-          console.log(c);
         },
       },
       { highWaterMark: 2 },
