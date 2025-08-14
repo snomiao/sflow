@@ -4,6 +4,8 @@ sflow is a powerful and highly-extensible library designed for processing and ma
 
 ONLINE DEMO avaliable here! - [sflow online Examples and Use Cases]( https://sflow-examples.vercel.app/ )
 
+📚 **Documentation**: [snomiao/sflow | DeepWiki]( https://deepwiki.com/snomiao/sflow )
+
 ## Features
 
 - **Chunking and buffering**: Easily divide your stream into chunks based on different criteria such as count, intervals, custom conditions, etc.
