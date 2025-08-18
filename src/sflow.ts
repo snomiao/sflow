@@ -3,7 +3,6 @@ import PolyfillTextEncoderStream from "polyfill-text-encoder-stream";
 import type { Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
 import type { AsyncOrSync } from "ts-essentials";
-import type { Split } from "ts-toolbelt/out/String/Split";
 import { asyncMaps } from "./asyncMaps";
 import type { Awaitable } from "./Awaitable";
 import { cacheLists } from "./cacheLists";
@@ -55,7 +54,6 @@ import { uniqBys, uniqs } from "./uniqs";
 import type { Unwinded } from "./Unwinded";
 import { unwinds } from "./unwinds";
 import { wseToArray, wseToPromise } from "./wse";
-import { csvFormats, csvParses, tsvFormats, tsvParses } from "./xsvStreams";
 import { toLatests } from "./toLatest";
 
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
@@ -323,37 +321,6 @@ type TextFlow<T> = T extends string
   }
   : {};
 
-type XsvEncodeFlow<T> = T extends Record<string, any>
-  ? {
-    csvFormat: (
-      ...args: Parameters<typeof csvFormats>
-    ) => sflow<
-      ReturnType<typeof csvFormats> extends TransformStream<any, infer R>
-      ? R
-      : never
-    >;
-    tsvFormat: (
-      ...args: Parameters<typeof tsvFormats>
-    ) => sflow<
-      ReturnType<typeof tsvFormats> extends TransformStream<any, infer R>
-      ? R
-      : never
-    >;
-  }
-  : {};
-type XsvDecodeFlow<T> = T extends string
-  ? {
-    csvParse<S extends string>(
-      header: S
-    ): sflow<Record<Split<S, ",">[number], any>>;
-    csvParse<S extends string[]>(header: S): sflow<Record<S[number], any>>;
-    tsvParse<S extends string>(
-      header: S
-    ): sflow<Record<Split<S, ",">[number], any>>;
-    tsvParse<S extends string[]>(header: S): sflow<Record<S[number], any>>;
-  }
-  : {};
-
 type ToResponse<T> =
   // toResponse
   T extends string | Uint8Array
@@ -376,8 +343,6 @@ export type sflow<T> = ReadableStream<T> &
   DictionaryFlow<T> &
   StreamsFlow<T> &
   TextFlow<T> &
-  XsvEncodeFlow<T> &
-  XsvDecodeFlow<T> &
   ToResponse<T>;
 
 /** stream flow */
@@ -550,18 +515,6 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r.pipeThrough(throttles(...args))),
 
     // line based data stream
-    csvFormat: (
-      ...args: Parameters<typeof csvFormats> // @ts-expect-error xsv
-    ) => sflow(r.pipeThrough(csvFormats(...args))),
-    tsvFormat: (
-      ...args: Parameters<typeof tsvFormats> // @ts-expect-error xsv
-    ) => sflow(r.pipeThrough(tsvFormats(...args))),
-    csvParse: (
-      ...args: Parameters<typeof csvParses> // @ts-expect-error xsv
-    ) => sflow(r.pipeThrough(csvParses(...args))),
-    tsvParse: (
-      ...args: Parameters<typeof tsvParses> // @ts-expect-error xsv
-    ) => sflow(r.pipeThrough(tsvParses(...args))),
 
     // prevents
     /** prevent upstream abort, ignore upstream errors   */

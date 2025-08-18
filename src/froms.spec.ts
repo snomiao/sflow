@@ -1,5 +1,5 @@
 import { createReadStream } from "fs";
-import { fromReadable } from "./fromNodeStream";
+import { fromReadable } from "./lib/from-node-stream";
 import { sflow } from "./sflow";
 
 it("froms", async () => {

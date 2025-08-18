@@ -1,5 +1,5 @@
-import { fromReadable, fromWritable } from "./fromNodeStream";
-import { sflow } from "./sflow";
+import { fromReadable, fromWritable } from ".";
+import { sflow } from "../../sflow";
 
 process.stdin.setRawMode(true);
 

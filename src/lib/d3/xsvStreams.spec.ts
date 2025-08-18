@@ -1,6 +1,6 @@
-import { mergeAscends } from "./mergeAscends";
-import { rangeFlow } from "./rangeStream";
-import { sflow } from "./sflow";
+import { mergeAscends } from "../../mergeAscends";
+import { rangeFlow } from "../../rangeStream";
+import { sflow } from "../../sflow";
 import { csvParses, tsvFormats } from "./xsvStreams";
 it("reads", async () => {
   expect(await controlFlow().log().toCount()).toEqual(5);

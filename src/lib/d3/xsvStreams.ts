@@ -1,9 +1,9 @@
 import { csvFormatBody, csvParse, tsvFormatBody, tsvParse } from "d3";
 import type { Split } from "ts-toolbelt/out/String/Split";
-import { lines } from "./lines";
-import { maps } from "./maps";
-import { skips } from "./skips";
-import { throughs } from "./throughs";
+import { lines } from "../../lines";
+import { maps } from "../../maps";
+import { skips } from "../../skips";
+import { throughs } from "../../throughs";
 
 export function csvFormats<S extends string>(
   header: S,

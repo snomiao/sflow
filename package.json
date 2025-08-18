@@ -24,8 +24,16 @@
       "types": "./src/index.ts"
     },
     "./fromNodeStream": {
-      "import": "./dist/fromNodeStream.js",
-      "types": "./src/fromNodeStream.ts"
+      "import": "./dist/lib/from-node-stream.js",
+      "types": "./src/lib/from-node-stream.ts"
+    },
+    "./lib/from-node-stream": {
+      "import": "./dist/lib/from-node-stream/index.js",
+      "types": "./src/lib/from-node-stream/index.ts"
+    },
+    "./lib/d3": {
+      "import": "./dist/lib/d3/index.js",
+      "types": "./src/lib/d3/index.ts"
     }
   },
   "main": "./dist/index.js",
@@ -37,8 +45,9 @@
   ],
   "scripts": {
     "dev": "bunx --bun tsc -w",
-    "build": "rm -rf dist && bun build:esm && bun build:node && bun build:umd",
-    "build:node": "bun build src/fromNodeStream.ts --target=node --outdir=dist",
+    "build": "rm -rf dist && run-p build:esm build:node build:d3 build:umd",
+    "build:node": "bun build src/lib/from-node-stream/index.ts --target=node --outdir=dist/lib/from-node-stream --sourcemap",
+    "build:d3": "bun build src/lib/d3/index.ts --outdir=dist/lib/d3  --sourcemap",
     "build:esm": "bun build src/index.ts --outdir=dist --packages=external --sourcemap=external",
     "build:umd": "bun build src/index.ts --outfile=dist/index.umd.js && bunx rollup dist/index.umd.js --file=dist/index.umd.js --format=umd --name sflow",
     "test": "vitest",
@@ -50,6 +59,7 @@
     "bson": "^6.8.0",
     "d3": "^7.9.0",
     "from-node-stream": "0.0.4",
+    "npm-run-all": "^4.1.5",
     "phpdie": "^1.2.12",
     "polyfill-text-decoder-stream": "0.0.10",
     "polyfill-text-encoder-stream": "^0.0.9",

@@ -65,4 +65,4 @@ export { uniqBys, uniqs } from "./uniqs";
 export { unpromises } from "./unpromises";
 export type { Unwinded } from "./Unwinded";
 export { unwinds } from "./unwinds";
-
+export { sflow as from } from "./sflow";
