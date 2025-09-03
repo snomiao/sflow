@@ -38,7 +38,7 @@ export function cacheTails<T>(
   const t = new TransformStream();
   const w = t.writable.getWriter();
   const writable = new WritableStream({
-    start: async () => cachePromise.resolve(await store.get(key)),
+    start: async () => cachePromise.resolve((await store.get(key)) ?? []),
     write: async (chunk, ctrl) => {
       const cache = await cachePromise.promise;
       if (cache && equals(chunk, cache[0])) {
