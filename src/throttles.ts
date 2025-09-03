@@ -21,7 +21,7 @@ export function throttles<T>(
   interval: number,
   { drop = false, keepLast = true }: ThrottleOption = {},
 ) {
-  let timerId: number | null | Timer = null;
+  let timerId: ReturnType<typeof setTimeout> | null = null;
   let cdPromise = Promise.withResolvers();
   let lasts: T[] = [];
   return new TransformStream<T, T>({

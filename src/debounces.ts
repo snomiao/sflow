@@ -1,5 +1,5 @@
 export function debounces<T>(t: number) {
-  let id: number | null | Timer = null;
+  let id: ReturnType<typeof setTimeout> | null = null;
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
       if (id) clearTimeout(id);
