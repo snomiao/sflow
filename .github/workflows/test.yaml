@@ -2,28 +2,50 @@ name: Test
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop, cicd]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  test:
+  test-node:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      
+
       - name: Install dependencies
         run: bun install
-      
-      - name: Run tests
-        run: bun run test
+
+      - name: Run tests with Vitest
+        run: npm run test
+
+  test-bun:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests with Bun
+        run: bun run buntest
