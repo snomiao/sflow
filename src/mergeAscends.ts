@@ -2,6 +2,7 @@ import DIE from "phpdie";
 import { sortBy, type Ord } from "rambda";
 import { toStream } from "./froms";
 import { sflow, type FlowSource } from "./index";
+import { streamAsyncIterator } from "./streamAsyncIterator";
 interface MergeBy {
   <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): sflow<T>;
   <T>(ordFn: (input: T) => Ord): {
@@ -129,7 +130,10 @@ export const mergeDescends: MergeBy = <T>(
           let lastMaxValue: T | undefined = undefined;
           await Promise.all(
             srcs.map(async (src, i) => {
-              for await (const value of toStream(src)) {
+              const stream = toStream(src);
+              for await (const value of Object.assign(stream, {
+                [Symbol.asyncIterator]: streamAsyncIterator,
+              })) {
                 while (slots[i] !== undefined) {
                   if (shiftMaxValueIfFull()) continue;
                   pendingSlotRemoval[i] = Promise.withResolvers<void>();
