@@ -54,7 +54,7 @@ export const replaces: {
     TransformStream<string, string>;
 
 } = (searchValue, replacement) => {
-  return maps((s) =>
+  return maps<string, string>((s) =>
     typeof replacement === "string"
       ? s.replace(
         searchValue as any,
@@ -84,7 +84,7 @@ export const replaceAlls: {
     replacer: (substring: string, ...args: any[]) => Promise<string> | string,
   ): TransformStream<string, string>;
 } = (searchValue, replacement) => {
-  return maps((s) =>
+  return maps<string, string>((s) =>
     typeof replacement === "string"
       ? s.replaceAll(searchValue, replacement)
       : replaceAsync(s, searchValue, replacement),
