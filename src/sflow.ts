@@ -29,6 +29,7 @@ import { limits } from "./limits";
 import { lines } from "./lines";
 import { logs } from "./logs";
 import { mapAddFields } from "./mapAddFields";
+import { mapMixins } from "./mapMixins";
 import { maps } from "./maps";
 import { merges } from "./merges";
 import { mergeStream } from "./mergeStream";
@@ -477,7 +478,7 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       ...args: Parameters<typeof mapAddFields> // @ts-ignore
     ) => sflow(r.pipeThrough(mapAddFields(...args))),
     mapMixin: (
-      ...args: Parameters<typeof mapMixins>
+      ...args: Parameters<typeof mapMixins> // @ts-ignore
     ) => sflow(r.pipeThrough(mapMixins(...args))),
     log: (...args: Parameters<typeof logs>) =>
       sflow(r.pipeThrough(logs(...args))),
