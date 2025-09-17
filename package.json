@@ -1,6 +1,6 @@
 {
   "name": "sflow",
-  "version": "1.18.1",
+  "version": "1.18.2",
   "description": "sflow is a powerful and highly-extensible library designed for processing and manipulating streams of data effortlessly. Inspired by the functional programming paradigm, it provides a rich set of utilities for transforming streams, including chunking, filtering, mapping, reducing, among many others. It's a perfect companion for those who work extensively with streams and want to make their data processing pipelines more efficient and concise.",
   "keywords": [
     "browser",
@@ -50,6 +50,7 @@
     "build:d3": "bun build src/lib/d3/index.ts --outdir=dist/lib/d3  --sourcemap",
     "build:esm": "bun build src/index.ts --outdir=dist --packages=external --sourcemap=external",
     "build:umd": "bun build src/index.ts --outfile=dist/index.umd.js && bunx rollup dist/index.umd.js --file=dist/index.umd.js --format=umd --name sflow",
+    "release": "bunx standard-version",
     "test": "vitest",
     "buntest": "bun test --coverage",
     "prepare": "bunx husky"
