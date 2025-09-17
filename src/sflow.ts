@@ -263,8 +263,11 @@ type DictionaryFlow<T> = T extends Record<string, any>
         [key in K]: R;
       }
     >;
-  }
-  : {};
+    mapMixin: <
+      T extends Record<string, any>,
+      R extends Record<string, any>,
+    >(fn: (x: T, i: number) => Awaitable<R>) => sflow<Omit<T, keyof R> & R>;
+  } : {};
 
 type StreamsFlow<T> = T extends ReadableStream<infer R>
   ? {
@@ -374,9 +377,6 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     by: (...args: Parameters<typeof _throughs>) =>
       sflow(r.pipeThrough(_throughs(...args))),
     byLazy: <R>(t: TransformStream<T, R>) => _byLazy<T, R>(r, t),
-    mapAddField: (
-      ...args: Parameters<typeof mapAddFields> // @ts-ignore
-    ) => sflow(r.pipeThrough(mapAddFields(...args))),
     cacheSkip: (...args: Parameters<typeof cacheSkips>) =>
       sflow(r).byLazy(cacheSkips(...args)),
     cacheList: (...args: Parameters<typeof cacheLists>) =>
@@ -473,6 +473,12 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r.pipeThrough(heads(...args))),
     map: (...args: Parameters<typeof maps>) =>
       sflow(r.pipeThrough(maps(...args))),
+    mapAddField: (
+      ...args: Parameters<typeof mapAddFields> // @ts-ignore
+    ) => sflow(r.pipeThrough(mapAddFields(...args))),
+    mapMixin: (
+      ...args: Parameters<typeof mapMixins>
+    ) => sflow(r.pipeThrough(mapMixins(...args))),
     log: (...args: Parameters<typeof logs>) =>
       sflow(r.pipeThrough(logs(...args))),
     uniq: (...args: Parameters<typeof uniqs>) =>
