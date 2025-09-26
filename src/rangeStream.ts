@@ -7,7 +7,7 @@ export function rangeStream(
 export function rangeStream(maxExclusive: number): ReadableStream<number>;
 export function rangeStream(...args: number[]) {
   const [min, max]: [number, number] =
-    args[1] != null ? [args[0], args[1]] : [0, args[0]];
+    args[1] != null ? [args[0]!, args[1]!] : [0, args[0]!];
   let i = min;
   return new ReadableStream(
     {

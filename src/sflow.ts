@@ -359,7 +359,7 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
   type T = SourcesType<SRCS>;
   let r: ReadableStream<T> =
     srcs.length === 1
-      ? (toStream(srcs[0]) as ReadableStream<T>)
+      ? (toStream(srcs[0]!) as ReadableStream<T>)
       : (concatStream(srcs) as ReadableStream<T>);
   // @ts-ignore todo
   return Object.assign(r, {

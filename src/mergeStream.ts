@@ -18,7 +18,7 @@ export const mergeStream: {
 } = (...srcs: FlowSource<any>[]): ReadableStream<any> => {
   if (!srcs.length) return new ReadableStream({ start: (c) => c.close() });
   // no nesscerry to merge
-  if (srcs.length === 1) return toStream(srcs[0]);
+  if (srcs.length === 1) return toStream(srcs[0]!);
 
   const t = new TransformStream();
   const w = t.writable.getWriter();

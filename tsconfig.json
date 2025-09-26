@@ -3,11 +3,11 @@
     // Enable latest features
     "lib": [
       "ESNext",
-      "DOM",
+      "DOM"
       // "DOM.Iterable",
       // "DOM.AsyncIterable"
     ],
-    "target": "ESNext",
+    "target": "ES2022",
     "module": "ESNext",
     "moduleDetection": "force",
     "jsx": "react-jsx",
@@ -31,12 +31,6 @@
     "noPropertyAccessFromIndexSignature": false,
     "incremental": true
   },
-  "include": [
-    "src/**/*.ts",
-    "vitest.*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-  ]
+  "include": ["src/**/*.ts", "vitest.*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

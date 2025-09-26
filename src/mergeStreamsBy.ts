@@ -67,7 +67,7 @@ export function mergeStreamsByAscend<T>(
       ctrl.close();
       return [];
     }
-    const peak: T = sortBy(ordFn, cands)[0];
+    const peak: T = sortBy(ordFn, cands)[0]!
     const index: number = slots.findIndex(
       (e) => e?.done === false && e?.value === peak,
     );
@@ -116,7 +116,7 @@ export function mergeStreamsByDescend<T>(
       ctrl.close();
       return [];
     }
-    const peak: T = sortBy(ordFn, cands).toReversed()[0];
+    const peak: T = sortBy(ordFn, cands).toReversed()[0]!
     const index: number = slots.findIndex(
       (e) => e?.done === false && e?.value === peak,
     );

@@ -45,7 +45,7 @@ export const mergeAscends: MergeBy = <T>(
                   pendingSlotRemoval[i] = Promise.withResolvers<void>();
                   await pendingSlotRemoval[i]!.promise; // wait for this slot empty;
                 }
-                slots[i] = { value };
+                slots[i] = { value: value as T };
                 shiftMinValueIfFull();
               }
               // done
@@ -68,7 +68,7 @@ export const mergeAscends: MergeBy = <T>(
                 const fullSlots = slots
                   .flatMap((e) => (e !== undefined ? [e] : []))
                   .map((e) => e.value);
-                const minValue = sortBy(ordFn, fullSlots)[0];
+                const minValue = sortBy(ordFn, fullSlots)[0]!
                 const minIndex = slots.findIndex((e) => e?.value === minValue);
                 if (lastMinValue !== undefined) {
                   const ordered = sortBy(ordFn, [lastMinValue, minValue]);
@@ -86,7 +86,7 @@ curr: ${JSON.stringify(minValue)}
 `);
                 }
                 lastMinValue = minValue;
-                ctrl.enqueue(minValue);
+                ctrl.enqueue(minValue!);
                 slots[minIndex] = undefined;
                 pendingSlotRemoval[minIndex]?.resolve();
                 pendingSlotRemoval[minIndex] = undefined;
@@ -139,7 +139,7 @@ export const mergeDescends: MergeBy = <T>(
                   pendingSlotRemoval[i] = Promise.withResolvers<void>();
                   await pendingSlotRemoval[i]!.promise; // wait for this slot empty;
                 }
-                slots[i] = { value };
+                slots[i] = { value: value as T };
                 shiftMaxValueIfFull();
               }
               // done
@@ -162,7 +162,7 @@ export const mergeDescends: MergeBy = <T>(
                 const fullSlots = slots
                   .flatMap((e) => (e !== undefined ? [e] : []))
                   .map((e) => e.value);
-                const maxValue = sortBy(ordFn, fullSlots).toReversed()[0];
+                const maxValue = sortBy(ordFn, fullSlots).toReversed()[0]!
                 const maxIndex = slots.findIndex((e) => e?.value === maxValue);
                 if (lastMaxValue !== undefined) {
                   const ordered = sortBy(ordFn, [maxValue, lastMaxValue]);
@@ -180,7 +180,7 @@ curr: ${JSON.stringify(maxValue)}
 `);
                 }
                 lastMaxValue = maxValue;
-                ctrl.enqueue(maxValue);
+                ctrl.enqueue(maxValue!);
                 slots[maxIndex] = undefined;
                 pendingSlotRemoval[maxIndex]?.resolve();
                 pendingSlotRemoval[maxIndex] = undefined;
