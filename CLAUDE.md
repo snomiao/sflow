@@ -66,8 +66,34 @@ When fixing TypeScript errors:
 1. Make changes
 2. Test: `bun test`
 3. Type check: `bunx tsc --incremental --noEmit`
-4. Commit with descriptive messages
+4. Commit using conventional commit messages (see below)
 5. Push to main branch
+
+### Conventional Commit Messages
+This project uses conventional commit format:
+```
+<type>: <description>
+
+[optional body]
+
+[optional footer]
+```
+
+Types:
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation changes
+- `test:` - Adding or updating tests
+- `refactor:` - Code change that neither fixes a bug nor adds a feature
+- `style:` - Changes that don't affect code meaning (formatting, etc.)
+- `chore:` - Changes to build process or auxiliary tools
+- `perf:` - Performance improvements
+
+Examples:
+- `fix: resolve TypeScript strict null check errors`
+- `feat: add mapMixin method for object stream transformations`
+- `docs: update README with new examples`
+- `chore(release): 1.18.2`
 
 ## Dependencies
 - Main runtime: WebStreams API (native)
