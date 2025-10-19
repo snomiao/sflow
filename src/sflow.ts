@@ -141,11 +141,23 @@ export interface BaseFlow<T> {
   concat(stream?: ReadableStream<T>): sflow<T>;
   limit(...args: Parameters<typeof limits<T>>): sflow<T>;
   head(...args: Parameters<typeof heads<T>>): sflow<T>;
-  map<R>(...args: Parameters<typeof maps<T, R>>): sflow<R>;
+  map<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
+  map<R>(
+    fn: (x: T, i: number) => Awaitable<R>,
+    options?: {
+      concurrency?: number;
+    }
+  ): sflow<R>;
   log(...args: Parameters<typeof logs<T>>): sflow<T>;
   peek(...args: Parameters<typeof peeks<T>>): sflow<T>;
   riffle(...args: Parameters<typeof riffles<T>>): sflow<T>;
-  forEach(...args: Parameters<typeof forEachs<T>>): sflow<T>;
+  forEach(fn: (x: T, i: number) => Awaitable<void | any>): sflow<T>;
+  forEach(
+    fn: (x: T, i: number) => Awaitable<void | any>,
+    options?: {
+      concurrency?: number;
+    }
+  ): sflow<T>;
   pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
   pMap<R>(
     fn: (x: T, i: number) => Awaitable<R>,
