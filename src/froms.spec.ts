@@ -1,4 +1,4 @@
-import { createReadStream } from "fs";
+import { createReadStream } from "node:fs";
 import { fromReadable } from "./lib/from-node-stream";
 import { sflow } from "./sflow";
 

@@ -35,7 +35,7 @@ describe("mapMixin", () => {
       { id: 2, value: 10 },
     ])
       .mapMixin(async (item) => {
-        await new Promise(resolve => setTimeout(resolve, 1));
+        await new Promise((resolve) => setTimeout(resolve, 1));
         return { doubled: item.value * 2 };
       })
       .toArray();
@@ -66,7 +66,7 @@ describe("mapMixin", () => {
       { name: "Bob" },
       { name: "Charlie" },
     ])
-      .mapMixin((item, index) => ({ position: index + 1 }))
+      .mapMixin((_item, index) => ({ position: index + 1 }))
       .toArray();
 
     expect(result).toEqual([

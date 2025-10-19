@@ -3,7 +3,7 @@ import type { Awaitable } from "./Awaitable";
 
 /** chunk items by compareFn, group items with same Ord */
 export function chunkBys<T>(compareFn: (x: T) => Awaitable<Ord>) {
-  let chunks: T[] = [];
+  const chunks: T[] = [];
   let lastOrder: Ord;
   return new TransformStream<T, T[]>({
     transform: async (chunk, ctrl) => {

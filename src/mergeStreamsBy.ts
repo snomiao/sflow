@@ -1,10 +1,11 @@
 import DIE from "phpdie";
-import { sortBy, type Ord } from "rambda";
+import { type Ord, sortBy } from "rambda";
 import type { Awaitable } from "./Awaitable";
 import { emptyStream } from "./emptyStream";
 import type { FlowSource } from "./FlowSource";
 import { toStream } from "./froms";
 import type { sflow } from "./sflow";
+
 type Slots<T> = Array<{ value?: T; done: boolean } | null>;
 type Transformer<T> = (
   slots: Slots<T>,
@@ -15,9 +16,9 @@ export function mergeStreamsBy<T>(
   transform: Transformer<T>,
   srcs: FlowSource<T>[],
 ): sflow<T>;
-export function mergeStreamsBy<T>(transform: Transformer<T>): {
-  (srcs: FlowSource<T>[]): sflow<T>;
-};
+export function mergeStreamsBy<T>(
+  transform: Transformer<T>,
+): (srcs: FlowSource<T>[]) => sflow<T>;
 export function mergeStreamsBy<T>(
   transform: Transformer<T>,
   sources?: FlowSource<T>[],
@@ -32,7 +33,7 @@ export function mergeStreamsBy<T>(
   return new ReadableStream({
     pull: async (ctrl) => {
       // ensure fill all slots
-      const results = await Promise.all(
+      const _results = await Promise.all(
         readers.map(async (reader, i) => (slots[i] ??= await reader.read())),
       );
       // const cands = results.filter((e) => !e.done).map((e) => e.value!);
@@ -49,9 +50,9 @@ export function mergeStreamsByAscend<T>(
   ordFn: OrdFn<T>,
   sources: FlowSource<T>[],
 ): sflow<T>;
-export function mergeStreamsByAscend<T>(ordFn: OrdFn<T>): {
-  (sources: FlowSource<T>[]): sflow<T>;
-};
+export function mergeStreamsByAscend<T>(
+  ordFn: OrdFn<T>,
+): (sources: FlowSource<T>[]) => sflow<T>;
 export function mergeStreamsByAscend<T>(
   ordFn: OrdFn<T>,
   sources?: FlowSource<T>[],
@@ -61,13 +62,13 @@ export function mergeStreamsByAscend<T>(
       mergeStreamsByAscend(ordFn, sources)) as any;
   let lastEmit: { value: T } | null = null;
   return mergeStreamsBy<T>(async (slots, ctrl) => {
-    // 
-    const cands = slots.filter((e) => e?.done === false).map((e) => e!.value!);
+    //
+    const cands = slots.filter((e) => e?.done === false).map((e) => e?.value!);
     if (!cands.length) {
       ctrl.close();
       return [];
     }
-    const peak: T = sortBy(ordFn, cands)[0]!
+    const peak: T = sortBy(ordFn, cands)[0]!;
     const index: number = slots.findIndex(
       (e) => e?.done === false && e?.value === peak,
     );
@@ -87,7 +88,7 @@ export function mergeStreamsByAscend<T>(
             curr: peak,
           },
         },
-      )
+      );
     lastEmit = { value: peak };
 
     ctrl.enqueue(peak);
@@ -99,9 +100,9 @@ export function mergeStreamsByDescend<T>(
   ordFn: OrdFn<T>,
   srcs: FlowSource<T>[],
 ): sflow<T>;
-export function mergeStreamsByDescend<T>(ordFn: OrdFn<T>): {
-  (srcs: FlowSource<T>[]): sflow<T>;
-};
+export function mergeStreamsByDescend<T>(
+  ordFn: OrdFn<T>,
+): (srcs: FlowSource<T>[]) => sflow<T>;
 export function mergeStreamsByDescend<T>(
   ordFn: OrdFn<T>,
   sources?: FlowSource<T>[],
@@ -111,12 +112,12 @@ export function mergeStreamsByDescend<T>(
       mergeStreamsByDescend(ordFn, srcs)) as any;
   let lastEmit: { value: T } | null = null;
   return mergeStreamsBy<T>(async (slots, ctrl) => {
-    const cands = slots.filter((e) => e?.done === false).map((e) => e!.value!);
+    const cands = slots.filter((e) => e?.done === false).map((e) => e?.value!);
     if (!cands.length) {
       ctrl.close();
       return [];
     }
-    const peak: T = sortBy(ordFn, cands).toReversed()[0]!
+    const peak: T = sortBy(ordFn, cands).toReversed()[0]!;
     const index: number = slots.findIndex(
       (e) => e?.done === false && e?.value === peak,
     );
@@ -124,7 +125,7 @@ export function mergeStreamsByDescend<T>(
     if (
       lastEmit &&
       lastEmit.value !==
-      sortBy(ordFn, [lastEmit.value, peak]).toReversed()[0] &&
+        sortBy(ordFn, [lastEmit.value, peak]).toReversed()[0] &&
       ordFn(lastEmit.value) !== ordFn(peak)
     )
       DIE(

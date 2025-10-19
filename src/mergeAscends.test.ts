@@ -8,8 +8,7 @@ it("merge asc", async () => {
   const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5];
 
   expect(
-    await sflow(mergeAscends((x) => x, [req1, req2, req3]))
-      .toArray(),
+    await sflow(mergeAscends((x) => x, [req1, req2, req3])).toArray(),
   ).toEqual(ret);
 });
 
@@ -52,8 +51,8 @@ it.skip("merge asc lazy", async () => {
   const req2 = sflow([1, 2, 3]).byLazy(forEachs(fn2));
   const fn3 = jest.fn();
   const req3 = sflow([0, 4, 5]).byLazy(forEachs(fn3));
-  const ret = [0, 0, 1, 1, 2, 2, 3, 4, 5];
-  const emi = [1, 3, 2, 1, 2, 1, 2, 3, 3]; // emit order
+  const _ret = [0, 0, 1, 1, 2, 2, 3, 4, 5];
+  const _emi = [1, 3, 2, 1, 2, 1, 2, 3, 3]; // emit order
   const r = sflow(mergeAscends((x) => x, [req1, req2, req3]));
   expect(fn1).toHaveBeenCalledTimes(0);
   expect(fn2).toHaveBeenCalledTimes(0);
@@ -146,5 +145,5 @@ it("throws not asc", async () => {
     sflow(mergeAscends((x) => x, [req1, req2]))
       // .peek(console.log)
       .toArray(),
-  ).rejects.toThrow('ascending');
+  ).rejects.toThrow("ascending");
 });

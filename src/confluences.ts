@@ -7,7 +7,7 @@ export const confluences = <T>({
 }: {
   order?: "breadth" | "deepth" | "faster";
 } = {}): TransformStream<ReadableStream<T>, T> => {
-  const baseError = new Error();
+  const _baseError = new Error();
   if (order !== "breadth") DIE("not implemented");
   const { writable, readable: sources } = new TransformStream<
     ReadableStream<T>,
@@ -17,7 +17,7 @@ export const confluences = <T>({
   const readable = new ReadableStream({
     async pull(ctrl) {
       while (true) {
-        const src = await (async function () {
+        const src = await (async () => {
           // get from source first
           const r = sources.getReader();
           const { done, value: src } = await r.read();

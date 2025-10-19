@@ -1,4 +1,5 @@
 import type { Awaitable } from "./Awaitable";
+
 type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 type ReducerWithUndefinedInitialState<T> = (
   state: T | undefined,

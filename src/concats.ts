@@ -3,18 +3,15 @@ import { toStream } from "./froms";
 import { maps } from "./maps";
 import { nils } from "./nils";
 
-type SourcesType<SRCS extends FlowSource<FlowSource<any>>> =
-  SRCS extends FlowSource<FlowSource<infer T>> ? T : never;
-
 /**
  * return a transform stream that concats streams from sources
  * don't get confused with mergeStream
  * concats     : returns a TransformStream, which also concats upstream
  * concatStream: returns a ReadableStream, which doesnt have upstream
  */
-export const concats: {
-  <T>(streams?: FlowSource<FlowSource<T>>): TransformStream<T, T>;
-} = (srcs?: FlowSource<FlowSource<any>>) => {
+export const concats: <T>(
+  streams?: FlowSource<FlowSource<T>>,
+) => TransformStream<T, T> = (srcs?: FlowSource<FlowSource<unknown>>) => {
   if (!srcs) return new TransformStream();
   const upstream = new TransformStream();
   return {

@@ -2,6 +2,7 @@ import { mergeAscends } from "../../mergeAscends";
 import { rangeFlow } from "../../rangeStream";
 import { sflow } from "../../sflow";
 import { csvParses, tsvFormats } from "./xsvStreams";
+
 it("reads", async () => {
   expect(await controlFlow().log().toCount()).toEqual(5);
 });
@@ -21,14 +22,19 @@ it("works", async () => {
       .map((e) => ({ ...e, x: 0, v: 0 })) // add speed placeholder
       // accelerate model
       .forEach(
-        (function () {
+        (() => {
           let x = 0,
             v = 0,
             t = 0,
             dt = 0;
           return (e) => {
-            t += dt = e.t - t; // calculate dt
-            return (e.x = x += dt * (e.v = v += dt * +e.a)); // calculate motion
+            dt = e.t - t;
+            t += dt; // calculate dt
+            v += dt * +e.a;
+            e.v = v;
+            x += dt * v;
+            e.x = x;
+            return e.x; // calculate motion
           };
         })(),
       )
@@ -40,7 +46,7 @@ it("works", async () => {
 });
 
 /** example for motion controller flow */
-function controlFlow(): sflow<Record<"t" | "a" | "remark", any>> {
+function controlFlow(): sflow<Record<"t" | "a" | "remark", string>> {
   return sflow([
     "t,a,remark\n0,0,idle\n1,2,push\n10,0,keep\n11,-1,break1\n12,-1,break2",
   ]).through(csvParses("t,a,remark"));

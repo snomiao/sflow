@@ -9,14 +9,18 @@ describe.skip("throttles", () => {
     // pass: 0, __, 100, ___
     expect(
       await sflow([1, 2, 3, 4])
-        .forEach(() => sleep(50))
+        .forEach(() => {
+          return sleep(50);
+        })
         .throttle(80, { drop: true, keepLast: false })
         .toArray(),
     ).toEqual([1, 3]);
   });
   it("works with drop keep last", async () => {
     const r = await sflow([1, 2, 3, 4])
-      .forEach(() => sleep(50))
+      .forEach(() => {
+        return sleep(50);
+      })
       .throttle(80, { drop: true, keepLast: true })
       .toArray();
     // emit: 0, 50, 100, 150
@@ -30,7 +34,9 @@ describe.skip("throttles", () => {
     // pass: 0, __, 100, ___
     expect(
       await sflow([1, 2, 3, 4])
-        .forEach(() => sleep(50))
+        .forEach(() => {
+          return sleep(50);
+        })
         .throttle(80)
         .toArray(),
     ).toEqual([1, 2, 3, 4]);
@@ -39,10 +45,12 @@ describe.skip("throttles", () => {
     // emit: 0, 50, 100, 150
     // pass: 0, __, 100, ___
     await sflow([1, 2, 3, 4])
-      .forEach(() => sleep(20))
+      .forEach(() => {
+        return sleep(20);
+      })
       .throttle(80)
       // calculate interval
-      .map(() => +new Date())
+      .map(() => Date.now())
       .convolve(2)
       .forEach(([a, b]) => {
         const interval = b - a;
@@ -52,7 +60,9 @@ describe.skip("throttles", () => {
   });
   it("works keep last", async () => {
     const r = await sflow([1, 2, 3, 4])
-      .forEach(() => sleep(50))
+      .forEach(() => {
+        return sleep(50);
+      })
       .throttle(80)
       .toArray();
     // emit: 0, 50, 100, 150
@@ -64,8 +74,12 @@ describe.skip("throttles", () => {
   it("works", async () => {
     expect(
       await sflow([1, 2, 3, 4])
-        .forEach(() => sleep(100))
-        .forEach(() => sleep(100))
+        .forEach(() => {
+          return sleep(100);
+        })
+        .forEach(() => {
+          return sleep(100);
+        })
         .log()
         .toArray(),
     ).toEqual([1, 2, 3, 4]);
@@ -73,10 +87,12 @@ describe.skip("throttles", () => {
 
   it("interval should be 80", async () => {
     await sflow([1, 2, 3, 4])
-      .forEach(() => sleep(80))
+      .forEach(() => {
+        return sleep(80);
+      })
       // .forEach(() => sleep(80))
       // calculate interval
-      .map(() => +new Date())
+      .map(() => Date.now())
       .convolve(2)
       .forEach(([a, b]) => {
         const interval = b - a;
@@ -91,7 +107,7 @@ describe.skip("throttles", () => {
       .peek(() => sleep(200))
       .peek(() => sleep(200))
       // calculate interval
-      .map(() => +new Date())
+      .map(() => Date.now())
       .convolve(2)
       .forEach(([a, b]) => {
         const interval = b - a;

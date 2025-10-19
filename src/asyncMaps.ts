@@ -17,16 +17,14 @@ export const asyncMaps: {
   options: asyncMapOptions = {},
 ) => {
   let i = 0;
-  let tasks = new Map<number, Awaitable<{ id: number; data: R }>>();
+  const tasks = new Map<number, Awaitable<{ id: number; data: R }>>();
   return new TransformStream<T, R>({
     transform: async (chunk, ctrl) => {
       const id = i++;
       // enqueue
       tasks.set(
         id,
-        (async function () {
-          return fn(chunk, id);
-        })().then((data) => ({ id, data })),
+        (async () => fn(chunk, id))().then((data) => ({ id, data })),
       );
       // TODO: allow emit on tasks not full
       // emit fastest when tasks full

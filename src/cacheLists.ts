@@ -15,20 +15,21 @@ export function cacheLists<T>(
   store: {
     has?: (key: string) => Awaitable<boolean>;
     get: (key: string) => Awaitable<T[] | undefined>;
-    set: (key: string, chunks: T[]) => Awaitable<any>;
+    set: (key: string, chunks: T[]) => Awaitable<void>;
   },
-  _options?: | string
-  | {
-      /**
-       * Key could step name,
-       * or defaults to `new Error().stack` if you r lazy enough
-       */
-      key?: string;
-    }
+  _options?:
+    | string
+    | {
+        /**
+         * Key could step name,
+         * or defaults to `new Error().stack` if you r lazy enough
+         */
+        key?: string;
+      },
 ) {
   // parse options
   const { key = new Error().stack ?? DIE("missing cache key") } =
-    typeof _options === "string" ? { key: _options } : _options ?? {};
+    typeof _options === "string" ? { key: _options } : (_options ?? {});
   const chunks: T[] = [];
   const cacheHitPromise = store.has?.(key) || store.get(key);
   let hitflag = false;

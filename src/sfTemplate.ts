@@ -7,7 +7,7 @@ export function sfTemplate(
   ...args: FlowSource<string>[]
 ): sflow<string> {
   return sflow(
-    ...tsa.map((str) => [sflow([str]), args.shift() || ([] as string[])]).flat()
+    ...tsa.flatMap((str) => [sflow([str]), args.shift() || ([] as string[])]),
   );
 }
 // alias

@@ -86,7 +86,7 @@ describe("maps function", () => {
 
   it("handles different input and output types", async () => {
     const result = await sflow(["1", "2", "3"])
-      .map((x) => parseInt(x))
+      .map((x) => parseInt(x, 10))
       .toArray();
 
     expect(result).toEqual([1, 2, 3]);

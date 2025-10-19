@@ -7,73 +7,73 @@ import { throughs } from "../../throughs";
 
 export function csvFormats<S extends string>(
   header: S,
-): TransformStream<Record<Split<S, ",">[number], any>, string>;
+): TransformStream<Record<Split<S, ",">[number], string>, string>;
 export function csvFormats<S extends string[]>(
   header: S,
-): TransformStream<Record<S[number], any>, string>;
+): TransformStream<Record<S[number], string>, string>;
 export function csvFormats(
   header: string | string[],
-): TransformStream<Record<string, any>, string> {
+): TransformStream<Record<string, string>, string> {
   const _header = typeof header === "string" ? header.split(",") : header;
   return new TransformStream({
-    start: (ctrl) => ctrl.enqueue(_header.join(",") + "\n"),
+    start: (ctrl) => ctrl.enqueue(`${_header.join(",")}\n`),
     transform: (chunk, ctrl) =>
-      ctrl.enqueue(csvFormatBody([chunk], _header) + "\n"),
+      ctrl.enqueue(`${csvFormatBody([chunk], _header)}\n`),
   });
 }
 
 export function csvParses<S extends string>(
   header: S,
-): TransformStream<string, Record<Split<S, ",">[number], any>>;
+): TransformStream<string, Record<Split<S, ",">[number], string>>;
 export function csvParses<S extends string[]>(
   header: S,
-): TransformStream<string, Record<S[number], any>>;
+): TransformStream<string, Record<S[number], string>>;
 export function csvParses(
   header: string | string[],
-): TransformStream<string, Record<string, any>> {
+): TransformStream<string, Record<string, string>> {
   const _header = typeof header === "string" ? header.split(",") : header;
-  let i = 0;
-  return throughs<string, Record<string, any>>((r) =>
+  const _i = 0;
+  return throughs<string, Record<string, string>>((r) =>
     r
       .pipeThrough(lines({ EOL: "LF" }))
       .pipeThrough(skips(1))
-      .pipeThrough(maps((line) => csvParse(_header + "\n" + line)[0])),
+      .pipeThrough(maps((line) => csvParse(`${_header}\n${line}`)[0])),
   );
 }
 
 export function tsvFormats<S extends string>(
   header: S,
-): TransformStream<Record<Split<S, "\t">[number], any>, string>;
+): TransformStream<Record<Split<S, "\t">[number], string>, string>;
 export function tsvFormats<S extends string[]>(
   header: S,
-): TransformStream<Record<S[number], any>, string>;
+): TransformStream<Record<S[number], string>, string>;
 export function tsvFormats(
   header: string | string[],
-): TransformStream<Record<string, any>, string> {
+): TransformStream<Record<string, string>, string> {
   const sep = "\t";
   const _header = typeof header === "string" ? header.split(sep) : header;
   return new TransformStream({
-    start: (ctrl) => ctrl.enqueue(_header.join(sep) + "\n"),
+    start: (ctrl) => ctrl.enqueue(`${_header.join(sep)}\n`),
     transform: (chunk, ctrl) =>
-      ctrl.enqueue(tsvFormatBody([chunk], _header) + "\n"),
+      ctrl.enqueue(`${tsvFormatBody([chunk], _header)}\n`),
   });
 }
 
 export function tsvParses<S extends string>(
   header: S,
-): TransformStream<string, Record<Split<S, "\t">[number], any>>;
+): TransformStream<string, Record<Split<S, "\t">[number], string>>;
 export function tsvParses<S extends string[]>(
   header: S,
-): TransformStream<string, Record<S[number], any>>;
+): TransformStream<string, Record<S[number], string>>;
 export function tsvParses(
   header: string | string[],
-): TransformStream<string, Record<string, any>> {
+): TransformStream<string, Record<string, string>> {
   const _header = typeof header === "string" ? header.split("\t") : header;
-  let i = 0;
-  return throughs<string, Record<string, any>>((r) =>
+  const _i = 0;
+  return throughs<string, Record<string, string>>((r) =>
     r
       .pipeThrough(lines({ EOL: "LF" }))
       .pipeThrough(skips(1))
-      .pipeThrough(maps((line) => tsvParse(_header + "\n" + line)[0])),
+      .pipeThrough(maps((line) => tsvParse(`${_header}\n${line}`)[0])),
   );
 }

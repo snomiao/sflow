@@ -16,11 +16,11 @@ it("by async fn", async () => {
   expect(
     await sflow([1, 2, 3])
       .by(
-        unpromisesFn(async function (src: sflow<number>) {
+        unpromisesFn(async (src: sflow<number>) => {
           await sleep(100);
           return src.map((x) => x * 2);
-        })
+        }),
       )
-      .toArray()
+      .toArray(),
   ).toEqual([2, 4, 6]);
 });

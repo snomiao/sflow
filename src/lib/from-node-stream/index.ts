@@ -1,10 +1,10 @@
+import { Readable, Writable } from "node:stream";
 import {
   fromReadable,
   fromStdioDropErr,
   fromStdioMergeError,
   fromWritable,
 } from "from-node-stream";
-import { Readable, Writable } from "stream";
 export { fromReadable, fromWritable };
 
 /** Make TransformStream from stdio
@@ -22,7 +22,7 @@ export function fromStdio(
   }: {
     // input stderr will pipe to this stream, defaults to process.stderr if undefined
     stderr?: Writable | "mergeIntoStdout";
-  } = {}
+  } = {},
 ): TransformStream<string | Uint8Array, string | Uint8Array> {
   if (p.stderr instanceof Readable && stderr instanceof Writable)
     fromReadable(p.stderr).pipeTo(fromWritable(stderr), {

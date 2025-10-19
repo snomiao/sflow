@@ -8,7 +8,7 @@ import { sleep } from "./utils";
 // ```typescript
 
 // Helper function to create a readable stream from an array of values
-function toReadableStream(values: any[]) {
+function toReadableStream(values: unknown[]) {
   let index = 0;
   return new ReadableStream({
     pull(controller) {
@@ -28,7 +28,7 @@ test("Streams merge correctly", async () => {
   const mergedStream = lazyMergeStream(stream1, stream2);
   const reader = mergedStream.getReader();
 
-  let result = [];
+  const result = [];
   let done = false;
 
   while (!done) {
@@ -49,7 +49,7 @@ test("Pull occurs lazily with highWaterMark: 0", async () => {
       async pull(controller) {
         await sleep(0);
         stream1PullCount++;
-        controller.enqueue("s1_" + stream1PullCount);
+        controller.enqueue(`s1_${stream1PullCount}`);
         if (stream1PullCount === 3) {
           controller.close();
         }
@@ -64,7 +64,7 @@ test("Pull occurs lazily with highWaterMark: 0", async () => {
       async pull(controller) {
         await sleep(0);
         stream2PullCount++;
-        controller.enqueue("s2_" + stream2PullCount);
+        controller.enqueue(`s2_${stream2PullCount}`);
         if (stream2PullCount === 3) {
           controller.close();
         }
@@ -109,7 +109,7 @@ test("Stream terminates correctly", async () => {
   const mergedStream = lazyMergeStream(stream1, stream2);
   const reader = mergedStream.getReader();
 
-  let result = [];
+  const result = [];
   let done = false;
 
   while (!done) {

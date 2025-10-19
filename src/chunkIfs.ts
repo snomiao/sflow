@@ -5,7 +5,7 @@ export function chunkIfs<T>(
   predicate: (x: T, i: number, chunks: T[]) => Awaitable<boolean>,
   { inclusive = false } = {},
 ): TransformStream<T, T[]> {
-  let chunks: T[] = [];
+  const chunks: T[] = [];
   let i = 0;
   return new TransformStream<T, T[]>({
     transform: async (chunk, ctrl) => {

@@ -5,7 +5,7 @@ it("Infinity concurrent", async () => {
   const runOrder: number[] = [];
   const finishOrder: number[] = [];
   const returnOrder = await sflow([1, 2, 3, 4, 4, 3, 2, 1])
-    .pMap(async (e, i) => {
+    .pMap(async (e, _i) => {
       runOrder.push(e);
       await sleep(e * 20);
       finishOrder.push(e);
@@ -17,7 +17,7 @@ it("Infinity concurrent", async () => {
   expect(returnOrder).toEqual([1, 2, 3, 4, 4, 3, 2, 1]);
 });
 it("pMaps", async () => {
-  const t = Date.now();
+  const _t = Date.now();
   const req = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const acc = sflow(req.toReversed())
     .pMap(

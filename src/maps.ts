@@ -6,7 +6,7 @@ type asyncMapOptions = {
 
 export function maps<T, R>(
   fn: (x: T, i: number) => Awaitable<R>,
-  options?: asyncMapOptions
+  options?: asyncMapOptions,
 ): TransformStream<T, R> {
   const concurrency = options?.concurrency ?? 1;
 
@@ -24,7 +24,7 @@ export function maps<T, R>(
 
   // If concurrency > 1, use parallel processing while maintaining order
   let i = 0;
-  let promises: Awaitable<R>[] = [];
+  const promises: Awaitable<R>[] = [];
   return new TransformStream<T, R>({
     transform: async (chunk, ctrl) => {
       promises.push(fn(chunk, i++));

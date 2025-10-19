@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { filters } from "./filters";
 
 describe("filters", () => {
@@ -129,10 +129,10 @@ describe("filters", () => {
 
       const indices: number[] = [];
       const filtered = stream.pipeThrough(
-        filters((x: string, i: number) => {
+        filters((_x: string, i: number) => {
           indices.push(i);
           return i % 2 === 0; // Keep items at even indices
-        })
+        }),
       );
       const reader = filtered.getReader();
       const results = [];
@@ -163,9 +163,9 @@ describe("filters", () => {
 
       const filtered = stream.pipeThrough(
         filters(async (x: number) => {
-          await new Promise(resolve => setTimeout(resolve, 1));
+          await new Promise((resolve) => setTimeout(resolve, 1));
           return x > 2;
-        })
+        }),
       );
       const reader = filtered.getReader();
       const results = [];
@@ -194,7 +194,7 @@ describe("filters", () => {
       });
 
       const filtered = stream.pipeThrough(
-        filters((x: string) => x.includes("keep"))
+        filters((x: string) => x.includes("keep")),
       );
       const reader = filtered.getReader();
       const results = [];
@@ -218,7 +218,7 @@ describe("filters", () => {
         },
       });
 
-      const filtered = stream.pipeThrough(filters((x: any) => true));
+      const filtered = stream.pipeThrough(filters((_x: unknown) => true));
       const reader = filtered.getReader();
       const results = [];
 
@@ -303,7 +303,7 @@ describe("filters", () => {
       });
 
       const filtered = stream.pipeThrough(
-        filters((obj: any) => obj.id % 2 === 1)
+        filters((obj: unknown) => (obj as { id: number }).id % 2 === 1),
       );
       const reader = filtered.getReader();
       const results = [];
@@ -332,7 +332,7 @@ describe("filters", () => {
       });
 
       const filtered = stream.pipeThrough(
-        filters((arr: any) => Array.isArray(arr) && arr.length > 0)
+        filters((arr: unknown) => Array.isArray(arr) && arr.length > 0),
       );
       const reader = filtered.getReader();
       const results = [];
@@ -346,7 +346,10 @@ describe("filters", () => {
         }
       }
 
-      expect(results).toEqual([[1, 2], [3, 4, 5]]);
+      expect(results).toEqual([
+        [1, 2],
+        [3, 4, 5],
+      ]);
     });
   });
 });

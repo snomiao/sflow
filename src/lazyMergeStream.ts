@@ -15,17 +15,18 @@ export function lazyMergeStream(...streams: ReadableStream[]) {
       cancel: (reason) => void readers.map((r) => r.cancel(reason)),
       pull: (ctrl) =>
         Promise.race(
-          readers.map(
-            (r, i) =>
-              (reads[i] ??= r.read().then(({ value, done }) => {
-                if (done) {
-                  dones[i]();
-                  return never;
-                }
-                ctrl.enqueue(value);
-                reads[i] = null;
-              })),
-          ),
+          readers.map((r, i) => {
+            if (reads[i]) return reads[i];
+            reads[i] = r.read().then(({ value, done }) => {
+              if (done) {
+                dones[i]();
+                return never;
+              }
+              ctrl.enqueue(value);
+              reads[i] = null;
+            });
+            return reads[i];
+          }),
         ),
     },
     { highWaterMark: 0 },
