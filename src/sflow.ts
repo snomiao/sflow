@@ -3,8 +3,8 @@ import PolyfillTextEncoderStream from "polyfill-text-encoder-stream";
 import type { Ord } from "rambda";
 import type { FieldPathByValue } from "react-hook-form";
 import type { AsyncOrSync } from "ts-essentials";
-import { asyncMaps } from "./asyncMaps";
 import type { Awaitable } from "./Awaitable";
+import { asyncMaps } from "./asyncMaps";
 import { cacheLists } from "./cacheLists";
 import { cacheSkips } from "./cacheSkips";
 import { cacheTails } from "./cacheTails";
@@ -13,15 +13,15 @@ import { chunkIfs } from "./chunkIfs";
 import { chunkIntervals } from "./chunkIntervals";
 import { chunks } from "./chunks";
 import type { ChunkTransformer } from "./chunkTransforms";
-import { concats, concatStream } from "./concats";
+import { concatStream, concats } from "./concats";
 import { confluences } from "./confluences";
 import { convolves } from "./convolves";
 import { debounces } from "./debounces";
+import type { FlowSource } from "./FlowSource";
 import { filters } from "./filters";
 import { finds } from "./finds";
 import { flatMaps } from "./flatMaps";
 import { flats } from "./flats";
-import type { FlowSource } from "./FlowSource";
 import { forEachs } from "./forEachs";
 import { toStream } from "./froms";
 import { heads } from "./heads";
@@ -31,9 +31,9 @@ import { logs } from "./logs";
 import { mapAddFields } from "./mapAddFields";
 import { mapMixins } from "./mapMixins";
 import { maps } from "./maps";
-import { merges } from "./merges";
 import { mergeStream } from "./mergeStream";
 import { mergeStreamsByAscend, mergeStreamsByDescend } from "./mergeStreamsBy";
+import { merges } from "./merges";
 import { nils } from "./nils";
 import { peeks } from "./peeks";
 import { pMaps } from "./pMaps";
@@ -41,9 +41,9 @@ import { portals } from "./portals";
 import { reduceEmits } from "./reduceEmits";
 import { reduces } from "./reduces";
 import { riffles } from "./riffles";
+import type { SourcesType } from "./SourcesType";
 import { skips } from "./skips";
 import { slices } from "./slices";
-import type { SourcesType } from "./SourcesType";
 import { streamAsyncIterator } from "./streamAsyncIterator";
 import { matchAlls, matchs, replaceAlls, replaces } from "./strings";
 import { tails } from "./tails";
@@ -51,17 +51,17 @@ import { tees } from "./tees";
 import { terminates } from "./terminates";
 import { throttles } from "./throttles";
 import { throughs } from "./throughs";
-import { uniqBys, uniqs } from "./uniqs";
+import { toLatests } from "./toLatest";
 import type { Unwinded } from "./Unwinded";
+import { uniqBys, uniqs } from "./uniqs";
 import { unwinds } from "./unwinds";
 import { wseToArray, wseToPromise } from "./wse";
-import { toLatests } from "./toLatest";
 
 export type Reducer<S, T> = (state: S, x: T, i: number) => Awaitable<S>;
 export type EmitReducer<S, T, R> = (
   state: S,
   x: T,
-  i: number
+  i: number,
 ) => Awaitable<{ next: S; emit: R }>;
 
 export interface BaseFlow<T> {
@@ -132,12 +132,12 @@ export interface BaseFlow<T> {
   flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): sflow<R>;
 
   /** @deprecated to join another stream, use merge instead  */
-  join(fn: (s: WritableStream<T>) => void | any): sflow<T>;
+  join(fn: (s: WritableStream<T>) => undefined | any): sflow<T>;
   /** @deprecated to join another stream, use merge instead  */
   join(stream?: ReadableStream<T>): sflow<T>;
-  merge(fn: (s: WritableStream<T>) => void | any): sflow<T>;
+  merge(fn: (s: WritableStream<T>) => undefined | any): sflow<T>;
   merge(stream?: ReadableStream<T>): sflow<T>;
-  concat(fn: (s: WritableStream<T>) => void | any): sflow<T>;
+  concat(fn: (s: WritableStream<T>) => undefined | any): sflow<T>;
   concat(stream?: ReadableStream<T>): sflow<T>;
   limit(...args: Parameters<typeof limits<T>>): sflow<T>;
   head(...args: Parameters<typeof heads<T>>): sflow<T>;
@@ -146,36 +146,36 @@ export interface BaseFlow<T> {
     fn: (x: T, i: number) => Awaitable<R>,
     options?: {
       concurrency?: number;
-    }
+    },
   ): sflow<R>;
   log(...args: Parameters<typeof logs<T>>): sflow<T>;
   peek(...args: Parameters<typeof peeks<T>>): sflow<T>;
   riffle(...args: Parameters<typeof riffles<T>>): sflow<T>;
-  forEach(fn: (x: T, i: number) => Awaitable<void | any>): sflow<T>;
+  forEach(fn: (x: T, i: number) => Awaitable<undefined | any>): sflow<T>;
   forEach(
-    fn: (x: T, i: number) => Awaitable<void | any>,
+    fn: (x: T, i: number) => Awaitable<undefined | any>,
     options?: {
       concurrency?: number;
-    }
+    },
   ): sflow<T>;
   pMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
   pMap<R>(
     fn: (x: T, i: number) => Awaitable<R>,
     options?: {
       concurrency?: number;
-    }
+    },
   ): sflow<R>;
   asyncMap<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>;
   asyncMap<R>(
     fn: (x: T, i: number) => Awaitable<R>,
     options?: {
       concurrency?: number;
-    }
+    },
   ): sflow<R>;
   reduce(fn: (state: T | undefined, x: T, i: number) => Awaitable<T>): sflow<T>; // fn must fisrt
   reduce(fn: Reducer<T, T>, initialState: T): sflow<T>;
   reduce<S>(
-    fn: (state: S | undefined, x: T, i: number) => Awaitable<S>
+    fn: (state: S | undefined, x: T, i: number) => Awaitable<S>,
   ): sflow<S>; // fn must fisrt
   reduce<S>(fn: Reducer<S, T>, initialState: S): sflow<S>;
   reduceEmit(fn: EmitReducer<T, T, T>): sflow<T>;
@@ -187,11 +187,11 @@ export interface BaseFlow<T> {
   uniq: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
   uniqBy: <K>(...args: Parameters<typeof uniqBys<T, K>>) => sflow<T>;
   /** @deprecated use fork, forkTo */
-  tees(fn: (s: sflow<T>) => void | any): sflow<T>; // fn must fisrt
+  tees(fn: (s: sflow<T>) => undefined | any): sflow<T>; // fn must fisrt
   /** @deprecated use fork, forkTo */
   tees(stream: WritableStream<T>): sflow<T>;
 
-  forkTo(fn: (s: sflow<T>) => void | any): sflow<T>; // fn must fisrt
+  forkTo(fn: (s: sflow<T>) => undefined | any): sflow<T>; // fn must fisrt
   forkTo(stream: WritableStream<T>): sflow<T>;
   /**
    * fork
@@ -228,7 +228,9 @@ export interface BaseFlow<T> {
   toFirst: () => Promise<T>;
 
   /** Get first item from stream that matches predicate, and terminate stream */
-  toFirstMatch: (predicate: (value: T, index: number) => Awaitable<any>) => Promise<T | undefined>;
+  toFirstMatch: (
+    predicate: (value: T, index: number) => Awaitable<any>,
+  ) => Promise<T | undefined>;
 
   /** Get one item from stream
    * throws if more than 1 item is emitted
@@ -259,95 +261,95 @@ export interface BaseFlow<T> {
 
 type ArrayFlow<T> = T extends ReadonlyArray<any>
   ? {
-    // inverse of chunk
-    flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
-  }
+      // inverse of chunk
+      flat: (...args: Parameters<typeof flats<T>>) => sflow<T[number]>;
+    }
   : {};
 
 type DictionaryFlow<T> = T extends Record<string, any>
   ? {
-    unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
-      key: K
-    ): sflow<Unwinded<T, K>>;
-    mapAddField: <K extends string, R>(
-      ...args: Parameters<typeof mapAddFields<K, T, R>>
-    ) => sflow<
-      Omit<T, K> & {
-        [key in K]: R;
-      }
-    >;
-    mapMixin: <
-      T extends Record<string, any>,
-      R extends Record<string, any>,
-    >(fn: (x: T, i: number) => Awaitable<R>) => sflow<Omit<T, keyof R> & R>;
-  } : {};
+      unwind<K extends FieldPathByValue<T, ReadonlyArray<any>>>(
+        key: K,
+      ): sflow<Unwinded<T, K>>;
+      mapAddField: <K extends string, R>(
+        ...args: Parameters<typeof mapAddFields<K, T, R>>
+      ) => sflow<
+        Omit<T, K> & {
+          [key in K]: R;
+        }
+      >;
+      mapMixin: <T extends Record<string, any>, R extends Record<string, any>>(
+        fn: (x: T, i: number) => Awaitable<R>,
+      ) => sflow<Omit<T, keyof R> & R>;
+    }
+  : {};
 
 type StreamsFlow<T> = T extends ReadableStream<infer R>
   ? {
-    // merge multiupstreams
-    /** @deprecated use confluencesByBreth */
-    confluence(...args: Parameters<typeof confluences<R>>): sflow<R>;
-    confluenceByZip(): sflow<R>;
-    confluenceByConcat(): sflow<R>;
-    confluenceByParallel(): sflow<R>;
-    confluenceByAscend(ordFn: (x: R) => Ord): sflow<R>;
-    confluenceByDescend(ordFn: (x: R) => Ord): sflow<R>;
-    // concat()
-  }
+      // merge multiupstreams
+      /** @deprecated use confluencesByBreth */
+      confluence(...args: Parameters<typeof confluences<R>>): sflow<R>;
+      confluenceByZip(): sflow<R>;
+      confluenceByConcat(): sflow<R>;
+      confluenceByParallel(): sflow<R>;
+      confluenceByAscend(ordFn: (x: R) => Ord): sflow<R>;
+      confluenceByDescend(ordFn: (x: R) => Ord): sflow<R>;
+      // concat()
+    }
   : {};
 
 type TextFlow<T> = T extends string
   ? {
-    join: (sep: string) => sflow<string>;
-    lines: (
-      ...args: Parameters<typeof lines>
-    ) => sflow<
-      ReturnType<typeof lines> extends TransformStream<any, infer R>
-      ? R
-      : never
-    >;
-    match: (
-      ...args: Parameters<typeof matchs>
-    ) => sflow<
-      ReturnType<typeof matchs> extends TransformStream<any, infer R>
-      ? R
-      : never
-    >;
-    matchAll: (
-      ...args: Parameters<typeof matchAlls>
-    ) => sflow<
-      ReturnType<typeof matchAlls> extends TransformStream<any, infer R>
-      ? R
-      : never
-    >;
-    replace: (
-      ...args: Parameters<typeof replaces>
-    ) => sflow<
-      ReturnType<typeof replaces> extends TransformStream<any, infer R>
-      ? R
-      : never
-    >;
-    replaceAll: (
-      ...args: Parameters<typeof replaceAlls>
-    ) => sflow<
-      ReturnType<typeof replaceAlls> extends TransformStream<any, infer R>
-      ? R
-      : never
-    >;
-  }
+      join: (sep: string) => sflow<string>;
+      lines: (
+        ...args: Parameters<typeof lines>
+      ) => sflow<
+        ReturnType<typeof lines> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+      match: (
+        ...args: Parameters<typeof matchs>
+      ) => sflow<
+        ReturnType<typeof matchs> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+      matchAll: (
+        ...args: Parameters<typeof matchAlls>
+      ) => sflow<
+        ReturnType<typeof matchAlls> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+      replace: (
+        ...args: Parameters<typeof replaces>
+      ) => sflow<
+        ReturnType<typeof replaces> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+      replaceAll: (
+        ...args: Parameters<typeof replaceAlls>
+      ) => sflow<
+        ReturnType<typeof replaceAlls> extends TransformStream<any, infer R>
+          ? R
+          : never
+      >;
+    }
   : {};
 
 type ToResponse<T> =
   // toResponse
   T extends string | Uint8Array
-  ? {
-    toResponse: () => Response;
-    text: () => Promise<string>;
-    json: () => Promise<any>;
-    blob: () => Promise<Blob>;
-    arrayBuffer: () => Promise<ArrayBuffer>;
-  }
-  : {};
+    ? {
+        toResponse: () => Response;
+        text: () => Promise<string>;
+        json: () => Promise<any>;
+        blob: () => Promise<Blob>;
+        arrayBuffer: () => Promise<ArrayBuffer>;
+      }
+    : {};
 
 export type sflowType<T extends sflow<any>> = T extends sflow<infer R>
   ? R
@@ -373,7 +375,7 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     srcs.length === 1
       ? (toStream(srcs[0]!) as ReadableStream<T>)
       : (concatStream(srcs) as ReadableStream<T>);
-  // @ts-ignore todo
+  // @ts-expect-error todo
   return Object.assign(r, {
     _type: null as T,
     get readable() {
@@ -442,7 +444,7 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     merge: (...args: FlowSource<T>[]) => sflow(r.pipeThrough(merges(...args))),
 
     concat: (srcs: FlowSource<FlowSource<T>>) =>
-      // @ts-ignore streams only
+      // @ts-expect-error streams only
       sflow(r.pipeThrough(concats(srcs))),
 
     confluence: (
@@ -451,32 +453,32 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
 
     confluenceByZip: () =>
       sflow(r)
-        // @ts-ignore upstream accepts streams only
+        // @ts-expect-error upstream accepts streams only
         .by(confluences()),
     confluenceByConcat: () =>
       sflow(r)
-        // @ts-ignore upstream accepts streams only
+        // @ts-expect-error upstream accepts streams only
         .by((srcs) => concatStream(srcs)),
     confluenceByParallel: () =>
       sflow(r)
-        // @ts-ignore upstream accepts streams only
+        // @ts-expect-error upstream accepts streams only
         .by((srcs: ReadableStream<FlowSource<T>>) =>
           sflow(srcs)
             .toArray()
-            .then((srcs: FlowSource<T>[]) => mergeStream(...srcs))
+            .then((srcs: FlowSource<T>[]) => mergeStream(...srcs)),
         )
-        // @ts-ignore upstream accepts streams only
+        // @ts-expect-error upstream accepts streams only
         .confluence(),
     confluenceByAscend: (ordFn: (x: T) => Ord) =>
       sflow(r)
         .chunk()
-        // @ts-ignore upstream accepts streams only
+        // @ts-expect-error upstream accepts streams only
         .map((srcs) => mergeStreamsByAscend(ordFn, srcs))
         .confluence(),
     confluenceByDescend: (ordFn: (x: T) => Ord) =>
       sflow(r)
         .chunk()
-        // @ts-ignore upstream accepts streams only
+        // @ts-expect-error upstream accepts streams only
         .map((srcs) => mergeStreamsByDescend(ordFn, srcs))
         .confluence(),
 
@@ -612,16 +614,16 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     text: (init?: ResponseInit) =>
       new Response(
         (r as ReadableStream<string | Uint8Array>).pipeThrough(
-          new PolyfillTextEncoderStream()
+          new PolyfillTextEncoderStream(),
         ),
-        init
+        init,
       ).text(),
     json: (init?: ResponseInit) =>
       new Response(
         (r as ReadableStream<string | Uint8Array>).pipeThrough(
-          new PolyfillTextEncoderStream()
+          new PolyfillTextEncoderStream(),
         ),
-        init
+        init,
       ).json(),
     blob: (init?: ResponseInit) => new Response(sflow(r), init).blob(),
     arrayBuffer: (init?: ResponseInit) => new Response(r, init).arrayBuffer(),
@@ -632,7 +634,7 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
 }
 
 export const _tees: {
-  <T>(fn: (s: sflow<T>) => void | any): TransformStream<T, T>;
+  <T>(fn: (s: sflow<T>) => undefined | any): TransformStream<T, T>;
   <T>(stream?: WritableStream<T>): TransformStream<T, T>;
 } = (arg) => {
   if (!arg) return new TransformStream();
@@ -640,7 +642,7 @@ export const _tees: {
   const fn = arg;
   const { writable, readable } = new TransformStream();
   const [a, b] = readable.tee();
-  // @ts-ignore
+  // @ts-expect-error
   fn(sflow(a));
   return { writable, readable: b };
 };
@@ -657,12 +659,12 @@ export const _throughs: {
 };
 /**
  * byLazy is a lazy version of by, it only pull upstream when downstream pull.
- * 
+ *
  * Warning: does not work with empty stream yet.
  */
 export function _byLazy<T, R>(
   r: ReadableStream<T>,
-  t: TransformStream<T, R>
+  t: TransformStream<T, R>,
 ): sflow<R> {
   const reader = r.getReader();
   const tw = t.writable.getWriter();
@@ -671,7 +673,7 @@ export function _byLazy<T, R>(
     new ReadableStream<R>(
       {
         start: async (ctrl) => {
-          (async function () {
+          (async () => {
             while (true) {
               const { done, value } = await tr.read();
               if (done) return ctrl.close();
@@ -679,7 +681,7 @@ export function _byLazy<T, R>(
             }
           })();
         },
-        pull: async (ctrl) => {
+        pull: async (_ctrl) => {
           const { done, value } = await reader.read();
           if (done) return tw.close();
           await tw.write(value);
@@ -689,8 +691,7 @@ export function _byLazy<T, R>(
           tr.cancel(r);
         },
       },
-      { highWaterMark: 0 }
-    )
+      { highWaterMark: 0 },
+    ),
   );
 }
-

@@ -16,9 +16,9 @@ export function csvFormats(
 ): TransformStream<Record<string, any>, string> {
   const _header = typeof header === "string" ? header.split(",") : header;
   return new TransformStream({
-    start: (ctrl) => ctrl.enqueue(_header.join(",") + "\n"),
+    start: (ctrl) => ctrl.enqueue(`${_header.join(",")}\n`),
     transform: (chunk, ctrl) =>
-      ctrl.enqueue(csvFormatBody([chunk], _header) + "\n"),
+      ctrl.enqueue(`${csvFormatBody([chunk], _header)}\n`),
   });
 }
 
@@ -32,12 +32,12 @@ export function csvParses(
   header: string | string[],
 ): TransformStream<string, Record<string, any>> {
   const _header = typeof header === "string" ? header.split(",") : header;
-  let i = 0;
+  const _i = 0;
   return throughs<string, Record<string, any>>((r) =>
     r
       .pipeThrough(lines({ EOL: "LF" }))
       .pipeThrough(skips(1))
-      .pipeThrough(maps((line) => csvParse(_header + "\n" + line)[0])),
+      .pipeThrough(maps((line) => csvParse(`${_header}\n${line}`)[0])),
   );
 }
 
@@ -53,9 +53,9 @@ export function tsvFormats(
   const sep = "\t";
   const _header = typeof header === "string" ? header.split(sep) : header;
   return new TransformStream({
-    start: (ctrl) => ctrl.enqueue(_header.join(sep) + "\n"),
+    start: (ctrl) => ctrl.enqueue(`${_header.join(sep)}\n`),
     transform: (chunk, ctrl) =>
-      ctrl.enqueue(tsvFormatBody([chunk], _header) + "\n"),
+      ctrl.enqueue(`${tsvFormatBody([chunk], _header)}\n`),
   });
 }
 
@@ -69,11 +69,11 @@ export function tsvParses(
   header: string | string[],
 ): TransformStream<string, Record<string, any>> {
   const _header = typeof header === "string" ? header.split("\t") : header;
-  let i = 0;
+  const _i = 0;
   return throughs<string, Record<string, any>>((r) =>
     r
       .pipeThrough(lines({ EOL: "LF" }))
       .pipeThrough(skips(1))
-      .pipeThrough(maps((line) => tsvParse(_header + "\n" + line)[0])),
+      .pipeThrough(maps((line) => tsvParse(`${_header}\n${line}`)[0])),
   );
 }

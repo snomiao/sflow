@@ -42,7 +42,7 @@ describe.skip("throttles", () => {
       .forEach(() => sleep(20))
       .throttle(80)
       // calculate interval
-      .map(() => +new Date())
+      .map(() => Date.now())
       .convolve(2)
       .forEach(([a, b]) => {
         const interval = b - a;
@@ -76,7 +76,7 @@ describe.skip("throttles", () => {
       .forEach(() => sleep(80))
       // .forEach(() => sleep(80))
       // calculate interval
-      .map(() => +new Date())
+      .map(() => Date.now())
       .convolve(2)
       .forEach(([a, b]) => {
         const interval = b - a;
@@ -91,7 +91,7 @@ describe.skip("throttles", () => {
       .peek(() => sleep(200))
       .peek(() => sleep(200))
       // calculate interval
-      .map(() => +new Date())
+      .map(() => Date.now())
       .convolve(2)
       .forEach(([a, b]) => {
         const interval = b - a;

@@ -3,7 +3,7 @@ import type { Awaitable } from "./Awaitable";
 export function mapAddFields<
   K extends string,
   T extends Record<string, any>,
-  R extends any,
+  R,
 >(key: K, fn: (x: T, i: number) => Awaitable<R>) {
   let i = 0;
   return new TransformStream<

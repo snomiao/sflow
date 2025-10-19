@@ -22,7 +22,7 @@ export const distributeBys = <T>(
         const ord = await groupFn(chunk);
         // create stream
         if (!streams.has(ord))
-          await (async function () {
+          await (async () => {
             const t = new TransformStream();
             await w.write(t.readable);
             const r = { ...t, writer: t.writable.getWriter() };

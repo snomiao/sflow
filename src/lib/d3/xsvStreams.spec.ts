@@ -2,6 +2,7 @@ import { mergeAscends } from "../../mergeAscends";
 import { rangeFlow } from "../../rangeStream";
 import { sflow } from "../../sflow";
 import { csvParses, tsvFormats } from "./xsvStreams";
+
 it("reads", async () => {
   expect(await controlFlow().log().toCount()).toEqual(5);
 });
@@ -21,7 +22,7 @@ it("works", async () => {
       .map((e) => ({ ...e, x: 0, v: 0 })) // add speed placeholder
       // accelerate model
       .forEach(
-        (function () {
+        (() => {
           let x = 0,
             v = 0,
             t = 0,

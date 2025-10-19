@@ -41,7 +41,7 @@ it.skip("page caches stream", async () => {
     return { data, next: data ? page + 1 : null };
   })
     .flat()
-    .byLazy(logs((e) => "head data: " + e))
+    .byLazy(logs((e) => `head data: ${e}`))
     .byLazy(maps(async (e) => (await sleep(10), e)))
     .byLazy(maps(async (e) => (await sleep(10), e)))
     .byLazy(maps(async (e) => (await sleep(10), e)))

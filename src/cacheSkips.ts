@@ -9,8 +9,8 @@ import { never } from "./never";
  * Only emit unmet contents
  *
  * Once flow done, cache latest contents in windowSize, and skip from cached content next time
- * 
- * 
+ *
+ *
  */
 export function cacheSkips<T>(
   store: {
@@ -28,13 +28,13 @@ export function cacheSkips<T>(
         key?: string;
         /** defaults to 1, incase first n header may modify by others you could set it as 2 */
         windowSize?: number;
-      }
+      },
 ) {
   // parse options
   const {
     key = new Error().stack ?? DIE("missing cache key"),
     windowSize = 1,
-  } = typeof _options === "string" ? { key: _options } : _options ?? {};
+  } = typeof _options === "string" ? { key: _options } : (_options ?? {});
   const chunks: T[] = [];
   const cachePromise = store.get(key);
   return new TransformStream({
@@ -48,7 +48,7 @@ export function cacheSkips<T>(
       if (cachedContents?.length) {
         await store.set(
           key,
-          [...chunks, ...cachedContents].slice(0, windowSize)
+          [...chunks, ...cachedContents].slice(0, windowSize),
         );
         ctrl.terminate();
         return await never();

@@ -3,7 +3,7 @@
  * Note: will emit all
  */
 export function chunkIntervals<T>(interval: number = 0) {
-  let chunks: T[] = [];
+  const chunks: T[] = [];
   let id: null | ReturnType<typeof setInterval> = null;
   return new TransformStream<T, T[]>({
     start: (ctrl) => {

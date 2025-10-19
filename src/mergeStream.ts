@@ -29,7 +29,7 @@ export const mergeStream: {
         [Symbol.asyncIterator]: streamAsyncIterator,
       }))
         await w.write(chunk);
-    })
+    }),
   )
     .then(async () => w.close())
     .catch((error) => {

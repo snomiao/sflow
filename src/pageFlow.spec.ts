@@ -2,6 +2,7 @@ import { expectTypeOf } from "expect-type";
 import Keyv from "keyv";
 import { KeyvCachedWith } from "keyv-cached-with";
 import { pageFlow } from "./index";
+
 it("works with number", async () => {
   await pageFlow(0, (page) => {
     expectTypeOf(page).toBeNumber();

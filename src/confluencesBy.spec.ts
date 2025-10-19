@@ -19,12 +19,12 @@ it("Confluence Streams Basic", async () => {
   expect(
     await f()
       .confluenceByAscend((x) => x + 1)
-      .toArray()
+      .toArray(),
   ).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   expect(
     await f()
       .confluenceByDescend((x) => -x)
-      .toArray()
+      .toArray(),
   ).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 });
 
@@ -50,12 +50,12 @@ describe("Confluence Streams With reversed delay", async () => {
     expect(
       await f()
         .confluenceByAscend((x) => x + 1)
-        .toArray()
+        .toArray(),
     ).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     expect(
       await f()
         .confluenceByDescend((x) => -x)
-        .toArray()
+        .toArray(),
     ).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 

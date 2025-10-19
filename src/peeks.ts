@@ -7,7 +7,7 @@ export function peeks<T>(fn: (x: T, i: number) => Awaitable<void>) {
     transform: async (chunk, ctrl) => {
       ctrl.enqueue(chunk);
       const ret = fn(chunk, i++);
-      const val = ret instanceof Promise ? await ret : ret;
+      const _val = ret instanceof Promise ? await ret : ret;
     },
   });
 }

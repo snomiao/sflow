@@ -6,7 +6,7 @@ it("works", async () => {
   const rs = new ReadableStream<number[]>(
     {
       pull: (ctrl) => {
-        console.log("pull st " + i);
+        console.log(`pull st ${i}`);
         ctrl.enqueue([i, i + 1]);
         ++i < 2 || ctrl.close();
       },
@@ -20,12 +20,12 @@ it("works", async () => {
   const rs = new ReadableStream<number[]>(
     {
       pull: (ctrl) => {
-        console.log("pull st " + i);
+        console.log(`pull st ${i}`);
         ctrl.enqueue([i, i + 1]);
         ++i < 2 || ctrl.close();
       },
     },
-    { highWaterMark: 0 }
+    { highWaterMark: 0 },
   );
   expect(await sflow(rs).flat().log().toArray()).toEqual([0, 1, 1, 2]);
 });

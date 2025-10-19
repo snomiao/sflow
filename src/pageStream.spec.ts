@@ -82,13 +82,13 @@ it("works with cacheTails", async () => {
 });
 
 it("works with signal polling", async () => {
-  const st = +new Date();
+  const st = Date.now();
   let id = 0;
   const fetcher = async () => {
-    const now = +new Date();
+    const now = Date.now();
     if (st + 1000 < now) DIE("no data");
     if (id === 3) return "END"; // done
-    return "signal" + id++;
+    return `signal${id++}`;
   };
 
   expect(

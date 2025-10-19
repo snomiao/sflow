@@ -72,7 +72,7 @@ describe("chunkTransforms", () => {
     const mockController = createMockController<string>();
     const transformMock = jest.fn(async (chunks: string[]) => {
       mockController.enqueue(chunks.join(""));
-      return chunks.toSpliced(0,1)
+      return chunks.toSpliced(0, 1);
     });
     const transformStream = chunkTransforms({
       transform: transformMock,

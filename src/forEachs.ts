@@ -6,8 +6,8 @@ type asyncMapOptions = {
 
 /** For each loop on stream, you can modify the item by x.property = 123 */
 export function forEachs<T>(
-  fn: (x: T, i: number) => Awaitable<void | any>,
-  options?: asyncMapOptions
+  fn: (x: T, i: number) => Awaitable<undefined | any>,
+  options?: asyncMapOptions,
 ) {
   const concurrency = options?.concurrency ?? 1;
 
@@ -26,8 +26,8 @@ export function forEachs<T>(
 
   // If concurrency > 1, use parallel processing while maintaining order
   let i = 0;
-  let promises: Awaitable<void | any>[] = [];
-  let chunks: T[] = [];
+  const promises: Awaitable<undefined | any>[] = [];
+  const chunks: T[] = [];
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
       promises.push(fn(chunk, i++));

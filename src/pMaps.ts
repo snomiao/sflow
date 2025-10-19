@@ -5,17 +5,15 @@ type asyncMapOptions = {
 };
 
 /* map a stream by parallel, return them in original order */
-export const pMaps: {
-  <T, R>(
-    fn: (x: T, i: number) => Awaitable<R>,
-    options?: asyncMapOptions,
-  ): TransformStream<T, R>;
-} = <T, R>(
+export const pMaps: <T, R>(
+  fn: (x: T, i: number) => Awaitable<R>,
+  options?: asyncMapOptions,
+) => TransformStream<T, R> = <T, R>(
   fn: (x: T, i: number) => Awaitable<R>,
   options: asyncMapOptions = {},
 ) => {
   let i = 0;
-  let promises: Awaitable<R>[] = [];
+  const promises: Awaitable<R>[] = [];
   return new TransformStream<T, R>({
     transform: async (chunk, ctrl) => {
       promises.push(fn(chunk, i++));

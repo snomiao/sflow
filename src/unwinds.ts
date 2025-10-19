@@ -1,6 +1,6 @@
 import { unwind } from "unwind-array";
-import type { Unwinded } from "./Unwinded";
 import { flatMaps } from "./flatMaps";
+import type { Unwinded } from "./Unwinded";
 
 export function unwinds<
   T extends Record<string, any>,

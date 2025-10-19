@@ -1,14 +1,13 @@
-type NODE = ReadableStream | WritableStream | TransformStream
+type NODE = ReadableStream | WritableStream | TransformStream;
 
-const graph: {
-    nodes: NODE[],
-    edges: { from: NODE, to: NODE }[]
+const _graph: {
+  nodes: NODE[];
+  edges: { from: NODE; to: NODE }[];
 } = {
-    nodes: [
-        // ...
-    ],
-    edges: [
-        // ...
-    ]
-}
-
+  nodes: [
+    // ...
+  ],
+  edges: [
+    // ...
+  ],
+};

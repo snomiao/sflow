@@ -1,4 +1,5 @@
 import { sflow } from "./sflow";
+
 it("chunkBy", async () => {
   const out = await sflow([1, 1.1, 1.00002, 1.9, 3, 3, 3, 3, 4, 5, 4, 3])
     .chunkBy((x) => Math.floor(x))

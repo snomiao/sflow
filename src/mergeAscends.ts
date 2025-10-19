@@ -1,13 +1,12 @@
 import DIE from "phpdie";
-import { sortBy, type Ord } from "rambda";
+import { type Ord, sortBy } from "rambda";
 import { toStream } from "./froms";
-import { sflow, type FlowSource } from "./index";
+import { type FlowSource, sflow } from "./index";
 import { streamAsyncIterator } from "./streamAsyncIterator";
+
 interface MergeBy {
   <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): sflow<T>;
-  <T>(ordFn: (input: T) => Ord): {
-    (srcs: FlowSource<FlowSource<T>>): sflow<T>;
-  };
+  <T>(ordFn: (input: T) => Ord): (srcs: FlowSource<FlowSource<T>>) => sflow<T>;
 }
 
 /**
@@ -36,14 +35,14 @@ export const mergeAscends: MergeBy = <T>(
             () => undefined as PromiseWithResolvers<void> | undefined,
           );
           const drains = srcs.map(() => false);
-          let lastMinValue: T | undefined = undefined;
+          let lastMinValue: T | undefined;
           await Promise.all(
             srcs.map(async (src, i) => {
               for await (const value of sflow(src)) {
                 while (slots[i] !== undefined) {
                   if (shiftMinValueIfFull()) continue;
                   pendingSlotRemoval[i] = Promise.withResolvers<void>();
-                  await pendingSlotRemoval[i]!.promise; // wait for this slot empty;
+                  await pendingSlotRemoval[i]?.promise; // wait for this slot empty;
                 }
                 slots[i] = { value: value as T };
                 shiftMinValueIfFull();
@@ -68,7 +67,7 @@ export const mergeAscends: MergeBy = <T>(
                 const fullSlots = slots
                   .flatMap((e) => (e !== undefined ? [e] : []))
                   .map((e) => e.value);
-                const minValue = sortBy(ordFn, fullSlots)[0]!
+                const minValue = sortBy(ordFn, fullSlots)[0]!;
                 const minIndex = slots.findIndex((e) => e?.value === minValue);
                 if (lastMinValue !== undefined) {
                   const ordered = sortBy(ordFn, [lastMinValue, minValue]);
@@ -127,7 +126,7 @@ export const mergeDescends: MergeBy = <T>(
             () => undefined as PromiseWithResolvers<void> | undefined,
           );
           const drains = srcs.map(() => false);
-          let lastMaxValue: T | undefined = undefined;
+          let lastMaxValue: T | undefined;
           await Promise.all(
             srcs.map(async (src, i) => {
               const stream = toStream(src);
@@ -137,7 +136,7 @@ export const mergeDescends: MergeBy = <T>(
                 while (slots[i] !== undefined) {
                   if (shiftMaxValueIfFull()) continue;
                   pendingSlotRemoval[i] = Promise.withResolvers<void>();
-                  await pendingSlotRemoval[i]!.promise; // wait for this slot empty;
+                  await pendingSlotRemoval[i]?.promise; // wait for this slot empty;
                 }
                 slots[i] = { value: value as T };
                 shiftMaxValueIfFull();
@@ -162,7 +161,7 @@ export const mergeDescends: MergeBy = <T>(
                 const fullSlots = slots
                   .flatMap((e) => (e !== undefined ? [e] : []))
                   .map((e) => e.value);
-                const maxValue = sortBy(ordFn, fullSlots).toReversed()[0]!
+                const maxValue = sortBy(ordFn, fullSlots).toReversed()[0]!;
                 const maxIndex = slots.findIndex((e) => e?.value === maxValue);
                 if (lastMaxValue !== undefined) {
                   const ordered = sortBy(ordFn, [maxValue, lastMaxValue]);

@@ -7,11 +7,11 @@ import type { Awaitable } from "./Awaitable";
  * stream.
  * If no function is provided, it will filter out null and undefined values.
  * This is useful for creating a stream that only contains non-null and non-undefined values.
- * 
+ *
  * Note: empty string is considered a valid value and will not be filtered out.
- * 
+ *
  * if you want to filter out empty strings, you can "Boolean" the filter function.
- * 
+ *
  * @param fn Optional function to determine if a value should be included.
  * @returns A TransformStream that filters the input stream.
  * @template T The type of the input stream.

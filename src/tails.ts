@@ -1,5 +1,5 @@
 export function tails<T>(n = 1): TransformStream<T, T> {
-  let chunks: T[] = [];
+  const chunks: T[] = [];
   return new TransformStream({
     transform: (chunk) => {
       chunks.push(chunk);

@@ -22,8 +22,7 @@ it("works", async () => {
     .buffer(2)
     .debounce(100)
     .filter()
-    .map((n) => [String(n)])
-    .flat()
+    .flatMap((n) => [String(n)])
     .flatMap((n) => [String(n)])
     .tees((s) => s.pipeTo(nils())) // Warn: read a flow with different speed may cause memory leak
     .limit(1)

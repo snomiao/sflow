@@ -151,7 +151,7 @@ describe("concats", () => {
     expect(result).toEqual([1, 2, 3]);
 
     promise.resolve();
-    
+
     await readOne();
     expect(result).toEqual([1, 2, 3, 4]);
     await readOne();

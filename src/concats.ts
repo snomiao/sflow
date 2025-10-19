@@ -12,9 +12,9 @@ type SourcesType<SRCS extends FlowSource<FlowSource<any>>> =
  * concats     : returns a TransformStream, which also concats upstream
  * concatStream: returns a ReadableStream, which doesnt have upstream
  */
-export const concats: {
-  <T>(streams?: FlowSource<FlowSource<T>>): TransformStream<T, T>;
-} = (srcs?: FlowSource<FlowSource<any>>) => {
+export const concats: <T>(
+  streams?: FlowSource<FlowSource<T>>,
+) => TransformStream<T, T> = (srcs?: FlowSource<FlowSource<any>>) => {
   if (!srcs) return new TransformStream();
   const upstream = new TransformStream();
   return {

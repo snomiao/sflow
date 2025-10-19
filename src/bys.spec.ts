@@ -6,7 +6,7 @@ it("should return a transform stream when no argument is provided", async () => 
   const transform = bys();
   expect(transform).toBeInstanceOf(TransformStream);
   expect(
-    await sflow(sflow([1, 2, 3]).pipeThrough(transform)).toArray()
+    await sflow(sflow([1, 2, 3]).pipeThrough(transform)).toArray(),
   ).toEqual([1, 2, 3]);
 });
 
@@ -23,7 +23,7 @@ it("should handle a transform stream as argument", async () => {
   // Test the transformation
   const writer = transform.writable.getWriter();
   const reader = transform.readable.getReader();
-  (async function () {
+  (async () => {
     await writer.write(1);
     await writer.write(2);
     await writer.write(3);
@@ -56,7 +56,7 @@ it("should handle a function as argument", async () => {
   // Test the transformation
   const writer = transform.writable.getWriter();
   const reader = transform.readable.getReader();
-  (async function () {
+  (async () => {
     await writer.write(1);
     await writer.write(2);
     await writer.write(3);
@@ -89,7 +89,7 @@ it("should handle async function transformation", async () => {
   // Test the transformation
   const writer = transform.writable.getWriter();
   const reader = transform.readable.getReader();
-  (async function () {
+  (async () => {
     await writer.write(1);
     await writer.write(2);
     await writer.write(3);
@@ -116,7 +116,7 @@ it("should work with sflow integration", async () => {
           },
         });
         return readable.pipeThrough(transform);
-      })
+      }),
     )
     .toArray();
 

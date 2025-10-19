@@ -12,4 +12,3 @@ export const throughs: {
   const { writable, readable } = new TransformStream();
   return { writable, readable: fn(readable) };
 };
-

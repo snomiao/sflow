@@ -2,10 +2,10 @@ import type { AsyncOrSync } from "ts-essentials";
 
 /** unwrap promises of readable stream */
 export function unpromises<T>(
-  promise: AsyncOrSync<ReadableStream<T>>
+  promise: AsyncOrSync<ReadableStream<T>>,
 ): ReadableStream<T> {
   const tr = new TransformStream<T, T>();
-  (async function () {
+  (async () => {
     const s = await promise;
     await s.pipeTo(tr.writable);
   })()
@@ -20,7 +20,7 @@ export function unpromises<T>(
 
 /** unwrap promises of readable stream */
 export function unpromisesFn<Args extends any[], T>(
-  fn: (...args: Args) => Promise<ReadableStream<T>>
+  fn: (...args: Args) => Promise<ReadableStream<T>>,
 ): (...args: Args) => ReadableStream<T> {
   return (...args: Args) => unpromises(fn(...args));
 }

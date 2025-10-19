@@ -2,7 +2,7 @@ import { sflow } from "./sf";
 
 it("Works merge parallel", async () => {
   const { readable, writable } = new TransformStream<number, number>();
-  (async function () {
+  (async () => {
     const w = writable.getWriter();
     console.log("writing");
     await Promise.all([
@@ -23,7 +23,7 @@ it("Works merge parallel 2", async () => {
   const srcs = [sflow([1, 2, 3]), sflow([4, 5, 6])];
 
   const { readable, writable } = new TransformStream<number, number>();
-  (async function () {
+  (async () => {
     const w = writable.getWriter();
     console.log("writing");
     await sflow(srcs)

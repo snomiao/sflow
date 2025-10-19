@@ -31,7 +31,7 @@ it.skip("passive", () => {
         start: (e) => {
           e.signal;
         },
-        write: async (c, ctrl) => {
+        write: async (_c, _ctrl) => {
           await sleep(10);
         },
       },

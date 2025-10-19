@@ -2,7 +2,7 @@ import type { Awaitable } from "./Awaitable";
 
 export type ChunkTransformer<T> = (
   chunks: T[],
-  ctrl: TransformStreamDefaultController<T>
+  ctrl: TransformStreamDefaultController<T>,
 ) => Awaitable<T[]>;
 
 /**

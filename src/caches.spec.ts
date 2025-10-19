@@ -39,20 +39,17 @@ it("caches stream", async () => {
 it("caches stream tail", async () => {
   const store = new Keyv<any>({ ttl: 10e3 });
   const heavyFlowHead1 = () => sflow([3, 2, 1]);
-  const heavyFlowHead2 = () => sflow([5, 4, 3, 2, 1]);
-  const heavyFlowHead3 = () => sflow([5, 4, 3, 2, 1]);
-  const heavyFlowHead = () => sflow([6]);
-  const fn1 = jest.fn();
+  const _heavyFlowHead2 = () => sflow([5, 4, 3, 2, 1]);
+  const _heavyFlowHead3 = () => sflow([5, 4, 3, 2, 1]);
+  const _heavyFlowHead = () => sflow([6]);
+  const _fn1 = jest.fn();
   const fn2 = jest.fn();
-  const fn3 = jest.fn();
-  const fn4 = jest.fn();
-  const fn6 = jest.fn();
+  const _fn3 = jest.fn();
+  const _fn4 = jest.fn();
+  const _fn6 = jest.fn();
 
   // 1st time, we got page emit 3,2,1, cache [3,2,1]
-  await heavyFlowHead1()
-    .forEach(fn2)
-    .by(cacheTails(store, "page"))
-    .toArray();
+  await heavyFlowHead1().forEach(fn2).by(cacheTails(store, "page")).toArray();
   expect(fn2).toHaveBeenCalledTimes(3);
   expect(await store.get("page")).toEqual([3, 2, 1]);
 
@@ -79,5 +76,3 @@ it("caches stream tail", async () => {
   // expect(fn1).toHaveBeenCalledTimes(1);
   // expect(await store.get("page")).toEqual([5, 4, 3, 2, 1]);
 });
-
-

@@ -26,6 +26,6 @@ export function rangeFlow(
 ): sflow<number>;
 export function rangeFlow(maxExclusive: number): sflow<number>;
 export function rangeFlow(...args: number[]) {
-  // @ts-ignore
+  // @ts-expect-error
   return sflow(rangeStream(...args));
 }

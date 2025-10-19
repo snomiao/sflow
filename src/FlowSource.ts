@@ -1,4 +1,4 @@
-import { type ReadableLike } from "web-streams-extensions";
+import type { ReadableLike } from "web-streams-extensions";
 
 // export type FlowSource<T> =
 //   | Iterable<T>

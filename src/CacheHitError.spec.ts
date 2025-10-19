@@ -31,7 +31,7 @@ it("handles cache hit error when stream start", async () => {
       start: (ctrl) => {
         ctrl.error(new CacheHitError("Cache hit when stream start"));
       },
-      write: (chunk, ctrl) => {
+      write: (chunk, _ctrl) => {
         console.log("write chunk: ", chunk);
       },
     },
@@ -50,7 +50,7 @@ it("handles cache hit error with start pipeTo", async () => {
   const rs = new ReadableStream(
     {
       pull: (ctrl) => {
-        console.log("pull st " + i);
+        console.log(`pull st ${i}`);
         ctrl.enqueue(i);
         ++i < 10 || ctrl.close();
       },
@@ -82,7 +82,7 @@ it("handles cache hit error with pipeTo", async () => {
   let i = 0;
   const rs = new ReadableStream({
     pull: (ctrl) => {
-      console.log("pull" + i);
+      console.log(`pull${i}`);
       ctrl.enqueue(i);
       ++i < 10 || ctrl.close();
     },

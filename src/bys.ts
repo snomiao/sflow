@@ -4,7 +4,7 @@ import { unpromises } from "./unpromises";
 export function bys<T>(stream?: TransformStream<T, T>): TransformStream<T, T>;
 export function bys<T, R>(stream: TransformStream<T, R>): TransformStream<T, R>;
 export function bys<T, R>(
-  fn: (s: ReadableStream<T>) => AsyncOrSync<ReadableStream<R>>
+  fn: (s: ReadableStream<T>) => AsyncOrSync<ReadableStream<R>>,
 ): TransformStream<T, R>;
 export function bys(arg: any) {
   if (!arg) return new TransformStream();

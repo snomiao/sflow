@@ -9,7 +9,7 @@ type MapFnIndexed<T> = (x: T, i?: number) => Awaitable<any>;
  * log the value and index and return as original stream, handy to debug.
  * Note: stream won't await the log function.
  */
-export function logs<T>(mapFn: MapFnIndexed<T> = (s, i) => s) {
+export function logs<T>(mapFn: MapFnIndexed<T> = (s, _i) => s) {
   return bys(
     peeks<T>(async (e, i) => {
       const ret = mapFn(e, i);

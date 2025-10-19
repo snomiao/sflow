@@ -1,6 +1,5 @@
-
 export const tees: {
-  <T>(fn: (s: ReadableStream<T>) => void | any): TransformStream<T, T>;
+  <T>(fn: (s: ReadableStream<T>) => undefined | any): TransformStream<T, T>;
   <T>(stream?: WritableStream<T>): TransformStream<T, T>;
 } = (arg) => {
   if (!arg) return new TransformStream();
@@ -8,7 +7,7 @@ export const tees: {
   const fn = arg;
   const { writable, readable } = new TransformStream();
   const [a, b] = readable.tee();
-  // @ts-ignore
+  // @ts-expect-error
   fn(a);
   return { writable, readable: b };
 };

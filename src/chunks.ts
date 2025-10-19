@@ -1,7 +1,7 @@
 /** you could use flats to re-join buffers, default buffer length is Infinity, which will enqueue when upstream drain */
 export const buffers = chunks;
 export function chunks<T>(n: number = Infinity) {
-  let chunks: T[] = [];
+  const chunks: T[] = [];
   if (n <= 0) throw new Error("Buffer size must be greater than 0");
   return new TransformStream<T, T[]>({
     transform: async (chunk, ctrl) => {

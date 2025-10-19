@@ -1,5 +1,6 @@
 import { sflow } from "./index";
 import { riffles } from "./riffles";
+
 it("riffles string", async () => {
   const out = await sflow(["a", "b", "c"]).through(riffles("\n")).text();
   console.log(out);

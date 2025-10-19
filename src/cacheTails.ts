@@ -28,11 +28,11 @@ export function cacheTails<T>(
          * or defaults to `new Error().stack` if you r lazy enough
          */
         key?: string;
-      }
+      },
 ) {
   // parse options
   const { key = new Error().stack ?? DIE("missing cache key") } =
-    typeof _options === "string" ? { key: _options } : _options ?? {};
+    typeof _options === "string" ? { key: _options } : (_options ?? {});
   const chunks: T[] = [];
   const cachePromise = Promise.withResolvers<T[]>();
   const t = new TransformStream();

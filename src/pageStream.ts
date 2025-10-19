@@ -8,7 +8,7 @@ export type PageFetcher<Data, Cursor> = (cursor: Cursor) => Awaitable<{
 }>;
 export function pageStream<Data, Cursor>(
   initialQuery: Awaitable<Cursor>,
-  fetcher: PageFetcher<Data, Cursor>
+  fetcher: PageFetcher<Data, Cursor>,
 ): ReadableStream<Data> {
   let query: { value: Cursor } | null = null;
   return new ReadableStream(
@@ -24,6 +24,6 @@ export function pageStream<Data, Cursor>(
         query.value = next;
       },
     },
-    { highWaterMark: 0 } // lazy page
+    { highWaterMark: 0 }, // lazy page
   );
 }
