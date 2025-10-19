@@ -8,7 +8,7 @@ import { sleep } from "./utils";
 // ```typescript
 
 // Helper function to create a readable stream from an array of values
-function toReadableStream(values: any[]) {
+function toReadableStream(values: unknown[]) {
   let index = 0;
   return new ReadableStream({
     pull(controller) {

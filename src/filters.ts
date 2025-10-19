@@ -21,8 +21,8 @@ import type { Awaitable } from "./Awaitable";
  */
 export const filters: {
   <T>(): TransformStream<T, NonNullable<T>>;
-  <T>(fn: (x: T, i: number) => Awaitable<any>): TransformStream<T, T>;
-} = (fn?: (...args: any[]) => any) => {
+  <T>(fn: (x: T, i: number) => Awaitable<unknown>): TransformStream<T, T>;
+} = (fn?: (...args: unknown[]) => unknown) => {
   let i = 0;
   return new TransformStream({
     transform: async (chunk, ctrl) => {

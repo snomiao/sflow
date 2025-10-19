@@ -3,7 +3,7 @@ import { cacheSkips } from "./cacheSkips";
 import { sflow } from "./sf";
 
 it("works", async () => {
-  const kv = new Keyv<any>({ ttl: 10e3 });
+  const kv = new Keyv<unknown>({ ttl: 10e3 });
   expect(
     await sflow([4, 3, 2, 1]).by(cacheSkips(kv, "test")).toArray(),
   ).toEqual([4, 3, 2, 1]);
@@ -13,7 +13,7 @@ it("works", async () => {
 });
 
 it("works on obj", async () => {
-  const kv = new Keyv<any>({ ttl: 10e3 });
+  const kv = new Keyv<unknown>({ ttl: 10e3 });
   expect(
     await sflow([4, 3, 2, 1])
       .map((e) => ({ e }))
@@ -38,7 +38,7 @@ it("works on obj", async () => {
 });
 
 it("works on Date", async () => {
-  const kv = new Keyv<any>({ ttl: 10e3 });
+  const kv = new Keyv<unknown>({ ttl: 10e3 });
   expect(
     await sflow([4, 3, 2, 1])
       .map((e) => ({ date: new Date(e) }))

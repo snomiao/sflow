@@ -5,7 +5,9 @@ describe("concats", () => {
   const createStream = <T>(chunks: T[]): ReadableStream<T> => {
     return new ReadableStream({
       start(controller) {
-        chunks.forEach((chunk) => controller.enqueue(chunk));
+        for (const chunk of chunks) {
+          controller.enqueue(chunk);
+        }
         controller.close();
       },
     });
@@ -34,9 +36,15 @@ describe("concats", () => {
 
   it("should concatenate multiple streams in correctly order", async () => {
     const f = jest.fn();
-    const source1 = sflow([1, 2, 3]).forEach((e) => f(e));
-    const source2 = sflow([4, 5]).forEach((e) => f(e));
-    const source3 = sflow([6, 7, 8, 9]).forEach((e) => f(e));
+    const source1 = sflow([1, 2, 3]).forEach((e) => {
+      f(e);
+    });
+    const source2 = sflow([4, 5]).forEach((e) => {
+      f(e);
+    });
+    const source3 = sflow([6, 7, 8, 9]).forEach((e) => {
+      f(e);
+    });
 
     const readable = concatStream([source1, source2, source3]);
     const reader = readable.getReader();
@@ -75,7 +83,7 @@ describe("concats", () => {
   it("should handle no streams", async () => {
     const readable = concatStream();
     const reader = readable.getReader();
-    const result: any[] = [];
+    const result: unknown[] = [];
 
     let done = false;
     while (!done) {

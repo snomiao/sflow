@@ -18,7 +18,7 @@ export function cacheTails<T>(
   store: {
     has?: (key: string) => Awaitable<boolean>;
     get: (key: string) => Awaitable<T[] | undefined>;
-    set: (key: string, chunks: T[]) => Awaitable<any>;
+    set: (key: string, chunks: T[]) => Awaitable<void>;
   },
   _options?:
     | string

@@ -19,7 +19,7 @@ export function unpromises<T>(
 }
 
 /** unwrap promises of readable stream */
-export function unpromisesFn<Args extends any[], T>(
+export function unpromisesFn<Args extends unknown[], T>(
   fn: (...args: Args) => Promise<ReadableStream<T>>,
 ): (...args: Args) => ReadableStream<T> {
   return (...args: Args) => unpromises(fn(...args));

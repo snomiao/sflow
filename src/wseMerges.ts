@@ -4,4 +4,4 @@ export const wseMerges: (
   concurrent?: number,
 ) => <T>(
   src: ReadableStream<ReadableStream<T> | Promise<T>>,
-) => ReadableStream<T> = wseMerge as any;
+) => ReadableStream<T> = wseMerge as never;

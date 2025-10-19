@@ -5,7 +5,7 @@ export const throughs: {
   <T, R>(
     fn: (s: ReadableStream<T>) => ReadableStream<R>,
   ): TransformStream<T, R>;
-} = (arg: any) => {
+} = (arg: unknown) => {
   if (!arg) return new TransformStream();
   if (typeof arg !== "function") return throughs((s) => s.pipeThrough(arg));
   const fn = arg;

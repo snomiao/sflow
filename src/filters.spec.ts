@@ -218,7 +218,7 @@ describe("filters", () => {
         },
       });
 
-      const filtered = stream.pipeThrough(filters((_x: any) => true));
+      const filtered = stream.pipeThrough(filters((_x: unknown) => true));
       const reader = filtered.getReader();
       const results = [];
 
@@ -303,7 +303,7 @@ describe("filters", () => {
       });
 
       const filtered = stream.pipeThrough(
-        filters((obj: any) => obj.id % 2 === 1),
+        filters((obj: unknown) => (obj as { id: number }).id % 2 === 1),
       );
       const reader = filtered.getReader();
       const results = [];
@@ -332,7 +332,7 @@ describe("filters", () => {
       });
 
       const filtered = stream.pipeThrough(
-        filters((arr: any) => Array.isArray(arr) && arr.length > 0),
+        filters((arr: unknown) => Array.isArray(arr) && arr.length > 0),
       );
       const reader = filtered.getReader();
       const results = [];

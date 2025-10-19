@@ -29,7 +29,8 @@ export const distributeBys = <T>(
             streams.set(ord, r);
             return r;
           })();
-        const t = streams.get(ord)!;
+        const t = streams.get(ord);
+        if (!t) throw new Error(`Stream not found for order ${ord}`);
         await t.writer.write(chunk);
       }),
     )

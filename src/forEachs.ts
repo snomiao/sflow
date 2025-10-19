@@ -6,7 +6,7 @@ type asyncMapOptions = {
 
 /** For each loop on stream, you can modify the item by x.property = 123 */
 export function forEachs<T>(
-  fn: (x: T, i: number) => Awaitable<undefined | any>,
+  fn: (x: T, i: number) => Awaitable<undefined | unknown>,
   options?: asyncMapOptions,
 ) {
   const concurrency = options?.concurrency ?? 1;
@@ -26,7 +26,7 @@ export function forEachs<T>(
 
   // If concurrency > 1, use parallel processing while maintaining order
   let i = 0;
-  const promises: Awaitable<undefined | any>[] = [];
+  const promises: Awaitable<undefined | unknown>[] = [];
   const chunks: T[] = [];
   return new TransformStream<T, T>({
     transform: async (chunk, ctrl) => {
@@ -34,13 +34,19 @@ export function forEachs<T>(
       chunks.push(chunk);
       if (promises.length >= concurrency) {
         await promises.shift();
-        ctrl.enqueue(chunks.shift()!);
+        const chunk = chunks.shift();
+        if (chunk === undefined)
+          throw new Error("chunks.shift() returned undefined");
+        ctrl.enqueue(chunk);
       }
     },
     flush: async (ctrl) => {
       while (promises.length) {
         await promises.shift();
-        ctrl.enqueue(chunks.shift()!);
+        const chunk = chunks.shift();
+        if (chunk === undefined)
+          throw new Error("chunks.shift() returned undefined");
+        ctrl.enqueue(chunk);
       }
     },
   });

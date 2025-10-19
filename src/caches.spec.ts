@@ -5,7 +5,7 @@ import sflow, { forEachs } from "./index";
 import { sleep } from "./utils";
 
 it("caches stream", async () => {
-  const store = new Keyv<any>({ ttl: 10e3 });
+  const store = new Keyv<unknown>({ ttl: 10e3 });
   const heavyFlow = () => sflow([1, 2, 3, 4]);
   const fn0 = jest.fn();
   const fn1 = jest.fn();
@@ -37,7 +37,7 @@ it("caches stream", async () => {
 });
 
 it("caches stream tail", async () => {
-  const store = new Keyv<any>({ ttl: 10e3 });
+  const store = new Keyv<unknown>({ ttl: 10e3 });
   const heavyFlowHead1 = () => sflow([3, 2, 1]);
   const _heavyFlowHead2 = () => sflow([5, 4, 3, 2, 1]);
   const _heavyFlowHead3 = () => sflow([5, 4, 3, 2, 1]);

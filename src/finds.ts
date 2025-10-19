@@ -1,7 +1,7 @@
 import type { Awaitable } from "./Awaitable";
 
 export function finds<T>(
-  predicate: (value: T, index: number) => Awaitable<any>,
+  predicate: (value: T, index: number) => Awaitable<unknown>,
 ): TransformStream<T, T> {
   let index = 0;
   let found = false;
