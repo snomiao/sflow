@@ -6,6 +6,7 @@ it("Get the latest value", async () => {
   const ret = toLatests(
     sflow([1, 2, 3]).forEach(async (_e) => {
       await sleep(10);
+      return;
     }),
   );
 
@@ -19,6 +20,7 @@ it("works number", async () => {
   const ret = toLatests(
     sflow([1, 2, 3]).forEach(async (_e) => {
       await sleep(10);
+      return;
     }),
   );
 
@@ -42,6 +44,7 @@ it("works obj", async () => {
   const ret = toLatests(
     sflow([{ b: 1 }, { a: { b: { c: 2 } } }, { c: 3 }]).forEach(async () => {
       await sleep(10);
+      return;
     }),
   );
 

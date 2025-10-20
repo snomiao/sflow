@@ -18,7 +18,9 @@ it("works when a stream slower", async () => {
   expect(
     await sflow(
       mergeStream(
-        sflow([1, 2, 3, 4]).forEach(() => sleep(30)),
+        sflow([1, 2, 3, 4]).forEach(async () => {
+          await sleep(30);
+        }),
         [5, 6, 7, 8],
       ),
     ).toArray(),

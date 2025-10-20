@@ -140,7 +140,10 @@ describe("concats", () => {
   it("should output the first stream before second stream starts", async () => {
     const promise = Promise.withResolvers();
     const source1 = createStream([1, 2, 3]);
-    const source2 = sflow([4, 5]).forEach(async () => await promise.promise);
+    const source2 = sflow([4, 5]).forEach(async () => {
+      await promise.promise;
+      return;
+    });
 
     const readable = concatStream([source1, source2]);
     const reader = readable.getReader();

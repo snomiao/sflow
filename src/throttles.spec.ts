@@ -9,8 +9,8 @@ describe.skip("throttles", () => {
     // pass: 0, __, 100, ___
     expect(
       await sflow([1, 2, 3, 4])
-        .forEach(() => {
-          return sleep(50);
+        .forEach(async () => {
+          await sleep(50);
         })
         .throttle(80, { drop: true, keepLast: false })
         .toArray(),
@@ -18,8 +18,8 @@ describe.skip("throttles", () => {
   });
   it("works with drop keep last", async () => {
     const r = await sflow([1, 2, 3, 4])
-      .forEach(() => {
-        return sleep(50);
+      .forEach(async () => {
+        await sleep(50);
       })
       .throttle(80, { drop: true, keepLast: true })
       .toArray();
@@ -34,8 +34,8 @@ describe.skip("throttles", () => {
     // pass: 0, __, 100, ___
     expect(
       await sflow([1, 2, 3, 4])
-        .forEach(() => {
-          return sleep(50);
+        .forEach(async () => {
+          await sleep(50);
         })
         .throttle(80)
         .toArray(),
@@ -45,8 +45,8 @@ describe.skip("throttles", () => {
     // emit: 0, 50, 100, 150
     // pass: 0, __, 100, ___
     await sflow([1, 2, 3, 4])
-      .forEach(() => {
-        return sleep(20);
+      .forEach(async () => {
+        await sleep(20);
       })
       .throttle(80)
       // calculate interval
@@ -60,8 +60,8 @@ describe.skip("throttles", () => {
   });
   it("works keep last", async () => {
     const r = await sflow([1, 2, 3, 4])
-      .forEach(() => {
-        return sleep(50);
+      .forEach(async () => {
+        await sleep(50);
       })
       .throttle(80)
       .toArray();
@@ -74,11 +74,11 @@ describe.skip("throttles", () => {
   it("works", async () => {
     expect(
       await sflow([1, 2, 3, 4])
-        .forEach(() => {
-          return sleep(100);
+        .forEach(async () => {
+          await sleep(100);
         })
-        .forEach(() => {
-          return sleep(100);
+        .forEach(async () => {
+          await sleep(100);
         })
         .log()
         .toArray(),
@@ -87,8 +87,8 @@ describe.skip("throttles", () => {
 
   it("interval should be 80", async () => {
     await sflow([1, 2, 3, 4])
-      .forEach(() => {
-        return sleep(80);
+      .forEach(async () => {
+        await sleep(80);
       })
       // .forEach(() => sleep(80))
       // calculate interval
