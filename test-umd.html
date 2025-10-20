@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sflow UMD Test</title>
+</head>
+<body>
+    <h1>sflow UMD Test</h1>
+    <div id="output"></div>
+
+    <script src="dist/index.umd.js"></script>
+    <script>
+        const output = document.getElementById('output');
+
+        async function test() {
+            try {
+                output.innerHTML += '<p>Testing sflow...</p>';
+
+                // Test basic functionality
+                const result = await sflow.default([1, 2, 3, 4, 5])
+                    .map(x => x * 2)
+                    .filter(x => x > 5)
+                    .toArray();
+
+                output.innerHTML += `<p>Result: ${JSON.stringify(result)}</p>`;
+                output.innerHTML += '<p style="color: green;">✓ UMD build works!</p>';
+            } catch (error) {
+                output.innerHTML += `<p style="color: red;">✗ Error: ${error.message}</p>`;
+                console.error(error);
+            }
+        }
+
+        test();
+    </script>
+</body>
+</html>

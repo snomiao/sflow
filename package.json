@@ -37,7 +37,9 @@
     }
   },
   "main": "./dist/index.js",
-  "module": "./src/index.ts",
+  "module": "./dist/index.js",
+  "browser": "./dist/index.umd.js",
+  "unpkg": "./dist/index.umd.js",
   "types": "./src/index.ts",
   "files": [
     "src/*.ts",
