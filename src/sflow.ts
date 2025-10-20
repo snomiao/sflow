@@ -437,14 +437,12 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     replace: (
       ...args: Parameters<typeof replaces> // @ts-expect-error string only
     ) => sflow(r.pipeThrough(replaces(...args))),
-    replaceAll: (
-      ...args: Parameters<typeof replaceAlls> // @ts-expect-error string only
-    ) => sflow(r.pipeThrough(replaceAlls(...args))),
+    replaceAll: (...args: Parameters<typeof replaceAlls>) =>
+      sflow(r.pipeThrough(replaceAlls(...args) as TransformStream<T, T>)),
     // stream merging
     merge: (...args: FlowSource<T>[]) => sflow(r.pipeThrough(merges(...args))),
 
     concat: (srcs: FlowSource<FlowSource<T>>) =>
-      // @ts-expect-error streams only
       sflow(r.pipeThrough(concats(srcs))),
 
     confluence: (

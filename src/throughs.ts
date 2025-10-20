@@ -5,10 +5,13 @@ export const throughs: {
   <T, R>(
     fn: (s: ReadableStream<T>) => ReadableStream<R>,
   ): TransformStream<T, R>;
-} = (arg: unknown) => {
+} = (arg: unknown): ReadableWritablePair<unknown, unknown> => {
   if (!arg) return new TransformStream();
-  if (typeof arg !== "function") return throughs((s) => s.pipeThrough(arg));
-  const fn = arg;
+  if (typeof arg !== "function")
+    return throughs((s) =>
+      s.pipeThrough(arg as TransformStream<unknown, unknown>),
+    );
+  const fn = arg as (s: ReadableStream<unknown>) => ReadableStream<unknown>;
   const { writable, readable } = new TransformStream();
   return { writable, readable: fn(readable) };
 };

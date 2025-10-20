@@ -4,10 +4,9 @@ export const tees: {
 } = (arg) => {
   if (!arg) return new TransformStream();
   if (arg instanceof WritableStream) return tees((s) => s.pipeTo(arg));
-  const fn = arg;
+  const fn = arg as (s: ReadableStream<unknown>) => unknown;
   const { writable, readable } = new TransformStream();
   const [a, b] = readable.tee();
-  // @ts-expect-error
-  fn(a);
+  void fn(a);
   return { writable, readable: b };
 };

@@ -39,8 +39,8 @@ it("works", async () => {
         })(),
       )
       // .log((e) => e)
-      .through(tsvFormats("t\tx\tv\ta\tremark")) //
-      .log((e) => e.trim())
+      .through(tsvFormats("t\tx\tv\ta\tremark") as TransformStream<any, string>)
+      .log((e) => (e as string).trim())
       .text(),
   ).toMatchSnapshot();
 });

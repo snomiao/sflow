@@ -2,6 +2,7 @@ import { expectTypeOf } from "expect-type";
 import Keyv from "keyv";
 import { KeyvCachedWith } from "keyv-cached-with";
 import DIE from "phpdie";
+import type { cacheTails } from "./cacheTails";
 import sflow, { nil, pageFlow, pageStream } from "./index";
 
 it("works with number", async () => {
@@ -57,7 +58,9 @@ it("works with cache without wrapper", async () => {
 });
 
 it("works with cacheTails", async () => {
-  const store = new Keyv<number[]>({ ttl: 86400e3 });
+  const store = new Keyv<number[]>({ ttl: 86400e3 }) as unknown as Parameters<
+    typeof cacheTails
+  >[0];
   // cache full content
   expect(
     await pageFlow(0, (page: number) => {
@@ -65,6 +68,7 @@ it("works with cacheTails", async () => {
       return { data, next: (!!data && page + 1) || null };
     })
       .filter()
+      // @ts-expect-error - store type mismatch in test
       .cacheTail(store, "page")
       .toArray(),
   ).toEqual([5, 4, 3, 2, 1]);
@@ -76,6 +80,7 @@ it("works with cacheTails", async () => {
       return { data, next: (!!data && page + 1) || null };
     })
       .filter()
+      // @ts-expect-error - store type mismatch in test
       .cacheTail(store, "page")
       .toArray(),
   ).toEqual([6, 5, 4, 3, 2, 1]);
