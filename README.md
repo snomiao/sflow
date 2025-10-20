@@ -1,12 +1,14 @@
 # sflow - Stream Flow 🚀
 
-sflow is a powerful and highly-extensible library designed for processing and manipulating streams of data effortlessly based on WebStream. Inspired by the functional programming paradigm, it provides a rich set of utilities for transforming streams, including chunking, filtering, mapping, reducing, among many others. It's a perfect companion for those who work extensively with streams and want to make their data processing pipelines more efficient and concise.
+sflow is a powerful and highly-extensible library designed for processing and manipulating streams of data effortlessly based on WebStream. **Built for async-first pipelines**, every pipeline method accepts async functions, making it perfect for web applications that handle async I/O operations and need to manage concurrency efficiently. Inspired by the functional programming paradigm, it provides a rich set of utilities for transforming streams, including chunking, filtering, mapping, reducing, among many others. It's a perfect companion for those who work extensively with streams and want to make their data processing pipelines more efficient and concise.
 
 ONLINE DEMO avaliable here! - [sflow online Examples and Use Cases]( https://sflow-examples.vercel.app/ )
 
 📚 **Documentation**: [snomiao/sflow | DeepWiki]( https://deepwiki.com/snomiao/sflow )
 
 ## Features
+
+- **Async-first design**: Every pipeline method accepts async functions, enabling seamless async I/O operations and concurrency management for web applications.
 
 - **Chunking and buffering**: Easily divide your stream into chunks based on different criteria such as count, intervals, custom conditions, etc.
 
@@ -57,6 +59,47 @@ async function run() {
 await run();
 ```
 
+### Async Pipeline Example
+
+sflow excels at handling async operations in pipelines - perfect for web applications:
+
+```typescript
+import { sflow } from "sflow";
+
+// Example: Fetch user data and process concurrently
+async function processUsers() {
+  const result = await sflow([1, 2, 3, 4, 5])
+    // Every method accepts async functions!
+    .map(async (userId) => {
+      const response = await fetch(`https://api.example.com/users/${userId}`);
+      return response.json();
+    })
+    .filter(async (user) => {
+      // Async filtering for complex checks
+      const isActive = await checkUserStatus(user.id);
+      return isActive;
+    })
+    .map(async (user) => {
+      // Transform with async operations
+      const profile = await enrichUserProfile(user);
+      return profile;
+    })
+    .toArray();
+
+  console.log(result); // Array of processed user profiles
+}
+
+async function checkUserStatus(id: number) {
+  // Simulate async check
+  return id % 2 === 0;
+}
+
+async function enrichUserProfile(user: any) {
+  // Simulate async enrichment
+  return { ...user, enriched: true };
+}
+```
+
 ## API Overview
 
 ### Initialization
@@ -83,17 +126,32 @@ const flow3 = sflow(asyncGenerator());
 
 ### Transformations
 
-Transform your flow with various transformation methods:
+Transform your flow with various transformation methods. **All methods support async functions:**
 
 ```typescript
-// Mapping
+// Synchronous mapping
 flow1.map((n) => n * 2);
 
-// Filtering
+// Async mapping - great for API calls, database queries, etc.
+flow1.map(async (n) => {
+  const data = await fetchData(n);
+  return data.value * 2;
+});
+
+// Synchronous filtering
 flow1.filter((n) => n % 2 === 0);
 
-// Reducing
-flow1.reduce((a, b) => a + b, 0);
+// Async filtering - perfect for complex validation
+flow1.filter(async (n) => {
+  const isValid = await validateAsync(n);
+  return isValid;
+});
+
+// Async reducing
+flow1.reduce(async (a, b) => {
+  const result = await computeAsync(a, b);
+  return result;
+}, 0);
 ```
 
 ### Chunking, Buffering, and Grouping
