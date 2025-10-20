@@ -1,4 +1,5 @@
 import Keyv from "keyv";
+import type { cacheTails } from "./cacheTails";
 import { logs, maps, pageFlow } from "./index";
 import { sleep } from "./utils";
 
@@ -8,7 +9,7 @@ it.skip("page caches stream", async () => {
     [2, 1],
   ];
 
-  const store = new Keyv<any>();
+  const store = new Keyv<any>() as unknown as Parameters<typeof cacheTails>[0];
   const fetcher1 = jest.fn((page) => pageData1[page]);
   const ret1 = await pageFlow(0, (page: number) => {
     const data = fetcher1(page);
@@ -24,6 +25,7 @@ it.skip("page caches stream", async () => {
     .byLazy(maps(async (e) => (await sleep(10), e)))
     .byLazy(maps(async (e) => (await sleep(10), e)))
     .byLazy(maps(async (e) => (await sleep(10), e)))
+    // @ts-expect-error - store type mismatch in test
     .cacheTail(store, "cache")
     .log()
     .toArray();
@@ -51,6 +53,7 @@ it.skip("page caches stream", async () => {
     .byLazy(maps(async (e) => (await sleep(10), e)))
     .byLazy(maps(async (e) => (await sleep(10), e)))
     .byLazy(maps(async (e) => (await sleep(10), e)))
+    // @ts-expect-error - store type mismatch in test
     .cacheTail(store, "cache")
     .log()
     .toArray();

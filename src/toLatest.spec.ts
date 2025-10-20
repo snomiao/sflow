@@ -51,7 +51,6 @@ it("works obj", async () => {
   // wait for first emit
   expect(await ret.latest).toEqual({ b: 1 });
 
-  // @ts-expect-error
   expect(await ret.next).toEqual({ a: { b: { c: 2 } } });
   expect(await ret.latest).toEqual({ a: { b: { c: 2 } } });
 
