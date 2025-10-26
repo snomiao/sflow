@@ -14,10 +14,10 @@
     "allowJs": true,
     // Bundler mode
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    // "verbatimModuleSyntax": true,
     "downlevelIteration": true,
-    "noEmit": true,
+    "declaration": true,
+    "outDir": "dist",
+    "sourceMap": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     // Best practices
@@ -25,9 +25,6 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "noFallthroughCasesInSwitch": true,
-    // Some stricter flags (disabled by default)
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
     "incremental": true
   },
