@@ -15,15 +15,10 @@ jobs:
         #[semantic-release]: node version >=20.8.1 is required. Found v18.20.5.
       - uses: oven-sh/setup-bun@v2
       - run: bun i
+      - run: bun fmt
       - run: bun run test
       - run: bun run build
-      - name: Prettify code
-        uses: creyD/prettier_action@v4.3
-        with:
-          # This part is also where you can pass other options, for example:
-          prettier_options: --write **/*.{js,md}
-          only_changed: True
-      - run: npx semantic-release
+      - run: bunx semantic-release
         env:
           # reminder to setup read/write permission for this token
           # here: REPO_URL/settings/actions

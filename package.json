@@ -53,8 +53,8 @@
     "build:esm": "bun build src/index.ts --outdir=dist --packages=external --sourcemap=external",
     "build:umd": "bun build src/index.ts --outfile=dist/index.umd.js && bunx rollup dist/index.umd.js --file=dist/index.umd.js --format=umd --name sflow",
     "release": "bunx standard-version",
-    "test": "vitest",
-    "buntest": "bun test --coverage",
+    "test": "bun test",
+    "coverage": "bun test --coverage",
     "prepare": "bunx husky",
     "fmt": "biome check --fix --unsafe"
   },
