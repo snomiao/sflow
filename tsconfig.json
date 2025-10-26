@@ -1,20 +1,14 @@
 {
   "compilerOptions": {
     // Enable latest features
-    "lib": [
-      "ESNext",
-      "DOM"
-      // "DOM.Iterable",
-      // "DOM.AsyncIterable"
-    ],
-    "target": "ES2022",
+    "lib": ["ESNext", "DOM"],
+    "target": "esnext",
     "module": "ESNext",
-    "moduleDetection": "force",
+    "moduleDetection": "auto",
     "jsx": "react-jsx",
     "allowJs": true,
     // Bundler mode
     "moduleResolution": "bundler",
-    "downlevelIteration": true,
     "declaration": true,
     "outDir": "dist",
     "sourceMap": true,
