@@ -121,7 +121,9 @@ export const mergeDescends: MergeBy = <T>(
       {
         pull: async (ctrl) => {
           const srcs = await sflow(_srcs).toArray();
-          const slots = srcs.map(() => undefined as { value: T } | undefined);
+          const slots = srcs.map(
+            () => undefined as { value: Awaited<T> } | undefined,
+          );
           const pendingSlotRemoval = srcs.map(
             () => undefined as PromiseWithResolvers<void> | undefined,
           );
@@ -140,7 +142,7 @@ export const mergeDescends: MergeBy = <T>(
                   await pendingSlotRemoval[i]?.promise; // wait for this slot empty;
                 }
 
-                slots[i] = { value: value as unknown as T };
+                slots[i] = { value: value as T extends Awaited<T> ? T : never };
                 shiftMaxValueIfFull();
               }
               // done
