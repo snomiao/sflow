@@ -130,15 +130,17 @@ export const mergeDescends: MergeBy = <T>(
           await Promise.all(
             srcs.map(async (src, i) => {
               const stream = toStream(src);
-              for await (const value of Object.assign(stream, {
+              const streamIterator = Object.assign(stream, {
                 [Symbol.asyncIterator]: streamAsyncIterator,
-              })) {
+              });
+              for await (const value of streamIterator) {
                 while (slots[i] !== undefined) {
                   if (shiftMaxValueIfFull()) continue;
                   pendingSlotRemoval[i] = Promise.withResolvers<void>();
                   await pendingSlotRemoval[i]?.promise; // wait for this slot empty;
                 }
-                slots[i] = { value: value as T };
+
+                slots[i] = { value: value as unknown as T };
                 shiftMaxValueIfFull();
               }
               // done
