@@ -177,3 +177,6 @@ dist
 bun.lockb
 *.log
 tsconfig.tsbuildinfo
+
+# TypeDoc output
+docs/
