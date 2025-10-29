@@ -2,7 +2,6 @@ import DIE from "phpdie";
 import { type Ord, sortBy } from "rambda";
 import { toStream } from "./froms";
 import { type FlowSource, sflow } from "./index";
-import { streamAsyncIterator } from "./streamAsyncIterator";
 
 interface MergeBy {
   <T>(ordFn: (input: T) => Ord, srcs: FlowSource<FlowSource<T>>): sflow<T>;
