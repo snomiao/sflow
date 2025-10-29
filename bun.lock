@@ -39,7 +39,6 @@
       "peerDependencies": {
         "rambda": "^9.2.1",
         "react-hook-form": "^7.52.2",
-        "typescript": "^5.8.3",
       },
     },
   },
