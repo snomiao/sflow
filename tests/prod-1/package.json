@@ -1,0 +1,11 @@
+{
+  "name": "prod-1",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "sflow": "file:../../"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
