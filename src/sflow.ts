@@ -364,9 +364,6 @@ export type sflow<T> = ReadableStream<T> &
   ToResponse<T>;
 
 /** stream flow */
-// <T, SRCS extends FlowSource<T>[]>(...streams: SRCS): ReadableStream<
-// SourcesType<SRCS>
-// >
 export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
   ...srcs: SRCS
 ): sflow<SourcesType<SRCS>> {
