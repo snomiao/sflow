@@ -47,6 +47,7 @@ import { slices } from "./slices";
 import { streamAsyncIterator } from "./streamAsyncIterator";
 import { matchAlls, matchs, replaceAlls, replaces } from "./strings";
 import { tails } from "./tails";
+import { takeWhiles } from "./takeWhiles";
 import { tees } from "./tees";
 import { terminates } from "./terminates";
 import { throttles } from "./throttles";
@@ -184,6 +185,7 @@ export interface BaseFlow<T> {
   skip: (...args: Parameters<typeof skips<T>>) => sflow<T>;
   slice: (...args: Parameters<typeof slices<T>>) => sflow<T>;
   tail: (...args: Parameters<typeof tails<T>>) => sflow<T>;
+  takeWhile: (...args: Parameters<typeof takeWhiles<T>>) => sflow<T>;
   uniq: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
   uniqBy: <K>(...args: Parameters<typeof uniqBys<T, K>>) => sflow<T>;
   /** @deprecated use fork, forkTo */
@@ -518,6 +520,8 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       sflow(r.pipeThrough(slices(...args))),
     tail: (...args: Parameters<typeof tails>) =>
       sflow(r.pipeThrough(tails(...args))),
+    takeWhile: (...args: Parameters<typeof takeWhiles>) =>
+      sflow(r.pipeThrough(takeWhiles(...args))),
     tees: (...args: Parameters<typeof _tees>) =>
       sflow(r.pipeThrough(_tees(...args))),
     forkTo: (...args: Parameters<typeof _tees>) =>
