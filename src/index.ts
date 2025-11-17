@@ -52,6 +52,7 @@ export { streamAsyncIterator } from "./streamAsyncIterator";
 export { matchAlls, matchs, replaceAlls, replaces } from "./strings";
 export { svector as sv, svector } from "./svector";
 export { tails } from "./tails";
+export { takeWhiles } from "./takeWhiles";
 export { tees } from "./tees";
 export { terminates as aborts } from "./terminates";
 export { throttles } from "./throttles";
