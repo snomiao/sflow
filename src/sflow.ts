@@ -187,6 +187,7 @@ export interface BaseFlow<T> {
   tail: (...args: Parameters<typeof tails<T>>) => sflow<T>;
   takeWhile: (...args: Parameters<typeof takeWhiles<T>>) => sflow<T>;
   uniq: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
+  unique: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
   uniqBy: <K>(...args: Parameters<typeof uniqBys<T, K>>) => sflow<T>;
   /** @deprecated use fork, forkTo */
   tees(fn: (s: sflow<T>) => undefined | any): sflow<T>; // fn must fisrt
@@ -494,6 +495,8 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     log: (...args: Parameters<typeof logs>) =>
       sflow(r.pipeThrough(logs(...args))),
     uniq: (...args: Parameters<typeof uniqs>) =>
+      sflow(r.pipeThrough(uniqs(...args))),
+    unique: (...args: Parameters<typeof uniqs>) =>
       sflow(r.pipeThrough(uniqs(...args))),
     uniqBy: (...args: Parameters<typeof uniqBys>) =>
       sflow(r.pipeThrough(uniqBys(...args))),
