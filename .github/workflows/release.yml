@@ -3,16 +3,15 @@ on:
     branches: 
       - main
 jobs:
-  semantic-release:
+  release:
     permissions:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
         with:
           node-version: latest
-        #[semantic-release]: node version >=20.8.1 is required. Found v18.20.5.
       - uses: oven-sh/setup-bun@v2
       - run: bun i
       - run: bun fmt
@@ -23,4 +22,3 @@ jobs:
           # reminder to setup read/write permission for this token
           # here: REPO_URL/settings/actions
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
