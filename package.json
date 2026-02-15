@@ -53,7 +53,8 @@
     "test": "bun test",
     "coverage": "bun test --coverage",
     "prepare": "bunx husky",
-    "fmt": "biome check --fix --unsafe",
+    "fmt": "oxlint --fix src",
+    "lint": "oxlint src",
     "docs": "typedoc",
     "docs:watch": "typedoc --watch"
   },
@@ -73,15 +74,17 @@
     "web-streams-extensions": "^0.12.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.6",
     "@types/bun": "^1.1.6",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.14",
+    "@typescript/native-preview": "^7.0.0-dev.20260215.1",
     "bun": "^1.3.1",
     "expect-type": "^0.19.0",
     "husky": "^9.1.7",
     "keyv": "^4.5.4",
     "keyv-cached-with": "^0.0.17",
+    "oxc": "^1.0.1",
+    "oxlint": "^1.47.0",
     "peek-log": "^0.0.11",
     "proxy-deep": "^4.0.1",
     "semantic-release": "^24.2.0",
@@ -89,7 +92,6 @@
     "ts-toolbelt": "^9.6.0",
     "tsdown": "^0.20.3",
     "typedoc": "^0.28.14",
-    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
