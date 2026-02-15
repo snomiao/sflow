@@ -25,34 +25,30 @@
     },
     "./fromNodeStream": {
       "import": "./dist/lib/from-node-stream.js",
-      "types": "./src/lib/from-node-stream.ts"
+      "types": "./dist/lib/from-node-stream.d.ts"
     },
     "./lib/from-node-stream": {
       "import": "./dist/lib/from-node-stream/index.js",
-      "types": "./src/lib/from-node-stream/index.ts"
+      "types": "./dist/lib/from-node-stream/index.d.ts"
     },
     "./lib/d3": {
       "import": "./dist/lib/d3/index.js",
-      "types": "./src/lib/d3/index.ts"
+      "types": "./dist/lib/d3/index.d.ts"
     }
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "browser": "./dist/index.umd.js",
   "unpkg": "./dist/index.umd.js",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "files": [
     "src/*.ts",
     "dist"
   ],
   "scripts": {
-    "dev": "bunx --bun tsc -w",
-    "build": "rm -rf dist && run-p build:esm build:node build:d3 build:umd build:ts",
-    "build:ts": "tsc",
-    "build:node": "bun build src/lib/from-node-stream/index.ts --target=node --outdir=dist/lib/from-node-stream --sourcemap",
-    "build:d3": "bun build src/lib/d3/index.ts --outdir=dist/lib/d3 --sourcemap",
-    "build:esm": "bun build src/index.ts --outdir=dist --packages=external --sourcemap=external",
-    "build:umd": "bun build src/index.ts --outfile=dist/index.umd.js && bunx rollup dist/index.umd.js --file=dist/index.umd.js --format=umd --name sflow",
+    "dev": "tsdown --watch",
+    "build": "tsdown && npm run build:umd",
+    "build:umd": "tsdown src/index.ts --format iife --globalName sflow --outDir dist --dts false --sourcemap false --clean false && mv dist/index.iife.js dist/index.umd.js",
     "release": "bunx standard-version",
     "test": "bun test",
     "coverage": "bun test --coverage",
@@ -91,6 +87,7 @@
     "semantic-release": "^24.2.0",
     "ts-pattern": "^5.2.0",
     "ts-toolbelt": "^9.6.0",
+    "tsdown": "^0.20.3",
     "typedoc": "^0.28.14",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
