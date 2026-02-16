@@ -21,5 +21,6 @@
     "private": false,
     "inherited": true,
     "external": false
-  }
+  },
+  "customCss": ".typedoc/custom.css"
 }

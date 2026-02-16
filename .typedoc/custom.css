@@ -1,0 +1,418 @@
+/* sflow Documentation - Modern Design */
+
+:root {
+  /* Modern color palette - Blue/Purple gradient theme */
+  --color-primary: #3b82f6;
+  --color-primary-dark: #2563eb;
+  --color-accent: #8b5cf6;
+  --color-background: #ffffff;
+  --color-background-secondary: #f8fafc;
+  --color-text: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-border: #e2e8f0;
+  --color-code-bg: #f1f5f9;
+  --color-hover: #f1f5f9;
+
+  /* Modern typography */
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, Consolas, monospace;
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}
+
+.dark {
+  --color-primary: #60a5fa;
+  --color-primary-dark: #3b82f6;
+  --color-accent: #a78bfa;
+  --color-background: #0f172a;
+  --color-background-secondary: #1e293b;
+  --color-text: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-border: #334155;
+  --color-code-bg: #1e293b;
+  --color-hover: #334155;
+}
+
+/* Global styles */
+html {
+  font-family: var(--font-family-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  line-height: 1.7;
+}
+
+/* Header improvements */
+.tsd-page-toolbar {
+  background: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md) 0;
+}
+
+.tsd-page-toolbar .title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.025em;
+}
+
+.tsd-page-toolbar .tsd-toolbar-contents {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+}
+
+/* Navigation sidebar */
+.col-sidebar {
+  background: var(--color-background-secondary);
+  border-right: 1px solid var(--color-border);
+}
+
+.tsd-navigation {
+  padding: var(--spacing-lg);
+}
+
+.tsd-navigation a {
+  color: var(--color-text);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  display: block;
+  font-weight: 500;
+}
+
+.tsd-navigation a:hover {
+  background: var(--color-hover);
+  color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+.tsd-navigation a.current {
+  background: var(--color-primary);
+  color: white;
+  font-weight: 600;
+}
+
+.tsd-accordion-summary {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* Main content area */
+.col-content {
+  max-width: 900px;
+  padding: var(--spacing-2xl);
+}
+
+.tsd-page-title {
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.tsd-page-title h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Typography improvements */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--color-text);
+}
+
+h2 {
+  font-size: 1.875rem;
+  margin-top: var(--spacing-2xl);
+  margin-bottom: var(--spacing-md);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+h3 {
+  font-size: 1.5rem;
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+}
+
+h4 {
+  font-size: 1.25rem;
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Code blocks */
+code {
+  font-family: var(--font-family-mono);
+  font-size: 0.9em;
+  background: var(--color-code-bg);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+pre code {
+  display: block;
+  padding: var(--spacing-lg);
+  background: var(--color-code-bg);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  line-height: 1.6;
+}
+
+/* Links */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+/* Type signatures */
+.tsd-signature {
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  font-family: var(--font-family-mono);
+  font-size: 0.9rem;
+  margin: var(--spacing-md) 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.tsd-signature .tsd-signature-symbol {
+  color: var(--color-text-secondary);
+}
+
+.tsd-signature .tsd-signature-type {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* Parameters and returns */
+.tsd-parameters,
+.tsd-returns {
+  margin: var(--spacing-lg) 0;
+}
+
+.tsd-parameters-title,
+.tsd-returns-title {
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
+}
+
+.tsd-parameter {
+  padding: var(--spacing-md);
+  background: var(--color-background-secondary);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+  border-left: 3px solid var(--color-primary);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: var(--spacing-lg) 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+thead {
+  background: var(--color-background-secondary);
+}
+
+th {
+  padding: var(--spacing-md);
+  text-align: left;
+  font-weight: 700;
+  color: var(--color-text);
+  border-bottom: 2px solid var(--color-border);
+}
+
+td {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover {
+  background: var(--color-hover);
+}
+
+/* Member cards */
+.tsd-member {
+  background: var(--color-background-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.tsd-member:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+}
+
+.tsd-anchor-link {
+  color: var(--color-text-secondary);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.tsd-member:hover .tsd-anchor-link {
+  opacity: 1;
+}
+
+/* Badges */
+.tsd-kind-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-right: var(--spacing-xs);
+}
+
+/* Search */
+.tsd-search {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.tsd-search input {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.tsd-search input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Footer */
+.tsd-generator {
+  background: var(--color-background-secondary);
+  border-top: 1px solid var(--color-border);
+  padding: var(--spacing-lg);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .col-content {
+    padding: var(--spacing-lg);
+  }
+
+  .tsd-page-title h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .tsd-member {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Improved spacing for lists */
+.tsd-description ul,
+.tsd-description ol {
+  padding-left: var(--spacing-lg);
+  margin: var(--spacing-md) 0;
+}
+
+.tsd-description li {
+  margin-bottom: var(--spacing-xs);
+}
+
+/* Version badge */
+.tsd-page-toolbar .tsd-toolbar-contents::after {
+  content: "v1.27.0";
+  display: inline-block;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-left: var(--spacing-md);
+}
