@@ -205,6 +205,24 @@ const typedFlow = sflow([{ a: 1, b: [1, 2, 3] }])
   .mapAddField("newField", (item) => item.a + item.b);
 ```
 
+## Agent Skill (Claude Code / Codex / Cursor)
+
+sflow ships an **Agent Skill** so AI coding assistants can use it fluently in your project.
+
+Install it with one command:
+
+```sh
+npx skills add https://github.com/snomiao/sflow --skill sflow
+```
+
+This copies the skill into your project's `.claude/skills/sflow/` (or equivalent) so Claude Code, Codex CLI, Cursor, and other compatible agents automatically understand how to write sflow pipelines — with the right API, patterns, and idioms.
+
+The skill includes:
+- `SKILL.md` — core API reference and patterns (loaded automatically when relevant)
+- `examples.md` — 10 real-world scenarios: API fetching, CSV processing, real-time events, parallel processing, object transformation, stream merging, batch processing, text streams, rate limiting, and more
+
+> Requires [skills CLI](https://github.com/vercel-labs/skills): `npm i -g skills` (or just use `npx`).
+
 ## Contributing
 
 Contributions to sflow are always welcome! If you have any ideas, suggestions, or bug reports, feel free to open an issue on GitHub or submit a pull request.
