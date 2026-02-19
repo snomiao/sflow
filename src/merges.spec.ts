@@ -2,6 +2,15 @@ import sflow from "./index";
 import { mergeStream } from "./mergeStream";
 import { sleep } from "./utils";
 
+it("propagates error from one source to consumer", async () => {
+  const boom = new ReadableStream({
+    start: (ctrl) => ctrl.error(new Error("stream exploded")),
+  });
+  await expect(sflow(mergeStream(boom, [1, 2, 3])).toArray()).rejects.toThrow(
+    "stream exploded",
+  );
+});
+
 it("merge different type", async () => {
   expect(
     await sflow(mergeStream(["1", "2", "3", "4"], [5, 6, 7, 8])).toArray(),

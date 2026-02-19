@@ -8,13 +8,7 @@ export function unpromises<T>(
   (async () => {
     const s = await promise;
     await s.pipeTo(tr.writable);
-  })()
-    .catch((error) => {
-      tr.readable.cancel(error).catch(() => {
-        throw error;
-      });
-    })
-    .then();
+  })().catch((error) => tr.writable.abort(error).catch(() => {}));
   return tr.readable;
 }
 
