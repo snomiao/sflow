@@ -2,6 +2,22 @@ import { sflow } from "./sflow";
 import { unpromises, unpromisesFn } from "./unpromises";
 import { sleep } from "./utils";
 
+it("propagates rejection of the promise to consumer", async () => {
+  const rejected = Promise.reject(new Error("bad promise"));
+  await expect(sflow(unpromises(rejected)).toArray()).rejects.toThrow(
+    "bad promise",
+  );
+});
+
+it("propagates error from the resolved stream to consumer", async () => {
+  const erroring = Promise.resolve(
+    new ReadableStream({ start: (ctrl) => ctrl.error(new Error("bad stream")) }),
+  );
+  await expect(sflow(unpromises(erroring)).toArray()).rejects.toThrow(
+    "bad stream",
+  );
+});
+
 it("works", async () => {
   const p = getStream();
   expect(p).toBeInstanceOf(Promise);

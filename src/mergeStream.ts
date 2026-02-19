@@ -33,11 +33,8 @@ export const mergeStream: {
   )
     .then(async () => w.close())
     .catch((error) => {
-      console.error(error);
-      return Promise.all([
-        t.writable.abort(error),
-        ...streams.map((e) => e.cancel(error)),
-      ]);
+      streams.forEach((e) => void e.cancel(error).catch(() => {}));
+      return w.abort(error).catch(() => {});
     });
 
   return t.readable;
