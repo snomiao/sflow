@@ -19,7 +19,6 @@ jobs:
         with:
           node-version: latest
           registry-url: 'https://registry.npmjs.org'
-          provenance: true
 
       - uses: oven-sh/setup-bun@v2
       - run: bun i
