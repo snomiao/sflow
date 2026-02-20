@@ -1,44 +1,81 @@
-# sflow - Stream Flow 🚀
+<div align="center">
 
-sflow is a powerful and highly-extensible library designed for processing and manipulating streams of data effortlessly based on WebStream. **Built for async-first pipelines**, every pipeline method accepts async functions, making it perfect for web applications that handle async I/O operations and need to manage concurrency efficiently. Inspired by the functional programming paradigm, it provides a rich set of utilities for transforming streams, including chunking, filtering, mapping, reducing, among many others. It's a perfect companion for those who work extensively with streams and want to make their data processing pipelines more efficient and concise.
+# sflow
 
-ONLINE DEMO avaliable here! - [sflow online Examples and Use Cases]( https://sflow-examples.vercel.app/ )
+### Stream Flow for TypeScript/JavaScript 🚀
 
-📚 **Documentation**: [snomiao/sflow | DeepWiki]( https://deepwiki.com/snomiao/sflow )
+[![npm version](https://img.shields.io/npm/v/sflow.svg)](https://www.npmjs.com/package/sflow)
+[![npm downloads](https://img.shields.io/npm/dm/sflow.svg)](https://www.npmjs.com/package/sflow)
+[![license](https://img.shields.io/npm/l/sflow.svg)](https://github.com/snomiao/sflow/blob/main/LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
-## Features
+A powerful and highly-extensible library for processing and manipulating streams of data effortlessly based on WebStreams API.
 
-- **Async-first design**: Every pipeline method accepts async functions, enabling seamless async I/O operations and concurrency management for web applications.
+**[📖 Documentation](https://deepwiki.com/snomiao/sflow)** • **[🎮 Online Demo](https://sflow-examples.vercel.app/)** • **[💬 Discussions](https://github.com/snomiao/sflow/discussions/2)**
 
-- **Chunking and buffering**: Easily divide your stream into chunks based on different criteria such as count, intervals, custom conditions, etc.
+</div>
 
-- **Transformations**: Map, filter, reduce, and various other transformations to process your stream data.
+---
 
-- **Stream utilities**: Merge, throttle, debounce, and more utilities for advanced stream controls.
+## 📋 Table of Contents
 
-- **Error handling**: Prevent or handle errors during stream processing, ensuring robustness.
+- [Why sflow?](#-why-sflow)
+- [Features](#-features)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [API Overview](#-api-overview)
+  - [Initialization](#initialization)
+  - [Transformations](#transformations)
+  - [Chunking, Buffering, and Grouping](#chunking-buffering-and-grouping)
+  - [Advanced Utilities](#advanced-utilities)
+  - [Type-Safe Enhancements](#type-safe-enhancements)
+- [Agent Skill](#-agent-skill-claude-code--codex--cursor)
+- [Contributing](#-contributing)
+- [References](#-references)
+- [License](#-license)
 
-- **Integration with other libraries**: Seamlessly integrates with tools like `web-streams-extensions`, making it versatile for different streaming needs.
+---
 
-- **TypeScript support**: Fully typed for a richer developer experience and better code quality.
+## ✨ Why sflow?
 
-## Get Started
+sflow is **built for async-first pipelines** — every pipeline method accepts async functions, making it perfect for web applications that handle async I/O operations and need to manage concurrency efficiently. Inspired by functional programming paradigms, it provides a rich set of utilities for transforming streams: chunking, filtering, mapping, reducing, and many more. It's the perfect companion for developers who work extensively with streams and want to make their data processing pipelines more efficient and concise.
 
-### Installation
+## 🎯 Features
 
-Install sflow using npm or bun:
+- **⚡ Async-first design** — Every pipeline method accepts async functions, enabling seamless async I/O operations and concurrency management for web applications.
 
-```sh
+- **📦 Chunking and buffering** — Easily divide your stream into chunks based on different criteria such as count, intervals, custom conditions, etc.
+
+- **🔄 Transformations** — Map, filter, reduce, and various other transformations to process your stream data.
+
+- **🛠️ Stream utilities** — Merge, throttle, debounce, and more utilities for advanced stream controls.
+
+- **🛡️ Error handling** — Prevent or handle errors during stream processing, ensuring robustness.
+
+- **🔌 Integration-ready** — Seamlessly integrates with tools like `web-streams-extensions`, making it versatile for different streaming needs.
+
+- **📘 TypeScript support** — Fully typed for a richer developer experience and better code quality.
+
+## 📦 Installation
+
+Install sflow using npm, yarn, or bun:
+
+```bash
+# npm
 npm install sflow
 
-# or if you are using bun
+# yarn
+yarn add sflow
 
+# bun
 bun add sflow
 ```
 
+## 🚀 Quick Start
+
 ### Basic Usage
 
-Here's a basic example of how to use sflow to process a stream:
+Here's a simple example of how to use sflow to process a stream:
 
 ```typescript
 import { sflow } from "sflow";
@@ -100,7 +137,7 @@ async function enrichUserProfile(user: any) {
 }
 ```
 
-## API Overview
+## 📚 API Overview
 
 ### Initialization
 
@@ -205,7 +242,7 @@ const typedFlow = sflow([{ a: 1, b: [1, 2, 3] }])
   .mapAddField("newField", (item) => item.a + item.b);
 ```
 
-## Agent Skill (Claude Code / Codex / Cursor)
+## 🤖 Agent Skill (Claude Code / Codex / Cursor)
 
 sflow ships an **Agent Skill** so AI coding assistants can use it fluently in your project.
 
@@ -223,28 +260,34 @@ The skill includes:
 
 > Requires [skills CLI](https://github.com/vercel-labs/skills): `npm i -g skills` (or just use `npx`).
 
-## Contributing
+## 🤝 Contributing
 
-Contributions to sflow are always welcome! If you have any ideas, suggestions, or bug reports, feel free to open an issue on GitHub or submit a pull request.
+Contributions to sflow are always welcome! We appreciate your help in making sflow better.
 
-Try to create your first PR start from here! https://github.dev/snomiao/sflow
+### How to Contribute
 
-2. Join sflow Community by Post Comments here:
+1. **🐛 Report bugs or suggest features** — [Open an issue](https://github.com/snomiao/sflow/issues) on GitHub
+2. **💻 Submit pull requests** — Fork the repo and create your first PR from [GitHub.dev](https://github.dev/snomiao/sflow)
+3. **💬 Join the community** — Share your thoughts and ask questions in [Discussions](https://github.com/snomiao/sflow/discussions/2)
 
-- [Welcome to sflow Discussions! · snomiao/sflow · Discussion #2]( https://github.com/snomiao/sflow/discussions/2 )
 
-
-## References
+## 📚 References
 
 - [Infinite Streams with Elixir](https://gist.github.com/mgwidmann/5e0cb590f12e2ca239564d07d7c2a572)
-- [web-streams-extensions - npm]( https://www.npmjs.com/package/web-streams-extensions )
-- [$unwind (aggregation) - MongoDB Manual v7.0]( https://www.mongodb.com/docs/manual/reference/operator/aggregation/unwind/ )
-- [Introducing sflow: A New Era of Web Stream Processing for TypeScript/JavaScript Developers! : r/javascript]( https://www.reddit.com/r/javascript/comments/1exv4we/introducing_sflow_a_new_era_of_web_stream/ )
+- [web-streams-extensions on npm](https://www.npmjs.com/package/web-streams-extensions)
+- [$unwind (aggregation) - MongoDB Manual](https://www.mongodb.com/docs/manual/reference/operator/aggregation/unwind/)
+- [Introducing sflow on r/javascript](https://www.reddit.com/r/javascript/comments/1exv4we/introducing_sflow_a_new_era_of_web_stream/)
 
-## License
+## 📄 License
 
-sflow is released under the MIT License. See the [LICENSE](./LICENSE) file for more details.
+sflow is released under the **MIT License**. See the [LICENSE](./LICENSE) file for more details.
 
 ---
 
-sflow aims to simplify stream processing and bring functional programming paradigms to modern JavaScript and TypeScript development. Happy streaming! 🚀
+<div align="center">
+
+**sflow aims to simplify stream processing and bring functional programming paradigms to modern JavaScript and TypeScript development.**
+
+Happy streaming! 🚀
+
+</div>
