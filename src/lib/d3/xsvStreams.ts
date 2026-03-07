@@ -1,4 +1,4 @@
-import { csvFormatBody, csvParse, tsvFormatBody, tsvParse } from "d3";
+import { csvFormatBody, csvParse, tsvFormatBody, tsvParse } from "d3-dsv";
 import type { Split } from "ts-toolbelt/out/String/Split";
 import { lines } from "../../lines";
 import { maps } from "../../maps";

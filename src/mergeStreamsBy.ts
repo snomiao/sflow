@@ -1,5 +1,5 @@
 import DIE from "phpdie";
-import { type Ord, sortBy } from "rambda";
+import { type Ord, minBy, maxBy } from "./utils";
 import type { Awaitable } from "./Awaitable";
 import { emptyStream } from "./emptyStream";
 import type { FlowSource } from "./FlowSource";
@@ -68,15 +68,14 @@ export function mergeStreamsByAscend<T>(
       ctrl.close();
       return [];
     }
-    const peak: T = sortBy(ordFn, cands)[0]!;
+    const peak: T = minBy(ordFn, cands);
     const index: number = slots.findIndex(
       (e) => e?.done === false && e?.value === peak,
     );
     // check order correct
     if (
       lastEmit &&
-      lastEmit.value !== sortBy(ordFn, [lastEmit.value, peak])[0] &&
-      ordFn(lastEmit.value) !== ordFn(peak)
+      ordFn(lastEmit.value) > ordFn(peak)
     )
       throw new Error(
         "MergeStreamError: one of sources is not ordered by ascending",
@@ -117,16 +116,14 @@ export function mergeStreamsByDescend<T>(
       ctrl.close();
       return [];
     }
-    const peak: T = sortBy(ordFn, cands).toReversed()[0]!;
+    const peak: T = maxBy(ordFn, cands);
     const index: number = slots.findIndex(
       (e) => e?.done === false && e?.value === peak,
     );
     // check order correct
     if (
       lastEmit &&
-      lastEmit.value !==
-        sortBy(ordFn, [lastEmit.value, peak]).toReversed()[0] &&
-      ordFn(lastEmit.value) !== ordFn(peak)
+      ordFn(lastEmit.value) < ordFn(peak)
     )
       DIE(
         new Error(

@@ -28,7 +28,7 @@ export const asyncMaps: {
       );
       // TODO: allow emit on tasks not full
       // emit fastest when tasks full
-      if (tasks.size >= (options.concurrency ?? Infinity)) {
+      if (tasks.size >= (options.concurrency ?? 16)) {
         const { id, data } = await Promise.race(tasks.values());
         tasks.delete(id);
         ctrl.enqueue(data);

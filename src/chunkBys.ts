@@ -1,4 +1,4 @@
-import type { Ord } from "rambda";
+import type { Ord } from "./utils";
 import type { Awaitable } from "./Awaitable";
 
 /** chunk items by compareFn, group items with same Ord */

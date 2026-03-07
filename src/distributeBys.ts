@@ -1,4 +1,4 @@
-import type { Ord } from "rambda";
+import type { Ord } from "./utils";
 import type { Awaitable } from "./Awaitable";
 import { nils } from "./nils";
 import { pMaps } from "./pMaps";

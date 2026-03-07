@@ -17,7 +17,7 @@ export const pMaps: <T, R>(
   return new TransformStream<T, R>({
     transform: async (chunk, ctrl) => {
       promises.push(fn(chunk, i++));
-      if (promises.length >= (options.concurrency ?? Infinity))
+      if (promises.length >= (options.concurrency ?? 16))
         ctrl.enqueue(await promises.shift());
     },
     flush: async (ctrl) => {

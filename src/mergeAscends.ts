@@ -1,5 +1,5 @@
 import DIE from "phpdie";
-import { type Ord, sortBy } from "rambda";
+import { type Ord, minBy, maxBy } from "./utils";
 import { toStream } from "./froms";
 import { type FlowSource, sflow } from "./index";
 import { streamAsyncIterator } from "./streamAsyncIterator";
@@ -67,11 +67,10 @@ export const mergeAscends: MergeBy = <T>(
                 const fullSlots = slots
                   .flatMap((e) => (e !== undefined ? [e] : []))
                   .map((e) => e.value);
-                const minValue = sortBy(ordFn, fullSlots)[0]!;
+                const minValue = minBy(ordFn, fullSlots);
                 const minIndex = slots.findIndex((e) => e?.value === minValue);
                 if (lastMinValue !== undefined) {
-                  const ordered = sortBy(ordFn, [lastMinValue, minValue]);
-                  (ordered[0] === lastMinValue && ordered[1] === minValue) ||
+                  ordFn(lastMinValue) <= ordFn(minValue) ||
                     DIE(`
 MergeAscendError: one of source stream is not ascending ordered.
 
@@ -165,11 +164,10 @@ export const mergeDescends: MergeBy = <T>(
                 const fullSlots = slots
                   .flatMap((e) => (e !== undefined ? [e] : []))
                   .map((e) => e.value);
-                const maxValue = sortBy(ordFn, fullSlots).toReversed()[0]!;
+                const maxValue = maxBy(ordFn, fullSlots);
                 const maxIndex = slots.findIndex((e) => e?.value === maxValue);
                 if (lastMaxValue !== undefined) {
-                  const ordered = sortBy(ordFn, [maxValue, lastMaxValue]);
-                  (ordered[0] === maxValue && ordered[1] === lastMaxValue) ||
+                  ordFn(lastMaxValue) >= ordFn(maxValue) ||
                     DIE(`
 MergeDescendError: one of source stream is not descending ordered.
 

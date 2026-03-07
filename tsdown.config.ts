@@ -23,16 +23,10 @@ export default defineConfig({
   inlineOnly: false,
   // Mark all dependencies as external (not bundled)
   external: [
-    "@types/d3",
-    "bson",
-    "d3",
+    "d3-dsv",
     "from-node-stream",
     "phpdie",
-    "polyfill-text-decoder-stream",
-    "polyfill-text-encoder-stream",
-    "rambda",
     "string-replace-async",
-    "ts-essentials",
     "ts-toolbelt",
     "unwind-array",
     "web-streams-extensions",

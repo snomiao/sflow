@@ -1,4 +1,4 @@
-import { range } from "rambda";
+import { range } from "./utils";
 import { forEachs, mergeAscends, mergeDescends, sflow } from "./index";
 
 it("merge asc", async () => {

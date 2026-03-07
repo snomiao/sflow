@@ -1,8 +1,6 @@
 import { andIgnoreError } from "./andIgnoreError";
 import { sflow } from "./sflow";
 
-export { default as TextDecoderStream } from "polyfill-text-decoder-stream";
-export { default as TextEncoderStream } from "polyfill-text-encoder-stream";
 export { bys } from "./bys";
 export { cacheLists } from "./cacheLists";
 export { cacheSkips } from "./cacheSkips";

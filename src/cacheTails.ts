@@ -1,5 +1,5 @@
 import DIE from "phpdie";
-import { equals } from "rambda";
+import { deepEquals } from "./utils";
 import type { Awaitable } from "./Awaitable";
 import { never } from "./never";
 
@@ -41,7 +41,7 @@ export function cacheTails<T>(
     start: async () => cachePromise.resolve((await store.get(key)) ?? []),
     write: async (chunk, ctrl) => {
       const cache = await cachePromise.promise;
-      if (cache && equals(chunk, cache[0])) {
+      if (cache && deepEquals(chunk, cache[0])) {
         // save cache
         await store.set(key, [...chunks, ...cache]);
         // emit whole cache as tail into downstream

@@ -1,4 +1,4 @@
-import { range } from "rambda";
+import { range } from "./utils";
 import { forEachs } from "./forEachs";
 import { mergeDescends } from "./mergeAscends";
 import { mergeStreamsByAscend } from "./mergeStreamsBy";
