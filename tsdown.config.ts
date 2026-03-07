@@ -10,9 +10,7 @@ export default defineConfig({
     "lib/d3/index": "src/lib/d3/index.ts",
   },
   format: ["esm"],
-  dts: {
-    resolve: true,
-  },
+  dts: true,
   sourcemap: true,
   clean: true,
   outDir: "dist",
