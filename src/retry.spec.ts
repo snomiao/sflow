@@ -65,7 +65,7 @@ describe("retry", () => {
         if (calls >= 2) throw new Error("stop");
         return fn(a, b);
       },
-      async (a: string, b: number) => {
+      async (_a: string, _b: number) => {
         calls++;
         throw new Error("fail");
       },
