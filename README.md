@@ -60,7 +60,11 @@ sflow is **built for async-first pipelines** — every pipeline method accepts a
 
 ```bash
 # AI coding agent skill (Claude Code / Codex / Cursor)
+# install to project scope
 bunx skills add snomiao/sflow -y -a
+
+# install to global scope
+bunx skills add snomiao/sflow -y -a -g
 
 # npm
 npm install sflow
