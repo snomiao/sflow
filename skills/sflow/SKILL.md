@@ -159,6 +159,35 @@ await sflow(eventStream)
   .run();
 ```
 
+## Retry
+
+Wrap any async function with retry logic using `retry(onError, fn)`.
+The handler receives `(error, attempt, fn, ...args)` — call `fn(...args)` to retry, throw to give up:
+
+```typescript
+import { sflow, retry } from "sflow";
+
+const fetchWithRetry = retry(
+  async (error, attempt, fn, url) => {
+    if (!String(error).includes("429") || attempt > 5) throw error;
+    await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+    return fn(url); // retry with same args
+  },
+  fetch,
+);
+
+await sflow(urls).map(fetchWithRetry, { concurrency: 5 }).toArray();
+
+// Retry with different args:
+const fetchWithFallback = retry(
+  async (error, attempt, fn, url) => {
+    if (attempt > 3) throw error;
+    return fn(url + "?retry=" + attempt);
+  },
+  fetchData,
+);
+```
+
 ## Detailed Examples
 
 See [examples.md](./examples.md) for real-world scenarios:

@@ -41,6 +41,7 @@ export { pMaps } from "./pMaps";
 export { portals } from "./portals";
 export { rangeFlow, rangeStream } from "./rangeStream";
 export { reduces } from "./reduces";
+export { retry } from "./retry";
 export type { sflowType } from "./sflow";
 export { sflow, sflow as snoflow } from "./sflow";
 export { sfT, sfTemplate } from "./sfTemplate";
