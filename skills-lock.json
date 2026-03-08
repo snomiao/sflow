@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "sflow": {
+      "source": "snomiao/sflow",
+      "sourceType": "github",
+      "computedHash": "a22d105599641863dc54f95019563315d47ff399074ea16be41bb061d0bffab5"
+    }
+  }
+}
