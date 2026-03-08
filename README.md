@@ -58,14 +58,12 @@ sflow is **built for async-first pipelines** — every pipeline method accepts a
 
 ## 📦 Installation
 
-Install sflow using npm, yarn, or bun:
-
 ```bash
+# AI coding agent skill (Claude Code / Codex / Cursor)
+bunx skills add snomiao/sflow -y -a
+
 # npm
 npm install sflow
-
-# yarn
-yarn add sflow
 
 # bun
 bun add sflow
