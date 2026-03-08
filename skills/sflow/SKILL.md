@@ -67,6 +67,98 @@ for await (const item of sflow(source).map(fn)) {
 }
 ```
 
+## Anti-Patterns sflow Replaces
+
+### 1. Manual async for-loops with sequential await
+
+```typescript
+// BAD: sequential, no concurrency, no backpressure
+const results = [];
+for (const id of ids) {
+  const user = await fetchUser(id); // one at a time
+  if (user.active) results.push(user);
+}
+
+// GOOD: concurrent, lazy, backpressure-aware
+const results = await sflow(ids)
+  .map(fetchUser, { concurrency: 5 })
+  .filter((u) => u.active)
+  .toArray();
+```
+
+### 2. Promise.all buffering entire datasets in memory
+
+```typescript
+// BAD: loads ALL results into memory at once, no concurrency limit
+const users = await Promise.all(ids.map(fetchUser));
+const active = users.filter((u) => u.active);
+
+// GOOD: streams results lazily, bounded concurrency
+const active = await sflow(ids)
+  .map(fetchUser, { concurrency: 16 })
+  .filter((u) => u.active)
+  .toArray();
+```
+
+### 3. Accumulating arrays then re-iterating
+
+```typescript
+// BAD: materializes full array at each step
+const raw = await getAllRecords();
+const parsed = raw.map(parse);
+const filtered = parsed.filter(isValid);
+const grouped = chunk(filtered, 100);
+for (const batch of grouped) await sendBatch(batch);
+
+// GOOD: single lazy pipeline, constant memory
+await sflow(getRecordStream())
+  .map(parse)
+  .filter(isValid)
+  .chunk(100)
+  .forEach(sendBatch)
+  .run();
+```
+
+### 4. Hand-rolled chunking / batching
+
+```typescript
+// BAD: imperative, error-prone, hard to maintain
+const batches = [];
+for (let i = 0; i < items.length; i += 100) {
+  batches.push(items.slice(i, i + 100));
+}
+
+// GOOD: declarative
+await sflow(items).chunk(100).forEach(processBatch).run();
+```
+
+### 5. Unbounded concurrency (OOM / rate-limit risk)
+
+```typescript
+// BAD: fires ALL requests at once — crashes with large input
+await Promise.all(urls.map((u) => fetch(u)));
+
+// GOOD: bounded, backpressure-aware
+await sflow(urls).map((u) => fetch(u), { concurrency: 8 }).run();
+```
+
+### 6. Callback-based event processing
+
+```typescript
+// BAD: callback hell, no composition
+emitter.on("data", (d) => {
+  transform(d, (err, result) => {
+    if (!err) save(result, () => {});
+  });
+});
+
+// GOOD: composable async pipeline
+await sflow(eventStream)
+  .map(transform)
+  .forEach(save)
+  .run();
+```
+
 ## Detailed Examples
 
 See [examples.md](./examples.md) for real-world scenarios:
