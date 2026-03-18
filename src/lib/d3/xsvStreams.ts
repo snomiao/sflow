@@ -1,5 +1,10 @@
 import { csvFormatBody, csvParse, tsvFormatBody, tsvParse } from "d3-dsv";
-import type { Split } from "ts-toolbelt/out/String/Split";
+// Inline Split type — replaces ts-toolbelt dep so consumers don't need it
+type Split<S extends string, D extends string> = string extends S
+  ? string[]
+  : S extends `${infer T}${D}${infer U}`
+    ? [T, ...Split<U, D>]
+    : [S];
 import { lines } from "../../lines";
 import { maps } from "../../maps";
 import { skips } from "../../skips";
