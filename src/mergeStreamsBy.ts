@@ -91,7 +91,7 @@ export function mergeStreamsByAscend<T>(
     lastEmit = { value: peak };
 
     ctrl.enqueue(peak);
-    return slots.toSpliced(index, 1, null);
+    return [...slots.slice(0, index), null, ...slots.slice(index + 1)];
   }, sources);
 }
 
@@ -141,6 +141,6 @@ export function mergeStreamsByDescend<T>(
     lastEmit = { value: peak };
 
     ctrl.enqueue(peak);
-    return slots.toSpliced(index, 1, null);
+    return [...slots.slice(0, index), null, ...slots.slice(index + 1)];
   }, sources);
 }

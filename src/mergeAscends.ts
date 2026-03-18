@@ -1,5 +1,12 @@
 import DIE from "phpdie";
 import { type Ord, minBy, maxBy } from "./utils";
+
+// PromiseWithResolvers is ES2024 — define locally for broader consumer compat
+type PromiseWithResolvers<T> = {
+  promise: Promise<T>;
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason?: unknown) => void;
+};
 import { toStream } from "./froms";
 import { type FlowSource, sflow } from "./index";
 import { streamAsyncIterator } from "./streamAsyncIterator";
