@@ -188,15 +188,35 @@ export interface BaseFlow<T> {
   uniq: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
   unique: (...args: Parameters<typeof uniqs<T>>) => sflow<T>;
   uniqBy: <K>(...args: Parameters<typeof uniqBys<T, K>>) => sflow<T>;
-  /** @deprecated use fork, forkTo */
+  /**
+   * @deprecated use fork, forkTo
+   * @warning Uses `ReadableStream.tee()` internally. If the forked branch is consumed slower than the main branch,
+   * the tee buffer will grow unboundedly in memory (no backpressure between tee branches).
+   */
   tees(fn: (s: sflow<T>) => undefined | any): sflow<T>; // fn must fisrt
-  /** @deprecated use fork, forkTo */
+  /**
+   * @deprecated use fork, forkTo
+   * @warning Uses `ReadableStream.tee()` internally. If the forked branch is consumed slower than the main branch,
+   * the tee buffer will grow unboundedly in memory (no backpressure between tee branches).
+   */
   tees(stream: WritableStream<T>): sflow<T>;
 
+  /**
+   * Fork the stream, sending a copy to the given function or writable stream, while continuing the main pipeline.
+   * @warning Uses `ReadableStream.tee()` internally. If the forked branch is consumed slower than the main branch,
+   * the tee buffer will grow unboundedly in memory (no backpressure between tee branches).
+   */
   forkTo(fn: (s: sflow<T>) => undefined | any): sflow<T>; // fn must fisrt
+  /**
+   * Fork the stream, sending a copy to the given writable stream, while continuing the main pipeline.
+   * @warning Uses `ReadableStream.tee()` internally. If the forked branch is consumed slower than the main branch,
+   * the tee buffer will grow unboundedly in memory (no backpressure between tee branches).
+   */
   forkTo(stream: WritableStream<T>): sflow<T>;
   /**
-   * fork
+   * Fork the stream into two independent branches. Returns the new branch; the original stream continues.
+   * @warning Uses `ReadableStream.tee()` internally. If one branch is consumed slower than the other,
+   * the tee buffer will grow unboundedly in memory (no backpressure between tee branches).
    */
   fork(): sflow<T>;
   throttle: (...args: Parameters<typeof throttles<T>>) => sflow<T>;
@@ -634,6 +654,11 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
   });
 }
 
+/**
+ * Internal tees helper that wraps forked branches in sflow.
+ * @warning Uses `ReadableStream.tee()` internally. If the forked branch is consumed slower than the main branch,
+ * the tee buffer will grow unboundedly in memory (no backpressure between tee branches).
+ */
 export const _tees: {
   <T>(fn: (s: sflow<T>) => undefined | any): TransformStream<T, T>;
   <T>(stream?: WritableStream<T>): TransformStream<T, T>;
