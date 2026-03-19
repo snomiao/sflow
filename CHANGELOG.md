@@ -1,3 +1,12 @@
+## [1.28.1](https://github.com/snomiao/sflow/compare/v1.28.0...v1.28.1) (2026-03-19)
+
+
+### Bug Fixes
+
+* add NPM_TOKEN to release workflow for npm publishing ([8134799](https://github.com/snomiao/sflow/commit/8134799805cd8143b1328723828225b1c9b1a463))
+* restore build:umd script removed by bun update ([55dc6a1](https://github.com/snomiao/sflow/commit/55dc6a1d048d66b6fe25dcf93570c9b819fcf192))
+* update deps to latest and fix wseMerge → mergeAll rename in web-streams-extensions v1 ([25ea647](https://github.com/snomiao/sflow/commit/25ea6476cab63d52505d2657ba3ad296124759e4))
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
