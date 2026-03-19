@@ -11,10 +11,10 @@ export function chunkIfs<T>(
     transform: async (chunk, ctrl) => {
       const cond = await predicate(chunk, i++, chunks);
       if (!inclusive && !cond)
-        chunks.length && ctrl.enqueue(chunks.splice(0, Infinity)); // clear chunks;
+        if (chunks.length) ctrl.enqueue(chunks.splice(0, Infinity)); // clear chunks
       chunks.push(chunk);
       if (!cond) ctrl.enqueue(chunks.splice(0, Infinity)); // enqueue current chunk
     },
-    flush: async (ctrl) => void (chunks.length && ctrl.enqueue(chunks)),
+    flush: async (ctrl) => { if (chunks.length) ctrl.enqueue(chunks); },
   });
 }

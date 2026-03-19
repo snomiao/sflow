@@ -593,7 +593,7 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     toLast: () => wseToPromise(sflow(r).tail(1)),
     toExactlyOne: async () => {
       const a = await wseToArray(r);
-      a.length !== 1 || DIE(`Expect exactly 1 Item, but got ${a.length}`);
+      if (a.length !== 1) DIE(`Expect exactly 1 Item, but got ${a.length}`);
       return a[0]!;
     },
     toOne: async () => {

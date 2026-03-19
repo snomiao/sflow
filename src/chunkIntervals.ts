@@ -17,7 +17,7 @@ export function chunkIntervals<T>(interval: number = 0) {
     },
     flush: async (ctrl) => {
       if (chunks.length) ctrl.enqueue(chunks.splice(0, Infinity));
-      id !== null && clearInterval(id);
+      if (id !== null) clearInterval(id);
     },
   });
 }

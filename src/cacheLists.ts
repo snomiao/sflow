@@ -42,8 +42,6 @@ export function cacheLists<T>(
       if (!cached) return;
       // emit cache, return never to disable pulling upstream
       cached.map((c) => ctrl.enqueue(c));
-      // ctrl.terminate();
-      // return never();
       hitflag = true;
     },
     transform: async (chunk, ctrl) => {

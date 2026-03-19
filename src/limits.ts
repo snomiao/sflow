@@ -8,7 +8,7 @@ export function limits<T>(n: number, { terminate = true } = {}) {
         ctrl.enqueue(chunk);
         // ensure not pull more items from upstream
         if (--n === 0) {
-          terminate && ctrl.terminate();
+          if (terminate) ctrl.terminate();
           return never();
         }
       },
