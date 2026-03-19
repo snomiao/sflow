@@ -63,7 +63,7 @@ export function mergeStreamsByAscend<T>(
   let lastEmit: { value: T } | null = null;
   return mergeStreamsBy<T>(async (slots, ctrl) => {
     //
-    const cands = slots.filter((e) => e?.done === false).map((e) => e?.value!);
+    const cands = slots.filter((e) => e?.done === false).map((e) => e!.value!);
     if (!cands.length) {
       ctrl.close();
       return [];
@@ -111,7 +111,7 @@ export function mergeStreamsByDescend<T>(
       mergeStreamsByDescend(ordFn, srcs)) as any;
   let lastEmit: { value: T } | null = null;
   return mergeStreamsBy<T>(async (slots, ctrl) => {
-    const cands = slots.filter((e) => e?.done === false).map((e) => e?.value!);
+    const cands = slots.filter((e) => e?.done === false).map((e) => e!.value!);
     if (!cands.length) {
       ctrl.close();
       return [];

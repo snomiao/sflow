@@ -17,7 +17,7 @@ export function forEachs<T>(
     return new TransformStream<T, T>({
       transform: async (chunk, ctrl) => {
         const ret = fn(chunk, i++);
-        ret instanceof Promise ? await ret : ret;
+        if (ret instanceof Promise) await ret;
 
         ctrl.enqueue(chunk);
       },
