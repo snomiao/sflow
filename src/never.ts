@@ -1,1 +1,2 @@
-export const never = () => new Promise<void>(() => null);
+const _never = new Promise<void>(() => {});
+export const never = () => _never;

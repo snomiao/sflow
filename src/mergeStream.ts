@@ -38,6 +38,4 @@ export const mergeStream: {
     });
 
   return t.readable;
-  // return parallels(...srcs.map(toStream));
-  // return parallels(...srcs.map(toStream));
 };

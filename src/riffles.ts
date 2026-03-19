@@ -2,7 +2,7 @@ export function riffles<T>(sep: T): TransformStream<T, T> {
   let last: T;
   return new TransformStream({
     transform: (chunk, ctrl) => {
-      if (undefined !== last) {
+      if (last !== undefined) {
         ctrl.enqueue(last);
         ctrl.enqueue(sep);
       }
