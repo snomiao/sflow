@@ -47,7 +47,8 @@
   ],
   "scripts": {
     "dev": "tsdown --watch",
-    "build": "tsdown",
+    "build": "tsdown && npm run build:umd",
+    "build:umd": "tsdown src/index.ts --format iife --globalName sflow --outDir dist --dts false --sourcemap false --clean false && mv dist/index.iife.js dist/index.umd.js",
     "release": "bunx standard-version",
     "test": "bun test",
     "coverage": "bun test --coverage",
