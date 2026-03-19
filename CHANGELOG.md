@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.28.0](https://github.com/snomiao/sflow/compare/v1.27.0...v1.28.0) (2026-03-19)
+
+
+### Features
+
+* add .unique() as alias for .uniq() method ([#18](https://github.com/snomiao/sflow/issues/18)) ([3f80859](https://github.com/snomiao/sflow/commit/3f808596b1c026858ddfd8703f2d22aef60d51d3))
+* add retry(onError, fn) for wrapping functions with retry logic ([a58503d](https://github.com/snomiao/sflow/commit/a58503d7a9bce59c8387ac62a5611279d5218fe6))
+* add sflow agent skill for Claude Code / Codex / Cursor ([dfd6a34](https://github.com/snomiao/sflow/commit/dfd6a34d234c586d910b6d7702ababcf85ba0409))
+* configure semantic-release for automatic versioning and changelog ([b08d899](https://github.com/snomiao/sflow/commit/b08d899e50d9484f8117ac36aa611e1486d2e89c))
+* modernize documentation design with custom CSS theme ([7c5a150](https://github.com/snomiao/sflow/commit/7c5a150088561c20b21cc5cc4716b34141630ca4))
+
+
+### Bug Fixes
+
+* chain stream errors to caller in mergeStream and unpromises ([#19](https://github.com/snomiao/sflow/issues/19)) ([f0ada49](https://github.com/snomiao/sflow/commit/f0ada4972635ee28f376db2149af02e2e2756fdb)), closes [#1](https://github.com/snomiao/sflow/issues/1)
+* ci ([d2c67cd](https://github.com/snomiao/sflow/commit/d2c67cd9192f1d6bc250d803dc6716e4581509f5))
+* correct tsdown dts config option (resolve -> true) ([d561918](https://github.com/snomiao/sflow/commit/d561918e8d1884891a92ff25d250830657be03c9))
+* improve compat for consumers without skipLibCheck ([#22](https://github.com/snomiao/sflow/issues/22)) ([444a96f](https://github.com/snomiao/sflow/commit/444a96ffd9e6bcbe389bd05690d5f8fac57afd71))
+* migrate build system to tsdown ([c2b9109](https://github.com/snomiao/sflow/commit/c2b9109762f89d518ad76e216d83c9acd73ace0c))
+* remove react-hook-form peer dependency ([#23](https://github.com/snomiao/sflow/issues/23)) ([dc8f5c9](https://github.com/snomiao/sflow/commit/dc8f5c97df2c7bf49f3fc576dbc066a2966564cd))
+* replace biome with oxlint and upgrade to TypeScript native preview ([ed04ddb](https://github.com/snomiao/sflow/commit/ed04ddb1580b57f79895e88cadc293f098de50c8))
+* update GitHub Actions workflows with setup-node@v6 and npm registry ([a2d97cb](https://github.com/snomiao/sflow/commit/a2d97cbb0d6510e5504a51d64e7ff523d9ad3d99))
+* update release workflow file in CI configuration ([7378f76](https://github.com/snomiao/sflow/commit/7378f76259fd407b192284e7a2334e9d9e10cb3d))
+* use OIDC for npm authentication instead of NPM_TOKEN ([4aa95f3](https://github.com/snomiao/sflow/commit/4aa95f394d43f69a0643afd9df6246d5fd8d60f3))
+
 ### [1.18.2](https://github.com/snomiao/sflow/compare/v1.25.0...v1.18.2) (2025-09-17)
 
 ### [1.18.1](https://github.com/snomiao/sflow/compare/v1.18.0...v1.18.1) (2024-12-19)
