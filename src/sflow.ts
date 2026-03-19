@@ -1,6 +1,6 @@
 import DIE from "phpdie";
 import type { Ord } from "./utils";
-import type { FieldPathByValue } from "react-hook-form";
+import type { FieldPathByValue } from "./FieldPath";
 import type { AsyncOrSync } from "ts-essentials";
 import type { Awaitable } from "./Awaitable";
 import { asyncMaps } from "./asyncMaps";
