@@ -93,9 +93,7 @@
     "typedoc": "^0.28.17",
     "vitest": "^3.2.4"
   },
-  "peerDependencies": {
-    "react-hook-form": "^7.60.0"
-  },
+  "peerDependencies": {},
   "license": "MIT",
   "homepage": "https://github.com/snomiao/sflow#readme",
   "repository": {

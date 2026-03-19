@@ -1,4 +1,4 @@
-import type { FieldPathByValue, FieldPathValue } from "react-hook-form";
+import type { FieldPathByValue, FieldPathValue } from "./FieldPath";
 
 export type Unwinded<T, K> = T extends Record<string, unknown>
   ? K extends FieldPathByValue<T, ReadonlyArray<unknown>>
