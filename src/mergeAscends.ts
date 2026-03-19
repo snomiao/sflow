@@ -77,7 +77,7 @@ export const mergeAscends: MergeBy = <T>(
                 const minValue = minBy(ordFn, fullSlots);
                 const minIndex = slots.findIndex((e) => e?.value === minValue);
                 if (lastMinValue !== undefined) {
-                  ordFn(lastMinValue) <= ordFn(minValue) ||
+                  if (ordFn(lastMinValue) > ordFn(minValue))
                     DIE(`
 MergeAscendError: one of source stream is not ascending ordered.
 
@@ -174,7 +174,7 @@ export const mergeDescends: MergeBy = <T>(
                 const maxValue = maxBy(ordFn, fullSlots);
                 const maxIndex = slots.findIndex((e) => e?.value === maxValue);
                 if (lastMaxValue !== undefined) {
-                  ordFn(lastMaxValue) >= ordFn(maxValue) ||
+                  if (ordFn(lastMaxValue) < ordFn(maxValue))
                     DIE(`
 MergeDescendError: one of source stream is not descending ordered.
 

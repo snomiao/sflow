@@ -400,10 +400,6 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
     get readable() {
       return r;
     },
-    // get writable() {
-    //   DIE(new Error("WIP, merge into this stream"));
-    //   return new WritableStream();
-    // },
     portal: (...args: Parameters<typeof portals>) =>
       sflow(r.pipeThrough(portals(...args))),
     through: (...args: Parameters<typeof _throughs>) =>
@@ -591,17 +587,6 @@ export function sflow<T0, SRCS extends FlowSource<T0>[] = FlowSource<T0>[]>(
       while (!(await d.read()).done) i++;
       return i;
     },
-    // toCount: async () =>
-    //   (async function () {
-    //     let i = 0;
-    //     await r.pipeTo(new WritableStream({ write: () => void i++ }));
-    //     return i;
-    //   })(),
-    // toCount: async () => (await wseToArray(r)).length,
-    // toCount: async () =>
-    //   (await sflow(r)
-    //     .map((_, i) => i + 1)
-    //     .toLast()) ?? 0, // TODO: optimize memory usage
     toFirst: () => wseToPromise(sflow(r).limit(1, { terminate: true })),
     toFirstMatch: (predicate: (value: T, index: number) => Awaitable<any>) =>
       wseToPromise(sflow(r).find(predicate)),
