@@ -1,3 +1,10 @@
+## [1.28.2](https://github.com/snomiao/sflow/compare/v1.28.1...v1.28.2) (2026-03-26)
+
+
+### Bug Fixes
+
+* align type declarations with implementations for merge, concat, join ([29c4879](https://github.com/snomiao/sflow/commit/29c487947142f11bfe0805222d473f81dd97b589))
+
 ## [1.28.1](https://github.com/snomiao/sflow/compare/v1.28.0...v1.28.1) (2026-03-19)
 
 
