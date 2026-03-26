@@ -156,7 +156,7 @@ describe("sflow methods coverage", () => {
   });
 
   it("toOne returns undefined when empty", async () => {
-    const val = await sflow([]).toOne();
+    const val = await sflow([] as number[]).toOne();
     expect(val).toBeUndefined();
   });
 
@@ -170,7 +170,7 @@ describe("sflow methods coverage", () => {
   });
 
   it("toAtLeastOne throws when empty", async () => {
-    await expect(sflow([]).toAtLeastOne()).rejects.toThrow();
+    await expect(sflow([] as number[]).toAtLeastOne()).rejects.toThrow();
   });
 
   it("json method returns parsed JSON", async () => {

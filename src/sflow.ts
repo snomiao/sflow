@@ -131,14 +131,10 @@ export interface BaseFlow<T> {
 
   flatMap<R>(...args: Parameters<typeof flatMaps<T, R>>): sflow<R>;
 
-  /** @deprecated to join another stream, use merge instead  */
-  join(fn: (s: WritableStream<T>) => undefined | any): sflow<T>;
-  /** @deprecated to join another stream, use merge instead  */
-  join(stream?: ReadableStream<T>): sflow<T>;
-  merge(fn: (s: WritableStream<T>) => undefined | any): sflow<T>;
-  merge(stream?: ReadableStream<T>): sflow<T>;
-  concat(fn: (s: WritableStream<T>) => undefined | any): sflow<T>;
-  concat(stream?: ReadableStream<T>): sflow<T>;
+  /** interleave a separator between items (alias for riffle) */
+  join(...args: Parameters<typeof riffles<T>>): sflow<T>;
+  merge(...args: FlowSource<T>[]): sflow<T>;
+  concat(srcs?: FlowSource<FlowSource<T>>): sflow<T>;
   limit(...args: Parameters<typeof limits<T>>): sflow<T>;
   head(...args: Parameters<typeof heads<T>>): sflow<T>;
   map<R>(fn: (x: T, i: number) => Awaitable<R>): sflow<R>;

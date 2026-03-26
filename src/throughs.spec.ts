@@ -26,7 +26,7 @@ it("throughs with TransformStream wraps it", async () => {
 });
 
 it("throughs with function applies function to readable", async () => {
-  const ts = throughs<number>((s) =>
+  const ts = throughs<number, number>((s: ReadableStream<number>) =>
     s.pipeThrough(
       new TransformStream<number, number>({
         transform(chunk, ctrl) { ctrl.enqueue(chunk + 100); },
